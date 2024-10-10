@@ -1,0 +1,104 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popix Mobile</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Include any necessary fonts here -->
+</head>
+<body>
+    <!-- Initial Leaderboard Screen -->
+    <div id="leaderboardScreen" class="screen active">
+        <h1>Popix Mobile</h1>
+        <h2>Level 1 Leaderboard</h2>
+        <table id="leaderboard">
+            <thead>
+                <tr>
+                    <th class="level-col">#</th>
+                    <th class="name-col">Name</th>
+                    <th class="time-col">Time (s)</th>
+                    <th class="clicks-col">Clicks</th>
+                    <th class="missed-clicks-col">Missed Clicks</th>
+                    <th class="score-col">Score</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboardBody">
+                <!-- Leaderboard entries will be injected here -->
+            </tbody>
+        </table>
+        <div class="buttons">
+            <button id="startGameButton">Start</button>
+            <button id="rulesButton">Rules</button>
+        </div>
+    </div>
+
+    <!-- Rules Modal -->
+    <div id="rulesModal" class="modal">
+        <div class="modal-content">
+            <span id="closeRulesButton" class="close-button">&times;</span>
+            <h2>Game Rules</h2>
+            <p>
+                Welcome to Popix Mobile! Your objective is to pop all the circles as quickly as possible.
+                Start the game by clicking the "Start" button. Two circles will appear on the screen at a time.
+                Click on a circle to pop it, and another will appear randomly until all circles are popped.
+                Your time will be recorded with penalties for missed clicks.
+            </p>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="screen">
+        <button id="startButton" class="hidden">Start</button> <!-- Hidden as Start is on leaderboard screen -->
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <!-- End of Level Screen -->
+    <div id="endLevelScreen" class="screen">
+        <h2>Level Completed!</h2>
+        <p id="endLevelScore">Time: 0.00s</p>
+        <form id="nameForm">
+            <input type="text" id="playerName" placeholder="Enter your name" required>
+            <button type="submit">Submit</button>
+        </form>
+        <button id="skipButton">Skip</button>
+    </div>
+
+    <!-- Confirmation Dialog -->
+    <div id="confirmationDialog" class="modal">
+        <div class="modal-content">
+            <p id="confirmationMessage">Are you sure?</p>
+            <button id="confirmYesButton">Yes</button>
+            <button id="confirmNoButton">No</button>
+        </div>
+    </div>
+
+    <!-- Leaderboard Page Before Level 2 -->
+    <div id="preNextLevelScreen" class="screen">
+        <h2>Level 2 Leaderboard</h2>
+        <table id="preLeaderboard">
+            <thead>
+                <tr>
+                    <th class="level-col">#</th>
+                    <th class="name-col">Name</th>
+                    <th class="time-col">Time (s)</th>
+                    <th class="clicks-col">Clicks</th>
+                    <th class="missed-clicks-col">Missed Clicks</th>
+                    <th class="score-col">Score</th>
+                </tr>
+            </thead>
+            <tbody id="preLeaderboardBody">
+                <!-- Leaderboard entries for Level 2 will be injected here -->
+            </tbody>
+        </table>
+        <div class="buttons">
+            <button id="playNextLevelButton">Play Next Level</button>
+            <button id="resetGameButton">Reset Game</button>
+        </div>
+    </div>
+
+    <!-- Include Firebase and Script -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>

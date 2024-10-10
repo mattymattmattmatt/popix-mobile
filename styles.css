@@ -1,0 +1,179 @@
+/* styles.css */
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    font-family: 'Your-Popix-Font', sans-serif; /* Replace with actual Popix font */
+    background-color: #f0f0f0; /* Replace with Popix's background color */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Screen Classes */
+.screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.screen.active {
+    display: flex;
+}
+
+/* Leaderboard Table Styling */
+table {
+    width: 90%;
+    max-width: 600px;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #4CAF50; /* Replace with Popix's header color */
+    color: white;
+}
+
+.no-miss-clicks {
+    color: gold;
+    font-weight: bold;
+}
+
+/* Buttons Styling */
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+    background-color: #4CAF50; /* Replace with Popix's button color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Hidden Elements */
+.hidden {
+    display: none;
+}
+
+/* Modal Styling */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 400px;
+    position: relative;
+    animation: fadeIn 0.5s;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+/* Game Canvas Styling */
+#gameCanvas {
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff; /* Replace with Popix's canvas background color */
+    touch-action: none; /* Prevent touch delays */
+}
+
+/* End Level Screen Styling */
+#endLevelScreen {
+    flex-direction: column;
+}
+
+#endLevelScreen h2 {
+    margin-bottom: 20px;
+}
+
+#endLevelScreen p {
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+#nameForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#nameForm input {
+    padding: 10px;
+    font-size: 16px;
+    width: 80%;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#nameForm button {
+    width: 50%;
+}
+
+/* Pre Next Level Screen Styling */
+#preNextLevelScreen h2 {
+    margin-bottom: 20px;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+@media (max-width: 600px) {
+    th, td {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+}
