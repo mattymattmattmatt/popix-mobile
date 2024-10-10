@@ -1,7 +1,3 @@
-// script.js
-
-import { database, ref, push, onValue, remove } from './firebase/firebase-config.js';
-
 // DOM Elements
 const leaderboardScreen = document.getElementById('leaderboardScreen');
 const leaderboardBody = document.getElementById('leaderboardBody');
@@ -24,8 +20,6 @@ const confirmYesButton = document.getElementById('confirmYesButton');
 const confirmNoButton = document.getElementById('confirmNoButton');
 const playNextLevelButton = document.getElementById('playNextLevelButton');
 const resetGameButton = document.getElementById('resetGameButton');
-const soundToggleButton = document.getElementById('soundToggleButton');
-const musicToggleButton = document.getElementById('musicToggleButton');
 
 // Game Variables
 let currentLevel = 1;
@@ -44,7 +38,7 @@ let totalTime = 0.00; // in seconds
 // Canvas Context
 const ctx = gameCanvas.getContext('2d');
 
-// Circle Object
+// Circle Class
 class Circle {
     constructor(x, y) {
         this.x = x;
@@ -74,6 +68,9 @@ let activeCircles = []; // Currently displayed circles
 function resizeCanvas() {
     gameCanvas.width = window.innerWidth;
     gameCanvas.height = window.innerHeight;
+    // Redraw active circles on resize
+    ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+    activeCircles.forEach(circle => circle.draw());
 }
 
 window.addEventListener('resize', resizeCanvas);
@@ -138,9 +135,10 @@ function displayLeaderboard(level, leaderboardBodyElement) {
                 missedClicksCell.textContent = entry.missedClicks;
                 row.appendChild(missedClicksCell);
 
-                const scoreCell = document.createElement('td');
-                scoreCell.textContent = entry.score;
-                row.appendChild(scoreCell);
+                // Remove the score cell
+                // const scoreCell = document.createElement('td');
+                // scoreCell.textContent = entry.score;
+                // row.appendChild(scoreCell);
 
                 leaderboardBodyElement.appendChild(row);
             });
@@ -148,7 +146,7 @@ function displayLeaderboard(level, leaderboardBodyElement) {
             // No entries yet
             const row = document.createElement('tr');
             const noDataCell = document.createElement('td');
-            noDataCell.colSpan = 6;
+            noDataCell.colSpan = 5; // Update colspan to match the number of columns
             noDataCell.textContent = 'No entries yet.';
             noDataCell.style.textAlign = 'center';
             row.appendChild(noDataCell);
@@ -268,7 +266,7 @@ function animatePop(circle) {
     const duration = 300; // in ms
     const start = performance.now();
 
-    function animate(time) {
+    function animateFrame(time) {
         const elapsed = time - start;
         const progress = Math.min(elapsed / duration, 1);
         const scale = 1 + progress; // Scale from 1 to 2
@@ -288,24 +286,24 @@ function animatePop(circle) {
         ctx.restore();
 
         if (progress < 1) {
-            requestAnimationFrame(animate);
+            requestAnimationFrame(animateFrame);
         } else {
             // Clear the area after animation
             ctx.clearRect(circle.x - circle.radius - 2, circle.y - circle.radius - 2, circle.radius * 2 + 4, circle.radius * 2 + 4);
         }
     }
 
-    requestAnimationFrame(animate);
+    requestAnimationFrame(animateFrame);
 }
 
 // Sound Functions
 function playPopSound() {
-    const popSound = new Audio('assets/sounds/pop.mp3'); // Replace with actual path
+    const popSound = new Audio('assets/sounds/pop.mp3'); // Ensure the path is correct
     popSound.play();
 }
 
 function playMissSound() {
-    const missSound = new Audio('assets/sounds/miss.mp3'); // Replace with actual path
+    const missSound = new Audio('assets/sounds/miss.mp3'); // Ensure the path is correct
     missSound.play();
 }
 
@@ -330,16 +328,16 @@ nameForm.addEventListener('submit', (e) => {
         name: playerName,
         time: parseFloat(totalTime),
         clicks: clickCount,
-        missedClicks: circlesMissed,
-        score: calculateScore()
+        missedClicks: circlesMissed
+        // Removed score
     };
 
     push(leaderboardRef, newEntry)
         .then(() => {
             console.log('Score submitted successfully.');
             // Optionally, show a success message
-            nameFormMessage.textContent = 'Score submitted!';
-            nameFormMessage.style.color = 'green';
+            // For example, you can add a message element or use alerts
+            alert('Score submitted successfully!');
             // Reset form
             nameForm.reset();
             // Proceed to next level or show leaderboard
@@ -352,19 +350,9 @@ nameForm.addEventListener('submit', (e) => {
         })
         .catch((error) => {
             console.error('Error submitting score:', error);
-            nameFormMessage.textContent = 'Error submitting score.';
-            nameFormMessage.style.color = 'red';
+            alert('Error submitting score. Please try again.');
         });
 });
-
-// Calculate Score Function
-function calculateScore() {
-    // Example: Lower time is better
-    // You can define a scoring formula based on time, clicks, and penalties
-    // For simplicity, let's assume score is inversely proportional to time
-    // Adjust as per your scoring mechanism
-    return Math.floor(10000 / (totalTime + (circlesMissed * 0.05)));
-}
 
 // Show Pre Next Level Screen
 function showPreNextLevelScreen() {
@@ -435,29 +423,11 @@ function showGameCompletedScreen() {
     // Implement a separate screen or message indicating game completion
     alert('Congratulations! You have completed all levels.');
     // Reset game or provide options as needed
+    resetGame();
 }
 
 // Initialize Leaderboard on Page Load
 initializeLeaderboard();
-
-// Ensure only 2 circles are active at any time
-function manageActiveCircles() {
-    while (activeCircles.length < 2 && circles.length > 0) {
-        addNewCircle();
-    }
-}
-
-// Override addNewCircle to manage only 2 active circles
-function addNewCircle() {
-    if (circles.length === 0) return;
-    const randomIndex = Math.floor(Math.random() * circles.length);
-    const circle = circles.splice(randomIndex, 1)[0];
-    activeCircles.push(circle);
-    circle.draw();
-}
-
-// Calculate Score Decay
-// If implementing score decay differently, adjust accordingly
 
 // Prevent default touch behavior for better responsiveness
 gameCanvas.addEventListener('touchstart', (e) => {
@@ -502,26 +472,11 @@ gameCanvas.addEventListener('touchstart', (e) => {
     }
 }, { passive: false });
 
-// Play Next Level Sound and Animation (Optional)
-function playNextLevelAnimation() {
-    // Implement any animations or sounds when moving to the next level
+// Ensure only 2 circles are active at any time
+function manageActiveCircles() {
+    while (activeCircles.length < 2 && circles.length > 0) {
+        addNewCircle();
+    }
 }
 
-// Optional: Implement Sound and Music Toggle Functionality
-// This can include pausing/playing background music or sound effects based on user preference
-
-// Example Sound Toggle
-let soundEnabled = true;
-soundToggleButton.addEventListener('click', () => {
-    soundEnabled = !soundEnabled;
-    soundToggleButton.textContent = soundEnabled ? 'Sound On' : 'Sound Off';
-    // Implement actual sound enabling/disabling logic
-});
-
-// Example Music Toggle
-let musicEnabled = true;
-musicToggleButton.addEventListener('click', () => {
-    musicEnabled = !musicEnabled;
-    musicToggleButton.textContent = musicEnabled ? 'Music On' : 'Music Off';
-    // Implement actual music enabling/disabling logic
-});
+// Optionally, call manageActiveCircles periodically or within relevant functions
