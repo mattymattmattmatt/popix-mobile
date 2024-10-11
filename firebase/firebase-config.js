@@ -18,6 +18,51 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+const auth = getAuth(app);
 
-// Export database functions
-export { database, ref, set, push, onValue, remove };
+// Sign in anonymously
+signInAnonymously(auth)
+    .then(() => {
+        console.log('Signed in anonymously');
+    })
+    .catch((error) => {
+        console.error('Anonymous sign-in failed:', error);
+    });
+
+// Listen for authentication state changes
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        console.log('User is signed in:', user.uid);
+    } else {
+        console.log('User is signed out');
+    }
+});
+
+/**
+ * Push a new score to the leaderboard
+ * @param {number} level - The current level
+ * @param {object} scoreData - The score data object
+ * @returns {Promise}
+ */
+export function pushScore(level, scoreData) {
+    const leaderboardRef = ref(database, `leaderboard/level${level}`);
+    return push(leaderboardRef, scoreData);
+}
+
+/**
+ * Get the leaderboard for a specific level
+ * @param {number} level - The level to fetch
+ * @param {function} callback - Callback function to handle the data
+ */
+export function getLeaderboard(level, callback) {
+    const leaderboardRef = ref(database, `leaderboard/level${level}`);
+    onValue(leaderboardRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            const entries = Object.values(data);
+            callback(entries);
+        } else {
+            callback([]);
+        }
+    });
+}
