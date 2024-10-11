@@ -2,8 +2,6 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -19,26 +17,8 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
-const auth = getAuth(app);
 
-// Sign in anonymously
-signInAnonymously(auth)
-    .then(() => {
-        console.log('Signed in anonymously');
-    })
-    .catch((error) => {
-        console.error('Anonymous sign-in failed:', error);
-    });
-
-// Listen for authentication state changes
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        console.log('User is signed in:', user.uid);
-    } else {
-        console.log('User is signed out');
-    }
-});
-
+// Export Database functions
 /**
  * Push a new score to the leaderboard
  * @param {number} level - The current level
