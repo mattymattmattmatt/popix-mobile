@@ -136,8 +136,6 @@ function displayLeaderboard(level, leaderboardBodyElement) {
                 missedClicksCell.textContent = entry.missedClicks;
                 row.appendChild(missedClicksCell);
 
-                // Removed score cell
-
                 leaderboardBodyElement.appendChild(row);
             });
         } else {
@@ -160,6 +158,7 @@ function initializeLeaderboard() {
 
 // Start Game Function
 function startGame() {
+    console.log('Starting game...'); // Debugging
     // Reset game variables
     circlesPopped = 0;
     circlesMissed = 0;
@@ -175,6 +174,9 @@ function startGame() {
     // Show game screen
     showScreen(gameScreen);
 
+    // Clear any existing drawings
+    ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+
     // Start the timer
     timeStart = performance.now();
     gameTimer = setInterval(() => {
@@ -188,13 +190,14 @@ function startGame() {
         totalTime = (parseFloat(totalTime) + 0.02).toFixed(2); // Add 0.02s every 0.02s for a smoother decay
     }, 20); // Adjust as needed
 
-    // Display initial circles
+    // Display initial 2 circles
     addNewCircle();
     addNewCircle();
 }
 
 // End Game Function
 function endGame() {
+    console.log('Ending game...'); // Debugging
     clearInterval(gameTimer);
     clearInterval(scoreDecayTimer);
 
@@ -297,12 +300,16 @@ function animatePop(circle) {
 // Sound Functions
 function playPopSound() {
     const popSound = new Audio('assets/sounds/pop.mp3'); // Ensure the path is correct
-    popSound.play();
+    popSound.play().catch(error => {
+        console.error('Error playing pop sound:', error);
+    });
 }
 
 function playMissSound() {
     const missSound = new Audio('assets/sounds/miss.mp3'); // Ensure the path is correct
-    missSound.play();
+    missSound.play().catch(error => {
+        console.error('Error playing miss sound:', error);
+    });
 }
 
 // Initialize Rules Modal
@@ -394,6 +401,7 @@ function showConfirmationDialog(message, callback) {
 
 // Reset Game Function
 function resetGame() {
+    console.log('Resetting game...'); // Debugging
     currentLevel = 1;
     totalCircles = 10;
     circles = [];
@@ -421,6 +429,12 @@ function showGameCompletedScreen() {
 
 // Initialize Leaderboard on Page Load
 initializeLeaderboard();
+
+// Handle Start Game Button Click
+startGameButton.addEventListener('click', () => {
+    console.log('Start Game Button Clicked'); // Debugging
+    startGame();
+});
 
 // Prevent default touch behavior for better responsiveness
 gameCanvas.addEventListener('touchstart', (e) => {
