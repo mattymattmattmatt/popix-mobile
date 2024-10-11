@@ -1,3 +1,7 @@
+// script.js
+
+import { pushScore, getLeaderboard } from './firebase-config.js'; // Adjust the path as necessary
+
 // DOM Elements
 const leaderboardScreen = document.getElementById('leaderboardScreen');
 const leaderboardBody = document.getElementById('leaderboardBody');
@@ -100,14 +104,11 @@ function showScreen(screen) {
 }
 
 function displayLeaderboard(level, leaderboardBodyElement) {
-    const leaderboardRef = ref(database, `leaderboard/level${level}`);
-    onValue(leaderboardRef, (snapshot) => {
-        const data = snapshot.val();
+    getLeaderboard(level, (entries) => { // Use the imported getLeaderboard function
         leaderboardBodyElement.innerHTML = ''; // Clear existing entries
 
-        if (data) {
-            // Convert data to array and sort by time ascending
-            const entries = Object.values(data);
+        if (entries && entries.length > 0) {
+            // Sort entries by time ascending
             entries.sort((a, b) => a.time - b.time);
 
             // Display top 5
@@ -135,10 +136,7 @@ function displayLeaderboard(level, leaderboardBodyElement) {
                 missedClicksCell.textContent = entry.missedClicks;
                 row.appendChild(missedClicksCell);
 
-                // Remove the score cell
-                // const scoreCell = document.createElement('td');
-                // scoreCell.textContent = entry.score;
-                // row.appendChild(scoreCell);
+                // Removed score cell
 
                 leaderboardBodyElement.appendChild(row);
             });
@@ -260,7 +258,7 @@ function addNewCircle() {
     circle.draw();
 }
 
-// Animation Function (Same as Popix)
+// Animation Function
 function animatePop(circle) {
     // Example simple pop animation: scaling up and fading out
     const duration = 300; // in ms
@@ -322,21 +320,16 @@ nameForm.addEventListener('submit', (e) => {
     const playerName = playerNameInput.value.trim();
     if (playerName === '') return;
 
-    // Push score to Firebase
-    const leaderboardRef = ref(database, `leaderboard/level${currentLevel}`);
-    const newEntry = {
+    // Push score to Firebase via separate firebase-config.js
+    pushScore(currentLevel, {
         name: playerName,
         time: parseFloat(totalTime),
         clicks: clickCount,
         missedClicks: circlesMissed
-        // Removed score
-    };
-
-    push(leaderboardRef, newEntry)
+    })
         .then(() => {
             console.log('Score submitted successfully.');
             // Optionally, show a success message
-            // For example, you can add a message element or use alerts
             alert('Score submitted successfully!');
             // Reset form
             nameForm.reset();
@@ -471,12 +464,3 @@ gameCanvas.addEventListener('touchstart', (e) => {
         playMissSound();
     }
 }, { passive: false });
-
-// Ensure only 2 circles are active at any time
-function manageActiveCircles() {
-    while (activeCircles.length < 2 && circles.length > 0) {
-        addNewCircle();
-    }
-}
-
-// Optionally, call manageActiveCircles periodically or within relevant functions
