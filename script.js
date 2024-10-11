@@ -24,7 +24,7 @@ const confirmYesButton = document.getElementById('confirmYesButton');
 const confirmNoButton = document.getElementById('confirmNoButton');
 const playNextLevelButton = document.getElementById('playNextLevelButton');
 const resetGameButton = document.getElementById('resetGameButton');
-const timerDisplay = document.getElementById('timer'); // Optional: Add a timer display in HTML
+const timerDisplay = document.getElementById('timer'); // Ensure this exists in your HTML
 
 // Game Variables
 let currentLevel = 1;
@@ -42,6 +42,20 @@ let totalTime = 0.00; // in seconds
 
 // Canvas Context
 const ctx = gameCanvas.getContext('2d');
+
+// Set Canvas Size to Fill Screen
+function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    gameCanvas.width = window.innerWidth * dpr;
+    gameCanvas.height = window.innerHeight * dpr;
+    ctx.scale(dpr, dpr);
+    // Redraw active circles on resize
+    ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+    activeCircles.forEach(circle => circle.draw());
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
 // Circle Class
 class Circle {
@@ -69,23 +83,23 @@ class Circle {
 let circles = [];
 let activeCircles = []; // Currently displayed circles
 
-// Initialize Game Canvas Size
-function resizeCanvas() {
-    gameCanvas.width = window.innerWidth;
-    gameCanvas.height = window.innerHeight;
-    // Redraw active circles on resize
-    ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-    activeCircles.forEach(circle => circle.draw());
-}
-
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-
 // Utility Functions
 function getRandomPosition() {
     const padding = circlesDiameter;
-    const x = Math.random() * (gameCanvas.width - 2 * padding) + padding;
-    const y = Math.random() * (gameCanvas.height - 2 * padding) + padding;
+    let x, y;
+    let attempts = 0;
+    const maxAttempts = 100;
+
+    do {
+        x = Math.random() * (gameCanvas.width - 2 * padding) / (window.devicePixelRatio || 1) + padding;
+        y = Math.random() * (gameCanvas.height - 2 * padding) / (window.devicePixelRatio || 1) + padding;
+        attempts++;
+        if (attempts > maxAttempts) break; // Prevent infinite loop
+    } while (activeCircles.some(circle => {
+        const distance = Math.sqrt((x - circle.x) ** 2 + (y - circle.y) ** 2);
+        return distance < circlesDiameter; // Ensure no overlap
+    }));
+
     return { x, y };
 }
 
@@ -219,8 +233,8 @@ function endGame() {
 // Handle Circle Clicks
 gameCanvas.addEventListener('click', (e) => {
     const rect = gameCanvas.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
+    const clickX = (e.clientX - rect.left) * (gameCanvas.width / rect.width) / (window.devicePixelRatio || 1);
+    const clickY = (e.clientY - rect.top) * (gameCanvas.height / rect.height) / (window.devicePixelRatio || 1);
 
     let clicked = false;
 
@@ -282,6 +296,7 @@ function animatePop(circle) {
         const scale = 1 + progress; // Scale from 1 to 2
         const opacity = 1 - progress; // Fade from 1 to 0
 
+        // Clear the area where the circle is
         ctx.clearRect(circle.x - circle.radius - 2, circle.y - circle.radius - 2, circle.radius * 2 + 4, circle.radius * 2 + 4);
 
         ctx.save();
@@ -298,7 +313,7 @@ function animatePop(circle) {
         if (progress < 1) {
             requestAnimationFrame(animateFrame);
         } else {
-            // Clear the area after animation
+            // Ensure the area is fully cleared after animation
             ctx.clearRect(circle.x - circle.radius - 2, circle.y - circle.radius - 2, circle.radius * 2 + 4, circle.radius * 2 + 4);
         }
     }
@@ -372,6 +387,7 @@ function showPreNextLevelScreen() {
 
 // Handle Play Next Level
 playNextLevelButton.addEventListener('click', () => {
+    console.log('Play Next Level Button Clicked'); // Debugging
     currentLevel++;
     totalCircles += 5;
     showScreen(leaderboardScreen);
@@ -449,8 +465,9 @@ startGameButton.addEventListener('click', () => {
 gameCanvas.addEventListener('touchstart', (e) => {
     e.preventDefault();
     const touch = e.touches[0];
-    const clickX = touch.clientX;
-    const clickY = touch.clientY;
+    const rect = gameCanvas.getBoundingClientRect();
+    const clickX = (touch.clientX - rect.left) * (gameCanvas.width / rect.width) / (window.devicePixelRatio || 1);
+    const clickY = (touch.clientY - rect.top) * (gameCanvas.height / rect.height) / (window.devicePixelRatio || 1);
 
     let clicked = false;
 
