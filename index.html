@@ -5,28 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Popix Mobile</title>
+    <!-- Link to External CSS -->
     <link rel="stylesheet" href="styles.css">
-    <!-- Include Favicon to Resolve 404 Error -->
+    <!-- Link to Favicon -->
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <!-- Include any necessary fonts here -->
 </head>
 <body>
-    <!-- Initial Leaderboard Screen -->
+    <!-- ===========================
+         Leaderboard Screen
+    =========================== -->
     <div id="leaderboardScreen" class="screen active">
         <h1>Popix Mobile</h1>
         <h2>Level 1 Leaderboard</h2>
         <table id="leaderboard">
             <thead>
                 <tr>
-                    <th class="level-col">#</th>
-                    <th class="name-col">Name</th>
-                    <th class="time-col">Time (s)</th>
-                    <th class="clicks-col">Clicks</th>
-                    <th class="missed-clicks-col">Missed Clicks</th>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Time (s)</th>
+                    <th>Clicks</th>
+                    <th>Missed Clicks</th>
                 </tr>
             </thead>
             <tbody id="leaderboardBody">
-                <!-- Leaderboard entries will be injected here -->
+                <!-- Leaderboard entries will be dynamically injected here -->
             </tbody>
         </table>
         <div class="buttons">
@@ -35,7 +37,9 @@
         </div>
     </div>
 
-    <!-- Rules Modal -->
+    <!-- ===========================
+         Rules Modal
+    =========================== -->
     <div id="rulesModal" class="modal">
         <div class="modal-content">
             <span id="closeRulesButton" class="close-button">&times;</span>
@@ -49,13 +53,17 @@
         </div>
     </div>
 
-    <!-- Game Screen -->
+    <!-- ===========================
+         Game Screen
+    =========================== -->
     <div id="gameScreen" class="screen">
         <div id="timer">Time: 0.00s</div> <!-- Timer Display -->
         <canvas id="gameCanvas"></canvas>
     </div>
 
-    <!-- End of Level Screen -->
+    <!-- ===========================
+         End of Level Screen
+    =========================== -->
     <div id="endLevelScreen" class="screen">
         <h2>Level Completed!</h2>
         <p id="endLevelScore">Time: 0.00s</p>
@@ -66,7 +74,9 @@
         <button id="skipButton">Skip</button>
     </div>
 
-    <!-- Confirmation Dialog -->
+    <!-- ===========================
+         Confirmation Dialog
+    =========================== -->
     <div id="confirmationDialog" class="modal">
         <div class="modal-content">
             <p id="confirmationMessage">Are you sure?</p>
@@ -75,21 +85,23 @@
         </div>
     </div>
 
-    <!-- Leaderboard Page Before Level 2 -->
+    <!-- ===========================
+         Pre Next Level Leaderboard Screen
+    =========================== -->
     <div id="preNextLevelScreen" class="screen">
         <h2>Level 2 Leaderboard</h2>
         <table id="preLeaderboard">
             <thead>
                 <tr>
-                    <th class="level-col">#</th>
-                    <th class="name-col">Name</th>
-                    <th class="time-col">Time (s)</th>
-                    <th class="clicks-col">Clicks</th>
-                    <th class="missed-clicks-col">Missed Clicks</th>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Time (s)</th>
+                    <th>Clicks</th>
+                    <th>Missed Clicks</th>
                 </tr>
             </thead>
             <tbody id="preLeaderboardBody">
-                <!-- Leaderboard entries for Level 2 will be injected here -->
+                <!-- Leaderboard entries for the next level will be dynamically injected here -->
             </tbody>
         </table>
         <div class="buttons">
@@ -98,7 +110,9 @@
         </div>
     </div>
 
-    <!-- Include Script -->
+    <!-- ===========================
+         Include JavaScript Modules
+    =========================== -->
     <script type="module" src="script.js"></script>
 </body>
 </html>
