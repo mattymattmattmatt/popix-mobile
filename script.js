@@ -24,12 +24,13 @@ const confirmYesButton = document.getElementById('confirmYesButton');
 const confirmNoButton = document.getElementById('confirmNoButton');
 const playNextLevelButton = document.getElementById('playNextLevelButton');
 const resetGameButton = document.getElementById('resetGameButton');
+const timerDisplay = document.getElementById('timer'); // Optional: Add a timer display in HTML
 
 // Game Variables
 let currentLevel = 1;
 const totalLevels = 10;
 let totalCircles = 10; // Starts at 10, increases by 5 each level
-const circlesDiameter = 15; // in pixels
+const circlesDiameter = 45; // Tripled size from 15px to 45px
 let circlesPopped = 0;
 let circlesMissed = 0;
 let clickCount = 0;
@@ -47,13 +48,13 @@ class Circle {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.radius = circlesDiameter / 2;
+        this.radius = circlesDiameter / 2; // 22.5px
     }
 
     draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-        ctx.fillStyle = '#4CAF50'; // Popix's circle color
+        ctx.fillStyle = '#000000'; // Changed to black
         ctx.fill();
         ctx.closePath();
     }
@@ -182,12 +183,17 @@ function startGame() {
     gameTimer = setInterval(() => {
         const now = performance.now();
         totalTime = ((now - timeStart) / 1000).toFixed(2); // in seconds with two decimals
-        // Optionally, update a timer display on the UI
+        if (timerDisplay) {
+            timerDisplay.textContent = `Time: ${totalTime}s`;
+        }
     }, 10); // Update every 10ms for higher precision
 
     // Start score decay timer
     scoreDecayTimer = setInterval(() => {
         totalTime = (parseFloat(totalTime) + 0.02).toFixed(2); // Add 0.02s every 0.02s for a smoother decay
+        if (timerDisplay) {
+            timerDisplay.textContent = `Time: ${totalTime}s`;
+        }
     }, 20); // Adjust as needed
 
     // Display initial 2 circles
@@ -248,6 +254,9 @@ gameCanvas.addEventListener('click', (e) => {
         circlesMissed++;
         // Apply penalty
         totalTime = (parseFloat(totalTime) + 0.05).toFixed(2);
+        if (timerDisplay) {
+            timerDisplay.textContent = `Time: ${totalTime}s`;
+        }
         playMissSound();
     }
 });
@@ -475,6 +484,9 @@ gameCanvas.addEventListener('touchstart', (e) => {
         circlesMissed++;
         // Apply penalty
         totalTime = (parseFloat(totalTime) + 0.05).toFixed(2);
+        if (timerDisplay) {
+            timerDisplay.textContent = `Time: ${totalTime}s`;
+        }
         playMissSound();
     }
 }, { passive: false });
