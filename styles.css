@@ -1,179 +1,282 @@
 /* styles.css */
 
-/* Reset and Base Styles */
+/* ===========================
+   General Styles
+=========================== */
+
+/* Reset default margins and paddings for all elements */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Set a comfortable font for the entire application */
 body, html {
     width: 100%;
     height: 100%;
-    font-family: 'Your-Popix-Font', sans-serif; /* Replace with actual Popix font */
-    background-color: #f0f0f0; /* Replace with Popix's background color */
-    position: relative;
-    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f0f0f0; /* Light grey background for contrast */
 }
 
-/* Screen Classes */
+/* ===========================
+   Screen Management
+=========================== */
+
+/* Each screen is hidden by default */
 .screen {
     display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
     padding: 20px;
+    box-sizing: border-box;
+    overflow: hidden; /* Prevent scrollbars */
 }
 
+/* The active screen is displayed */
 .screen.active {
-    display: flex;
+    display: block;
 }
 
-/* Leaderboard Table Styling */
+/* ===========================
+   Timer Display
+=========================== */
+
+/* Style for the timer displayed during the game */
+#timer {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
+    padding: 5px 10px;
+    border-radius: 5px;
+    z-index: 2; /* Ensure it stays above other elements */
+}
+
+/* ===========================
+   Leaderboard Table
+=========================== */
+
+/* General table styling */
 table {
-    width: 90%;
-    max-width: 600px;
+    width: 100%;
     border-collapse: collapse;
-    margin: 20px 0;
+    margin-top: 20px;
+    font-size: 16px;
 }
 
+/* Table headers */
 th, td {
-    padding: 12px;
+    padding: 12px 15px;
     text-align: center;
-    border-bottom: 1px solid #ddd;
+    border: 1px solid #dddddd;
 }
 
+/* Header row styling */
 th {
-    background-color: #4CAF50; /* Replace with Popix's header color */
-    color: white;
-}
-
-.no-miss-clicks {
-    color: gold;
+    background-color: #333333; /* Dark background for headers */
+    color: #ffffff; /* White text for contrast */
     font-weight: bold;
 }
 
-/* Buttons Styling */
+/* Zebra striping for table rows */
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Hover effect for table rows */
+tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* ===========================
+   Buttons
+=========================== */
+
+/* Container for buttons to align them */
+.buttons {
+    margin-top: 30px;
+    text-align: center;
+}
+
+/* General button styling */
 button {
-    padding: 10px 20px;
+    padding: 12px 25px;
     margin: 10px;
     font-size: 16px;
-    background-color: #4CAF50; /* Replace with Popix's button color */
-    color: white;
+    color: #ffffff;
+    background-color: #4CAF50; /* Green background */
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
+/* Hover effect for buttons */
 button:hover {
     background-color: #45a049;
 }
 
-/* Hidden Elements */
-.hidden {
-    display: none;
+/* Specific styles for different buttons if needed */
+/* Example:
+#startGameButton {
+    background-color: #008CBA; 
 }
 
-/* Modal Styling */
+#startGameButton:hover {
+    background-color: #007bb5;
+}
+*/
+
+/* ===========================
+   Modal Styling
+=========================== */
+
+/* Modal background */
 .modal {
     display: none; /* Hidden by default */
-    position: fixed;
-    z-index: 1000;
+    position: fixed; /* Stay in place */
+    z-index: 3; /* Sit on top */
     left: 0;
     top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.5);
-    align-items: center;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
     justify-content: center;
+    align-items: center;
+    display: flex; /* Flex to center content */
 }
 
+/* Modal content box */
 .modal-content {
     background-color: #fefefe;
-    padding: 20px;
-    border-radius: 10px;
+    margin: auto;
+    padding: 30px;
+    border: 1px solid #888;
     width: 80%;
-    max-width: 400px;
+    max-width: 500px;
     position: relative;
-    animation: fadeIn 0.5s;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
+/* Close button (X) */
 .close-button {
+    color: #aaa;
     position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
     font-weight: bold;
     cursor: pointer;
+    transition: color 0.3s ease;
 }
 
-@keyframes fadeIn {
-    from {opacity: 0;}
-    to {opacity: 1;}
+.close-button:hover,
+.close-button:focus {
+    color: #000;
+    text-decoration: none;
 }
 
-/* Game Canvas Styling */
+/* ===========================
+   Form Styling
+=========================== */
+
+/* Style for input fields */
+input[type="text"] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 15px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+/* Style for submit buttons within forms */
+form button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+form button:hover {
+    background-color: #45a049;
+}
+
+/* ===========================
+   Canvas Styling
+=========================== */
+
+/* Ensure the canvas covers the entire screen */
 #gameCanvas {
+    display: block; /* Remove default inline behavior */
     width: 100%;
     height: 100%;
-    background-color: #ffffff; /* Replace with Popix's canvas background color */
-    touch-action: none; /* Prevent touch delays */
+    background-color: #ffffff; /* White background for contrast */
 }
 
-/* End Level Screen Styling */
-#endLevelScreen {
-    flex-direction: column;
+/* ===========================
+   End of Level and Pre Next Level Screens
+=========================== */
+
+/* Styling for end level screens */
+#endLevelScreen, #preNextLevelScreen {
+    text-align: center;
 }
 
-#endLevelScreen h2 {
+/* Styling for messages within end level screens */
+#endLevelScreen h2, #preNextLevelScreen h2 {
     margin-bottom: 20px;
+    color: #333333;
 }
 
-#endLevelScreen p {
-    margin-bottom: 20px;
+#endLevelScore {
     font-size: 18px;
-}
-
-#nameForm {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-#nameForm input {
-    padding: 10px;
-    font-size: 16px;
-    width: 80%;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-#nameForm button {
-    width: 50%;
-}
-
-/* Pre Next Level Screen Styling */
-#preNextLevelScreen h2 {
     margin-bottom: 20px;
+    color: #555555;
 }
 
-.buttons {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-}
+/* ===========================
+   Responsive Design
+=========================== */
 
+/* Adjustments for smaller screens */
 @media (max-width: 600px) {
-    th, td {
-        padding: 8px;
-        font-size: 14px;
+    /* Reduce padding for smaller devices */
+    .modal-content {
+        width: 90%;
+        padding: 20px;
     }
 
     button {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    /* Adjust timer font size */
+    #timer {
+        font-size: 16px;
+        padding: 4px 8px;
+    }
+
+    /* Adjust table font size */
+    table {
         font-size: 14px;
-        padding: 8px 16px;
+    }
+
+    /* Adjust input fields */
+    input[type="text"] {
+        font-size: 14px;
     }
 }
