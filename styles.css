@@ -135,7 +135,9 @@ button:hover {
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
-    /* Remove the conflicting display: flex; */
+    justify-content: center;
+    align-items: center;
+    /* Removed conflicting display property */
 }
 
 /* Modal content box */
@@ -149,7 +151,7 @@ button:hover {
     position: relative;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    display: flex; /* Flex to center content */
+    display: flex;
     flex-direction: column;
     align-items: center;
 }
