@@ -1,6 +1,6 @@
 // script.js
 
-import { pushScore, getLeaderboard } from './firebase-config.js'; // Adjust the path as necessary
+import { pushScore, getLeaderboard } from './firebase-config.js'; // Ensure this path is correct
 
 // DOM Elements
 const leaderboardScreen = document.getElementById('leaderboardScreen');
@@ -24,7 +24,7 @@ const confirmYesButton = document.getElementById('confirmYesButton');
 const confirmNoButton = document.getElementById('confirmNoButton');
 const playNextLevelButton = document.getElementById('playNextLevelButton');
 const resetGameButton = document.getElementById('resetGameButton');
-const timerDisplay = document.getElementById('timer'); // Ensure this exists in your HTML
+const timerDisplay = document.getElementById('timer');
 
 // Game Variables
 let currentLevel = 1;
@@ -91,8 +91,8 @@ function getRandomPosition() {
     const maxAttempts = 100;
 
     do {
-        x = Math.random() * (gameCanvas.width - 2 * padding) / (window.devicePixelRatio || 1) + padding;
-        y = Math.random() * (gameCanvas.height - 2 * padding) / (window.devicePixelRatio || 1) + padding;
+        x = Math.random() * (gameCanvas.width / (window.devicePixelRatio || 1) - 2 * padding) + padding;
+        y = Math.random() * (gameCanvas.height / (window.devicePixelRatio || 1) - 2 * padding) + padding;
         attempts++;
         if (attempts > maxAttempts) break; // Prevent infinite loop
     } while (activeCircles.some(circle => {
@@ -202,14 +202,6 @@ function startGame() {
         }
     }, 10); // Update every 10ms for higher precision
 
-    // Start score decay timer
-    scoreDecayTimer = setInterval(() => {
-        totalTime = (parseFloat(totalTime) + 0.02).toFixed(2); // Add 0.02s every 0.02s for a smoother decay
-        if (timerDisplay) {
-            timerDisplay.textContent = `Time: ${totalTime}s`;
-        }
-    }, 20); // Adjust as needed
-
     // Display initial 2 circles
     addNewCircle();
     addNewCircle();
@@ -219,7 +211,6 @@ function startGame() {
 function endGame() {
     console.log('Ending game...'); // Debugging
     clearInterval(gameTimer);
-    clearInterval(scoreDecayTimer);
 
     // Record end time
     timeEnd = performance.now();
@@ -231,7 +222,7 @@ function endGame() {
 }
 
 // Handle Circle Clicks
-gameCanvas.addEventListener('click', (e) => {
+function handleClick(e) {
     const rect = gameCanvas.getBoundingClientRect();
     const clickX = (e.clientX - rect.left) * (gameCanvas.width / rect.width) / (window.devicePixelRatio || 1);
     const clickY = (e.clientY - rect.top) * (gameCanvas.height / rect.height) / (window.devicePixelRatio || 1);
@@ -273,7 +264,22 @@ gameCanvas.addEventListener('click', (e) => {
         }
         playMissSound();
     }
-});
+}
+
+gameCanvas.addEventListener('click', handleClick);
+
+// Handle Touch Events
+function handleTouch(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const rect = gameCanvas.getBoundingClientRect();
+    const clickX = (touch.clientX - rect.left) * (gameCanvas.width / rect.width) / (window.devicePixelRatio || 1);
+    const clickY = (touch.clientY - rect.top) * (gameCanvas.height / rect.height) / (window.devicePixelRatio || 1);
+
+    handleClick({ clientX: touch.clientX, clientY: touch.clientY });
+}
+
+gameCanvas.addEventListener('touchstart', handleTouch, { passive: false });
 
 // Add New Circle to Active Circles
 function addNewCircle() {
@@ -297,7 +303,7 @@ function animatePop(circle) {
         const opacity = 1 - progress; // Fade from 1 to 0
 
         // Clear the area where the circle is
-        ctx.clearRect(circle.x - circle.radius - 2, circle.y - circle.radius - 2, circle.radius * 2 + 4, circle.radius * 2 + 4);
+        ctx.clearRect(circle.x - circle.radius - 2, circle.y - circle.radius - 2, (circle.radius * 2 + 4), (circle.radius * 2 + 4));
 
         ctx.save();
         ctx.globalAlpha = opacity;
@@ -314,7 +320,7 @@ function animatePop(circle) {
             requestAnimationFrame(animateFrame);
         } else {
             // Ensure the area is fully cleared after animation
-            ctx.clearRect(circle.x - circle.radius - 2, circle.y - circle.radius - 2, circle.radius * 2 + 4, circle.radius * 2 + 4);
+            ctx.clearRect(circle.x - circle.radius * scale - 2, circle.y - circle.radius * scale - 2, (circle.radius * 2 * scale + 4), (circle.radius * 2 * scale + 4));
         }
     }
 
@@ -378,20 +384,35 @@ nameForm.addEventListener('submit', (e) => {
         });
 });
 
+// Handle Skip Button
+skipButton.addEventListener('click', () => {
+    console.log('Skip Button Clicked'); // Debugging
+    if (currentLevel < totalLevels) {
+        showPreNextLevelScreen();
+    } else {
+        showGameCompletedScreen();
+    }
+});
+
 // Show Pre Next Level Screen
 function showPreNextLevelScreen() {
-    // Display leaderboard for the next level
-    displayLeaderboard(currentLevel + 1, preLeaderboardBody);
+    // Increment level
+    currentLevel++;
+    totalCircles += 5;
+
+    // Update leaderboard for the next level
+    displayLeaderboard(currentLevel, preLeaderboardBody);
+    document.querySelector('#preNextLevelScreen h2').textContent = `Level ${currentLevel} Leaderboard`;
+
     showScreen(preNextLevelScreen);
 }
 
 // Handle Play Next Level
 playNextLevelButton.addEventListener('click', () => {
     console.log('Play Next Level Button Clicked'); // Debugging
-    currentLevel++;
-    totalCircles += 5;
-    showScreen(leaderboardScreen);
+    // Reset game variables for the next level
     initializeLeaderboard();
+    showScreen(leaderboardScreen);
 });
 
 // Handle Reset Game
@@ -440,8 +461,8 @@ function resetGame() {
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
     // Show initial leaderboard screen
-    showScreen(leaderboardScreen);
     initializeLeaderboard();
+    showScreen(leaderboardScreen);
 }
 
 // Show Game Completed Screen (After Level 10)
@@ -460,50 +481,3 @@ startGameButton.addEventListener('click', () => {
     console.log('Start Game Button Clicked'); // Debugging
     startGame();
 });
-
-// Prevent default touch behavior for better responsiveness
-gameCanvas.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    const touch = e.touches[0];
-    const rect = gameCanvas.getBoundingClientRect();
-    const clickX = (touch.clientX - rect.left) * (gameCanvas.width / rect.width) / (window.devicePixelRatio || 1);
-    const clickY = (touch.clientY - rect.top) * (gameCanvas.height / rect.height) / (window.devicePixelRatio || 1);
-
-    let clicked = false;
-
-    for (let i = 0; i < activeCircles.length; i++) {
-        const circle = activeCircles[i];
-        if (circle.isClicked(clickX, clickY)) {
-            // Play pop animation and sound
-            animatePop(circle);
-            playPopSound();
-
-            // Remove clicked circle
-            activeCircles.splice(i, 1);
-            circlesPopped++;
-            clickCount++;
-
-            // Add a new circle if any remain
-            if (circlesPopped < totalCircles) {
-                addNewCircle();
-            } else {
-                // All circles popped, end game
-                endGame();
-            }
-
-            clicked = true;
-            break;
-        }
-    }
-
-    if (!clicked) {
-        // Missed click
-        circlesMissed++;
-        // Apply penalty
-        totalTime = (parseFloat(totalTime) + 0.05).toFixed(2);
-        if (timerDisplay) {
-            timerDisplay.textContent = `Time: ${totalTime}s`;
-        }
-        playMissSound();
-    }
-}, { passive: false });
