@@ -1,6 +1,6 @@
 // script.js
 
-import { pushScore, getLeaderboard } from './firebase-config.js'; // Adjust the path as necessary
+import { pushScore, getLeaderboard } from './firebase/firebase-config.js'; // Adjust the path as necessary
 
 // DOM Elements
 const leaderboardScreen = document.getElementById('leaderboardScreen');
