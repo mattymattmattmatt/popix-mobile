@@ -37,8 +37,11 @@ let clickCount = 0;
 let timeStart = null;
 let timeEnd = null;
 let gameTimer = null;
-let scoreDecayTimer = null;
 let totalTime = 0.00; // in seconds
+
+// Game State
+let circles = [];
+let activeCircles = []; // Currently displayed circles
 
 // Canvas Context
 const ctx = gameCanvas.getContext('2d');
@@ -49,13 +52,16 @@ function resizeCanvas() {
     gameCanvas.width = window.innerWidth * dpr;
     gameCanvas.height = window.innerHeight * dpr;
     ctx.scale(dpr, dpr);
-    // Redraw active circles on resize
+
+    // Clear the canvas
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+
+    // Redraw active circles on resize
     activeCircles.forEach(circle => circle.draw());
 }
 
 window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
+resizeCanvas(); // Call resizeCanvas after activeCircles is declared
 
 // Circle Class
 class Circle {
@@ -78,10 +84,6 @@ class Circle {
         return distance <= this.radius;
     }
 }
-
-// Game State
-let circles = [];
-let activeCircles = []; // Currently displayed circles
 
 // Utility Functions
 function getRandomPosition() {
@@ -303,7 +305,7 @@ function animatePop(circle) {
         const opacity = 1 - progress; // Fade from 1 to 0
 
         // Clear the area where the circle is
-        ctx.clearRect(circle.x - circle.radius - 2, circle.y - circle.radius - 2, (circle.radius * 2 + 4), (circle.radius * 2 + 4));
+        ctx.clearRect(circle.x - circle.radius * 2 - 2, circle.y - circle.radius * 2 - 2, (circle.radius * 4 + 4), (circle.radius * 4 + 4));
 
         ctx.save();
         ctx.globalAlpha = opacity;
