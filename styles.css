@@ -49,6 +49,7 @@ body {
     display: block;
     background-color: #ffffff;
     touch-action: none; /* Prevent touch actions like scrolling */
+    margin: 0 auto; /* Center the canvas */
 }
 
 /* Timer Display */
@@ -144,6 +145,13 @@ form input[type="text"] {
     border-radius: 0.25rem;
 }
 
+/* Game Title Image */
+#gameTitle {
+    max-width: 80%;
+    height: auto;
+    margin-bottom: 1.5rem;
+}
+
 /* Responsive Design Adjustments */
 
 /* Dynamic Sizing: Adjust circle size and UI elements based on screen size */
@@ -168,6 +176,10 @@ form input[type="text"] {
 
     form label, form input[type="text"] {
         font-size: 0.9rem;
+    }
+
+    #gameTitle {
+        max-width: 90%;
     }
 }
 
