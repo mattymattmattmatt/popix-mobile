@@ -3,7 +3,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Popix Mobile</title>
     <!-- Link to External CSS -->
     <link rel="stylesheet" href="styles.css">
@@ -16,7 +15,7 @@
     =========================== -->
     <div id="leaderboardScreen" class="screen active">
         <h1>Popix Mobile</h1>
-        <h2>Level 1 Leaderboard</h2>
+        <h2>Leaderboard</h2>
         <table id="leaderboard">
             <thead>
                 <tr>
@@ -62,52 +61,16 @@
     </div>
 
     <!-- ===========================
-         End of Level Screen
+         End of Game Screen
     =========================== -->
     <div id="endLevelScreen" class="screen">
-        <h2>Level Completed!</h2>
+        <h2>Game Completed!</h2>
         <p id="endLevelScore">Time: 0.00s</p>
         <form id="nameForm">
             <input type="text" id="playerName" placeholder="Enter your name" required>
             <button type="submit">Submit</button>
         </form>
         <button id="skipButton">Skip</button>
-    </div>
-
-    <!-- ===========================
-         Confirmation Dialog
-    =========================== -->
-    <div id="confirmationDialog" class="modal">
-        <div class="modal-content">
-            <p id="confirmationMessage">Are you sure?</p>
-            <button id="confirmYesButton">Yes</button>
-            <button id="confirmNoButton">No</button>
-        </div>
-    </div>
-
-    <!-- ===========================
-         Pre Next Level Leaderboard Screen
-    =========================== -->
-    <div id="preNextLevelScreen" class="screen">
-        <h2>Level 2 Leaderboard</h2>
-        <table id="preLeaderboard">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Time (s)</th>
-                    <th>Clicks</th>
-                    <th>Missed Clicks</th>
-                </tr>
-            </thead>
-            <tbody id="preLeaderboardBody">
-                <!-- Leaderboard entries for the next level will be dynamically injected here -->
-            </tbody>
-        </table>
-        <div class="buttons">
-            <button id="playNextLevelButton">Play Next Level</button>
-            <button id="resetGameButton">Reset Game</button>
-        </div>
     </div>
 
     <!-- ===========================
