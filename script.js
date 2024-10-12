@@ -46,19 +46,20 @@ const debounceDuration = 150; // in ms
 // Set Canvas Size to Fill Screen
 function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
-    gameCanvas.width = window.innerWidth * dpr;
-    gameCanvas.height = window.innerHeight * dpr;
+    const displayWidth = window.innerWidth;
+    const displayHeight = window.innerHeight;
 
-    // Reset any existing transforms before scaling
+    gameCanvas.style.width = `${displayWidth}px`;
+    gameCanvas.style.height = `${displayHeight}px`;
+
+    gameCanvas.width = displayWidth * dpr;
+    gameCanvas.height = displayHeight * dpr;
+
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-    // Apply the new scale based on device pixel ratio
     ctx.scale(dpr, dpr);
 
-    // Clear the canvas to remove any previous drawings
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
-    // Redraw the active circle if it exists
     if (activeCircle) {
         activeCircle.draw();
     }
