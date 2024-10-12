@@ -137,7 +137,6 @@ button:hover {
     background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
     justify-content: center;
     align-items: center;
-    /* Removed conflicting display property */
 }
 
 /* Modal content box */
@@ -219,16 +218,14 @@ form button:hover {
 }
 
 /* ===========================
-   End of Level and Pre Next Level Screens
+   End of Game Screen
 =========================== */
 
-/* Styling for end level screens */
-#endLevelScreen, #preNextLevelScreen {
+#endLevelScreen {
     text-align: center;
 }
 
-/* Styling for messages within end level screens */
-#endLevelScreen h2, #preNextLevelScreen h2 {
+#endLevelScreen h2 {
     margin-bottom: 20px;
     color: #333333;
 }
