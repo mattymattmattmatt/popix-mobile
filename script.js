@@ -1,6 +1,6 @@
 // script.js
 
-import { pushScore, getLeaderboard } from './firebase-config.js';
+import { pushScore, getLeaderboard, resetLeaderboard } from './firebase-config.js';
 import { SoundManager } from './soundManager.js';
 
 // Initialize SoundManager
@@ -11,6 +11,7 @@ const leaderboardScreen = document.getElementById('leaderboardScreen');
 const leaderboardBody = document.getElementById('leaderboardBody');
 const startGameButton = document.getElementById('startGameButton');
 const rulesButton = document.getElementById('rulesButton');
+const resetScoreButton = document.getElementById('resetScoreButton'); // New Reset Score Button
 const rulesModal = document.getElementById('rulesModal');
 const closeRulesButton = document.getElementById('closeRulesButton');
 const gameScreen = document.getElementById('gameScreen');
@@ -27,7 +28,7 @@ const ctx = gameCanvas.getContext('2d');
 
 // Game Variables
 let totalCircles = 10; // Total number of circles to pop
-let circlesDiameter = 75; // Diameter of each circle in px
+let circlesDiameter = 135; // Diameter of each circle in px
 let circlesPopped = 0;
 let circlesMissed = 0;
 let clickCount = 0;
@@ -243,8 +244,11 @@ function handlePointerDown(e) {
 
     // Calculate click/touch coordinates
     const rect = gameCanvas.getBoundingClientRect();
-    const clickX = (e.clientX - rect.left) * (gameCanvas.width / rect.width) / (window.devicePixelRatio || 1);
-    const clickY = (e.clientY - rect.top) * (gameCanvas.height / rect.height) / (window.devicePixelRatio || 1);
+    const scaleX = gameCanvas.width / rect.width;
+    const scaleY = gameCanvas.height / rect.height;
+
+    const clickX = (e.clientX - rect.left) * scaleX / (window.devicePixelRatio || 1);
+    const clickY = (e.clientY - rect.top) * scaleY / (window.devicePixelRatio || 1);
 
     if (activeCircle && activeCircle.isClicked(clickX, clickY)) {
         // Vibrate on successful pop
@@ -277,7 +281,7 @@ gameCanvas.addEventListener('pointerdown', (e) => {
 // Animation Function
 function animatePop(circle) {
     isAnimating = true; // Set flag to indicate animation is in progress
-    const duration = 50; // in ms
+    const duration = 100; // in ms
     const start = performance.now();
 
     // Define the maximum scale factor
@@ -424,6 +428,31 @@ skipButton.addEventListener('click', () => {
     initializeLeaderboard();
     // Return to initial screen
     showScreen(leaderboardScreen);
+});
+
+// Handle Reset Score Button
+resetScoreButton.addEventListener('click', () => {
+    const password = prompt('Enter the password to reset the leaderboard:');
+    if (password === null) {
+        // User cancelled the prompt
+        return;
+    }
+    if (password === 'ban00bles') {
+        const confirmation = confirm('Are you sure you want to reset the leaderboard? This action cannot be undone.');
+        if (confirmation) {
+            resetLeaderboard()
+                .then(() => {
+                    alert('Leaderboard has been reset successfully.');
+                    initializeLeaderboard();
+                })
+                .catch((error) => {
+                    console.error('Error resetting leaderboard:', error);
+                    alert('An error occurred while resetting the leaderboard. Please try again.');
+                });
+        }
+    } else {
+        alert('Incorrect password. Leaderboard reset denied.');
+    }
 });
 
 // Initialize Leaderboard on Page Load
