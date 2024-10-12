@@ -27,7 +27,7 @@ const ctx = gameCanvas.getContext('2d');
 
 // Game Variables
 let totalCircles = 10; // Total number of circles to pop
-let circlesDiameter = 135; // Diameter of each circle in px
+let circlesDiameter = 75; // Diameter of each circle in px
 let circlesPopped = 0;
 let circlesMissed = 0;
 let clickCount = 0;
@@ -277,7 +277,7 @@ gameCanvas.addEventListener('pointerdown', (e) => {
 // Animation Function
 function animatePop(circle) {
     isAnimating = true; // Set flag to indicate animation is in progress
-    const duration = 100; // in ms
+    const duration = 50; // in ms
     const start = performance.now();
 
     // Define the maximum scale factor
