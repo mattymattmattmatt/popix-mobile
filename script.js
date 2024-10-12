@@ -5,8 +5,6 @@ import { pushScore, getLeaderboard } from './firebase-config.js'; // Ensure this
 // DOM Elements
 const leaderboardScreen = document.getElementById('leaderboardScreen');
 const leaderboardBody = document.getElementById('leaderboardBody');
-const preNextLevelScreen = document.getElementById('preNextLevelScreen');
-const preLeaderboardBody = document.getElementById('preLeaderboardBody');
 const startGameButton = document.getElementById('startGameButton');
 const rulesButton = document.getElementById('rulesButton');
 const rulesModal = document.getElementById('rulesModal');
@@ -18,33 +16,23 @@ const endLevelScore = document.getElementById('endLevelScore');
 const nameForm = document.getElementById('nameForm');
 const playerNameInput = document.getElementById('playerName');
 const skipButton = document.getElementById('skipButton');
-const confirmationDialog = document.getElementById('confirmationDialog');
-const confirmationMessage = document.getElementById('confirmationMessage');
-const confirmYesButton = document.getElementById('confirmYesButton');
-const confirmNoButton = document.getElementById('confirmNoButton');
-const playNextLevelButton = document.getElementById('playNextLevelButton');
-const resetGameButton = document.getElementById('resetGameButton');
 const timerDisplay = document.getElementById('timer');
 
+const ctx = gameCanvas.getContext('2d');
+
 // Game Variables
-let currentLevel = 1;
-const totalLevels = 10;
-let totalCircles = 10; // Starts at 10, increases by 5 each level
-const circlesDiameter = 45; // Tripled size from 15px to 45px
+let totalCircles = 10; // Total number of circles
+let circlesDiameter = 56.25; // Increased by 25% from 45px to 56.25px
 let circlesPopped = 0;
 let circlesMissed = 0;
 let clickCount = 0;
 let timeStart = null;
-let timeEnd = null;
 let gameTimer = null;
 let totalTime = 0.00; // in seconds
 
 // Game State
 let circles = [];
 let activeCircles = []; // Currently displayed circles
-
-// Canvas Context
-const ctx = gameCanvas.getContext('2d');
 
 // Set Canvas Size to Fill Screen
 function resizeCanvas() {
@@ -68,19 +56,19 @@ class Circle {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.radius = circlesDiameter / 2; // 22.5px
+        this.radius = circlesDiameter / 2;
     }
 
     draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-        ctx.fillStyle = '#000000'; // Changed to black
+        ctx.fillStyle = '#000000'; // Black color
         ctx.fill();
         ctx.closePath();
     }
 
     isClicked(clickX, clickY) {
-        const distance = Math.sqrt((clickX - this.x) ** 2 + (clickY - this.y) ** 2);
+        const distance = Math.hypot(clickX - this.x, clickY - this.y);
         return distance <= this.radius;
     }
 }
@@ -98,8 +86,8 @@ function getRandomPosition() {
         attempts++;
         if (attempts > maxAttempts) break; // Prevent infinite loop
     } while (activeCircles.some(circle => {
-        const distance = Math.sqrt((x - circle.x) ** 2 + (y - circle.y) ** 2);
-        return distance < circlesDiameter; // Ensure no overlap
+        const distance = Math.hypot(x - circle.x, y - circle.y);
+        return distance < circlesDiameter * 1.5; // Ensure no circle is within 1.5 times the diameter
     }));
 
     return { x, y };
@@ -120,8 +108,8 @@ function showScreen(screen) {
     screen.classList.add('active');
 }
 
-function displayLeaderboard(level, leaderboardBodyElement) {
-    getLeaderboard(level, (entries) => { // Use the imported getLeaderboard function
+function displayLeaderboard(leaderboardBodyElement) {
+    getLeaderboard((entries) => {
         leaderboardBodyElement.innerHTML = ''; // Clear existing entries
 
         if (entries && entries.length > 0) {
@@ -159,7 +147,7 @@ function displayLeaderboard(level, leaderboardBodyElement) {
             // No entries yet
             const row = document.createElement('tr');
             const noDataCell = document.createElement('td');
-            noDataCell.colSpan = 5; // Update colspan to match the number of columns
+            noDataCell.colSpan = 5;
             noDataCell.textContent = 'No entries yet.';
             noDataCell.style.textAlign = 'center';
             row.appendChild(noDataCell);
@@ -170,7 +158,7 @@ function displayLeaderboard(level, leaderboardBodyElement) {
 
 // Initialize Leaderboard Screen
 function initializeLeaderboard() {
-    displayLeaderboard(currentLevel, leaderboardBody);
+    displayLeaderboard(leaderboardBody);
 }
 
 // Start Game Function
@@ -215,7 +203,7 @@ function endGame() {
     clearInterval(gameTimer);
 
     // Record end time
-    timeEnd = performance.now();
+    const timeEnd = performance.now();
     totalTime = ((timeEnd - timeStart) / 1000).toFixed(2);
 
     // Show end level screen with time
@@ -294,7 +282,7 @@ function addNewCircle() {
 
 // Animation Function
 function animatePop(circle) {
-    // Example simple pop animation: scaling up and fading out
+    // Simple pop animation: scaling up and fading out
     const duration = 300; // in ms
     const start = performance.now();
 
@@ -305,7 +293,7 @@ function animatePop(circle) {
         const opacity = 1 - progress; // Fade from 1 to 0
 
         // Clear the area where the circle is
-        ctx.clearRect(circle.x - circle.radius * 2 - 2, circle.y - circle.radius * 2 - 2, (circle.radius * 4 + 4), (circle.radius * 4 + 4));
+        ctx.clearRect(circle.x - circle.radius * 2, circle.y - circle.radius * 2, circle.radius * 4, circle.radius * 4);
 
         ctx.save();
         ctx.globalAlpha = opacity;
@@ -322,7 +310,7 @@ function animatePop(circle) {
             requestAnimationFrame(animateFrame);
         } else {
             // Ensure the area is fully cleared after animation
-            ctx.clearRect(circle.x - circle.radius * scale - 2, circle.y - circle.radius * scale - 2, (circle.radius * 2 * scale + 4), (circle.radius * 2 * scale + 4));
+            ctx.clearRect(circle.x - circle.radius * scale, circle.y - circle.radius * scale, circle.radius * 2 * scale, circle.radius * 2 * scale);
         }
     }
 
@@ -360,7 +348,7 @@ nameForm.addEventListener('submit', (e) => {
     if (playerName === '') return;
 
     // Push score to Firebase via separate firebase-config.js
-    pushScore(currentLevel, {
+    pushScore({
         name: playerName,
         time: parseFloat(totalTime),
         clicks: clickCount,
@@ -368,17 +356,11 @@ nameForm.addEventListener('submit', (e) => {
     })
         .then(() => {
             console.log('Score submitted successfully.');
-            // Optionally, show a success message
-            alert('Score submitted successfully!');
             // Reset form
             nameForm.reset();
-            // Proceed to next level or show leaderboard
-            if (currentLevel < totalLevels) {
-                showPreNextLevelScreen();
-            } else {
-                // Game completed
-                showGameCompletedScreen();
-            }
+            // Display the leaderboard
+            initializeLeaderboard();
+            showScreen(leaderboardScreen);
         })
         .catch((error) => {
             console.error('Error submitting score:', error);
@@ -389,91 +371,10 @@ nameForm.addEventListener('submit', (e) => {
 // Handle Skip Button
 skipButton.addEventListener('click', () => {
     console.log('Skip Button Clicked'); // Debugging
-    if (currentLevel < totalLevels) {
-        showPreNextLevelScreen();
-    } else {
-        showGameCompletedScreen();
-    }
-});
-
-// Show Pre Next Level Screen
-function showPreNextLevelScreen() {
-    // Increment level
-    currentLevel++;
-    totalCircles += 5;
-
-    // Update leaderboard for the next level
-    displayLeaderboard(currentLevel, preLeaderboardBody);
-    document.querySelector('#preNextLevelScreen h2').textContent = `Level ${currentLevel} Leaderboard`;
-
-    showScreen(preNextLevelScreen);
-}
-
-// Handle Play Next Level
-playNextLevelButton.addEventListener('click', () => {
-    console.log('Play Next Level Button Clicked'); // Debugging
-    // Reset game variables for the next level
+    // Display the leaderboard
     initializeLeaderboard();
     showScreen(leaderboardScreen);
 });
-
-// Handle Reset Game
-resetGameButton.addEventListener('click', () => {
-    showConfirmationDialog('Are you sure you want to reset the game?', () => {
-        resetGame();
-    });
-});
-
-// Show Confirmation Dialog
-function showConfirmationDialog(message, callback) {
-    confirmationMessage.textContent = message;
-    confirmationDialog.style.display = 'flex';
-
-    // Remove existing event listeners to prevent multiple triggers
-    confirmYesButton.replaceWith(confirmYesButton.cloneNode(true));
-    confirmNoButton.replaceWith(confirmNoButton.cloneNode(true));
-
-    // Re-select buttons after cloning
-    const newConfirmYesButton = document.getElementById('confirmYesButton');
-    const newConfirmNoButton = document.getElementById('confirmNoButton');
-
-    newConfirmYesButton.addEventListener('click', () => {
-        confirmationDialog.style.display = 'none';
-        callback();
-    });
-
-    newConfirmNoButton.addEventListener('click', () => {
-        confirmationDialog.style.display = 'none';
-    });
-}
-
-// Reset Game Function
-function resetGame() {
-    console.log('Resetting game...'); // Debugging
-    currentLevel = 1;
-    totalCircles = 10;
-    circles = [];
-    activeCircles = [];
-    circlesPopped = 0;
-    circlesMissed = 0;
-    clickCount = 0;
-    totalTime = 0.00;
-
-    // Clear all active circles
-    ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-
-    // Show initial leaderboard screen
-    initializeLeaderboard();
-    showScreen(leaderboardScreen);
-}
-
-// Show Game Completed Screen (After Level 10)
-function showGameCompletedScreen() {
-    // Implement a separate screen or message indicating game completion
-    alert('Congratulations! You have completed all levels.');
-    // Reset game or provide options as needed
-    resetGame();
-}
 
 // Initialize Leaderboard on Page Load
 initializeLeaderboard();
