@@ -1,97 +1,276 @@
-<!-- index.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Popix Mobile</title>
-    <!-- Link to External CSS -->
-    <link rel="stylesheet" href="styles.css">
-    <!-- Link to Favicon -->
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-</head>
-<body>
-    <!-- ===========================
-         Leaderboard Screen
-    =========================== -->
-    <div id="leaderboardScreen" class="screen active">
-        <h1>Popix Mobile</h1>
-        <h2>Leaderboard</h2>
-        <table id="leaderboard">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Time (s)</th>
-                    <th>Clicks</th>
-                    <th>Missed Clicks</th>
-                </tr>
-            </thead>
-            <tbody id="leaderboardBody">
-                <!-- Leaderboard entries will be dynamically injected here -->
-            </tbody>
-        </table>
-        <div class="buttons">
-            <button id="startGameButton">Start</button>
-            <button id="rulesButton">Rules</button>
-        </div>
-    </div>
+/* styles.css */
 
-    <!-- ===========================
-         Rules Modal
-    =========================== -->
-    <div id="rulesModal" class="modal">
-        <div class="modal-content">
-            <span id="closeRulesButton" class="close-button">&times;</span>
-            <h2>Game Rules</h2>
-            <p>
-                Welcome to Popix Mobile! Your objective is to pop all the circles as quickly as possible.
-                Start the game by clicking the "Start" button. Two circles will appear on the screen at a time.
-                Click on a circle to pop it, and another will appear randomly until all circles are popped.
-                Your time will be recorded with penalties for missed clicks.
-            </p>
-        </div>
-    </div>
+/* ===========================
+   General Styles
+=========================== */
 
-    <!-- ===========================
-         Game Screen
-    =========================== -->
-    <div id="gameScreen" class="screen">
-        <div id="timer">Time: 0.00s</div> <!-- Timer Display -->
-        <canvas id="gameCanvas"></canvas>
-    </div>
+/* Reset default margins and paddings for all elements */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-    <!-- ===========================
-         End of Game Screen
-    =========================== -->
-    <div id="endGameScreen" class="screen">
-        <h2>Game Completed!</h2>
-        <p id="endGameScore">Your Time: 0.00s</p>
-        <!-- Leaderboard on End Game Screen -->
-        <h3>Leaderboard</h3>
-        <table id="endGameLeaderboard">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Time (s)</th>
-                    <th>Clicks</th>
-                    <th>Missed Clicks</th>
-                </tr>
-            </thead>
-            <tbody id="endGameLeaderboardBody">
-                <!-- Leaderboard entries will be dynamically injected here -->
-            </tbody>
-        </table>
-        <form id="nameForm">
-            <input type="text" id="playerName" placeholder="Enter your name" required>
-            <button type="submit">Submit</button>
-        </form>
-        <button id="skipButton">Skip</button>
-    </div>
+/* Set a comfortable font for the entire application */
+body, html {
+    width: 100%;
+    height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f0f0f0; /* Light grey background for contrast */
+}
 
-    <!-- ===========================
-         Include JavaScript Modules
-    =========================== -->
-    <script type="module" src="script.js"></script>
-</body>
-</html>
+/* ===========================
+   Screen Management
+=========================== */
+
+/* Each screen is hidden by default */
+.screen {
+    display: none;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow: auto; /* Allow scrolling if content overflows */
+}
+
+/* The active screen is displayed */
+.screen.active {
+    display: block;
+}
+
+/* ===========================
+   Timer Display
+=========================== */
+
+/* Style for the timer displayed during the game */
+#timer {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
+    padding: 5px 10px;
+    border-radius: 5px;
+    z-index: 2; /* Ensure it stays above other elements */
+}
+
+/* ===========================
+   Leaderboard Table
+=========================== */
+
+/* General table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+/* Table headers */
+th, td {
+    padding: 12px 15px;
+    text-align: center;
+    border: 1px solid #dddddd;
+}
+
+/* Header row styling */
+th {
+    background-color: #333333; /* Dark background for headers */
+    color: #ffffff; /* White text for contrast */
+    font-weight: bold;
+}
+
+/* Zebra striping for table rows */
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Hover effect for table rows */
+tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* ===========================
+   Buttons
+=========================== */
+
+/* Container for buttons to align them */
+.buttons {
+    margin-top: 30px;
+    text-align: center;
+}
+
+/* General button styling */
+button {
+    padding: 12px 25px;
+    margin: 10px;
+    font-size: 16px;
+    color: #ffffff;
+    background-color: #4CAF50; /* Green background */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Hover effect for buttons */
+button:hover {
+    background-color: #45a049;
+}
+
+/* ===========================
+   Modal Styling
+=========================== */
+
+/* Modal background */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 3; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal content box */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 30px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    position: relative;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Close button (X) */
+.close-button {
+    color: #aaa;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #000;
+    text-decoration: none;
+}
+
+/* ===========================
+   Form Styling
+=========================== */
+
+/* Style for input fields */
+input[type="text"] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 15px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+/* Style for submit buttons within forms */
+form button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+form button:hover {
+    background-color: #45a049;
+}
+
+/* ===========================
+   Canvas Styling
+=========================== */
+
+/* Ensure the canvas covers the entire screen */
+#gameCanvas {
+    display: block; /* Remove default inline behavior */
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff; /* White background for contrast */
+}
+
+/* ===========================
+   End of Game Screen
+=========================== */
+
+#endGameScreen {
+    text-align: center;
+}
+
+#endGameScreen h2 {
+    margin-bottom: 20px;
+    color: #333333;
+}
+
+#endGameScreen h3 {
+    margin-top: 30px;
+    color: #333333;
+}
+
+#endGameScore {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #555555;
+}
+
+/* ===========================
+   Responsive Design
+=========================== */
+
+/* Adjustments for smaller screens */
+@media (max-width: 600px) {
+    /* Reduce padding for smaller devices */
+    .modal-content {
+        width: 90%;
+        padding: 20px;
+    }
+
+    button {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    /* Adjust timer font size */
+    #timer {
+        font-size: 16px;
+        padding: 4px 8px;
+    }
+
+    /* Adjust table font size */
+    table {
+        font-size: 14px;
+    }
+
+    /* Adjust input fields */
+    input[type="text"] {
+        font-size: 14px;
+    }
+}
