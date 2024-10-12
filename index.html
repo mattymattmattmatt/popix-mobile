@@ -65,7 +65,23 @@
     =========================== -->
     <div id="endLevelScreen" class="screen">
         <h2>Game Completed!</h2>
-        <p id="endLevelScore">Time: 0.00s</p>
+        <p id="endLevelScore">Your Time: 0.00s</p>
+        <!-- Leaderboard on End Level Screen -->
+        <h3>Leaderboard</h3>
+        <table id="endLevelLeaderboard">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Time (s)</th>
+                    <th>Clicks</th>
+                    <th>Missed Clicks</th>
+                </tr>
+            </thead>
+            <tbody id="endLevelLeaderboardBody">
+                <!-- Leaderboard entries will be dynamically injected here -->
+            </tbody>
+        </table>
         <form id="nameForm">
             <input type="text" id="playerName" placeholder="Enter your name" required>
             <button type="submit">Submit</button>
