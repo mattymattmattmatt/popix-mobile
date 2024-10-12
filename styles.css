@@ -143,12 +143,16 @@ table tr:hover {
 /* Form Styles */
 form {
     margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items horizontally */
 }
 
 form label {
     display: block;
     margin-bottom: 0.5rem;
     font-size: 1rem;
+    text-align: center; /* Center label text */
 }
 
 form input[type="text"] {
@@ -159,6 +163,11 @@ form input[type="text"] {
     font-size: 1rem;
     border: 1px solid #ccc;
     border-radius: 0.25rem;
+}
+
+form button.btn {
+    width: 50%; /* Optional: Adjust width as needed */
+    max-width: 200px;
 }
 
 /* Responsive Design Adjustments */
