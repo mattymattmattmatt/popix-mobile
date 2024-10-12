@@ -23,7 +23,7 @@ const ctx = gameCanvas.getContext('2d');
 
 // Game Variables
 let totalCircles = 10; // Total number of circles
-let circlesDiameter = 150; 
+let circlesDiameter = 135; // Increased to 135px (3 times original 45px)
 let circlesPopped = 0;
 let circlesMissed = 0;
 let clickCount = 0;
@@ -40,17 +40,22 @@ function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
     gameCanvas.width = window.innerWidth * dpr;
     gameCanvas.height = window.innerHeight * dpr;
+
+    // Reset any existing transforms before scaling
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    // Apply the new scale based on device pixel ratio
     ctx.scale(dpr, dpr);
 
-    // Clear the canvas
+    // Clear the canvas to remove any previous drawings
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
-    // Redraw active circles on resize
+    // Redraw active circles after resizing
     activeCircles.forEach(circle => circle.draw());
 }
 
 window.addEventListener('resize', resizeCanvas);
-resizeCanvas(); // Call resizeCanvas after activeCircles is declared
+resizeCanvas(); // Call resizeCanvas on initial load
 
 // Circle Class
 class Circle {
@@ -80,7 +85,7 @@ function getRandomPosition() {
     let x, y;
     let attempts = 0;
     const maxAttempts = 100;
-    const minDistance = 2 * circlesDiameter; // Minimum distance between centers
+    const minDistance = 2 * circlesDiameter; // Ensures at least one diameter spacing between circles
 
     do {
         x = Math.random() * (gameCanvas.width / (window.devicePixelRatio || 1) - 2 * padding) + padding;
@@ -92,7 +97,7 @@ function getRandomPosition() {
         }
     } while (activeCircles.some(circle => {
         const distance = Math.hypot(x - circle.x, y - circle.y);
-        return distance < minDistance; // Ensure at least two diameters spacing
+        return distance < minDistance; // Ensure at least one diameter spacing
     }));
 
     return { x, y };
@@ -301,9 +306,16 @@ function animatePop(circle) {
         const scale = 1 + progress; // Scale from 1 to 2
         const opacity = 1 - progress; // Fade from 1 to 0
 
-        // Clear the area where the circle is
-        ctx.clearRect(circle.x - circle.radius * 2, circle.y - circle.radius * 2, circle.radius * 4, circle.radius * 4);
+        // Calculate the bounding box for the animated circle
+        const scaledRadius = circle.radius * scale;
+        const clearX = circle.x - scaledRadius;
+        const clearY = circle.y - scaledRadius;
+        const clearSize = scaledRadius * 2;
 
+        // Clear only the area occupied by the animated circle
+        ctx.clearRect(clearX, clearY, clearSize, clearSize);
+
+        // Draw the animated (popped) circle
         ctx.save();
         ctx.globalAlpha = opacity;
         ctx.translate(circle.x, circle.y);
@@ -318,8 +330,8 @@ function animatePop(circle) {
         if (progress < 1) {
             requestAnimationFrame(animateFrame);
         } else {
-            // Ensure the area is fully cleared after animation
-            ctx.clearRect(circle.x - circle.radius * scale, circle.y - circle.radius * scale, circle.radius * 2 * scale, circle.radius * 2 * scale);
+            // Final clear to ensure no residual artifacts
+            ctx.clearRect(clearX, clearY, clearSize, clearSize);
         }
     }
 
