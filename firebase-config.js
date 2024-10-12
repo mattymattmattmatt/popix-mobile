@@ -1,7 +1,6 @@
-// firebase-config.js
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
-import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
+// Import the Firebase modules
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
+import { getFirestore, collection, getDocs, addDoc, writeBatch } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js';
 
 
 // Your web app's Firebase configuration
