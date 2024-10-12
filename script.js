@@ -23,7 +23,7 @@ const ctx = gameCanvas.getContext('2d');
 
 // Game Variables
 let totalCircles = 10; // Total number of circles
-let circlesDiameter = 500;
+let circlesDiameter = 200;
 let circlesPopped = 0;
 let circlesMissed = 0;
 let clickCount = 0;
