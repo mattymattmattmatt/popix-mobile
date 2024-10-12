@@ -85,7 +85,8 @@ function getRandomPosition() {
     let x, y;
     let attempts = 0;
     const maxAttempts = 100;
-    const minDistance = 2 * circlesDiameter; // Ensures at least one diameter spacing between circles
+    const buffer = 20; // Additional spacing in px
+    const minDistance = 2 * circlesDiameter + buffer; // 270px + 20px = 290px
 
     do {
         x = Math.random() * (gameCanvas.width / (window.devicePixelRatio || 1) - 2 * padding) + padding;
@@ -97,7 +98,11 @@ function getRandomPosition() {
         }
     } while (activeCircles.some(circle => {
         const distance = Math.hypot(x - circle.x, y - circle.y);
-        return distance < minDistance; // Ensure at least one diameter spacing
+        if (distance < minDistance) {
+            console.log(`Overlap detected: New Circle at (${x}, ${y}) overlaps with Circle at (${circle.x}, ${circle.y})`);
+            return true; // Overlapping
+        }
+        return false; // No overlap
     }));
 
     return { x, y };
@@ -292,11 +297,16 @@ function addNewCircle() {
     const circle = circles.splice(randomIndex, 1)[0];
     activeCircles.push(circle);
     circle.draw();
+
+    // Log the positions of all active circles for debugging
+    console.log('Active Circles Positions:');
+    activeCircles.forEach((activeCircle, index) => {
+        console.log(`Circle ${index + 1}: (x: ${activeCircle.x}, y: ${activeCircle.y})`);
+    });
 }
 
 // Animation Function
 function animatePop(circle) {
-    // Updated pop animation: scaling up and fading out three times quicker
     const duration = 100; // in ms (originally 300ms)
     const start = performance.now();
 
