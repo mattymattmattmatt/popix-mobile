@@ -1,6 +1,6 @@
 // script.js
 
-import { pushScore, getLeaderboard, clearLeaderboard } from './firebase-config.js';
+import { pushScore, getLeaderboard } from './firebase-config.js';
 import { SoundManager } from './soundManager.js'; // Ensure this path is correct
 
 // Initialize SoundManager
@@ -26,7 +26,6 @@ const playerNameInput = document.getElementById('playerName');
 const skipButton = document.getElementById('skipButton');
 const timerDisplay = document.getElementById('timer');
 const endGameLeaderboardBody = document.getElementById('endGameLeaderboardBody');
-const clearLeaderboardButton = document.getElementById('clearLeaderboardButton'); // New Button
 
 const ctx = gameCanvas.getContext('2d');
 
@@ -459,33 +458,6 @@ startGameButton.addEventListener('click', () => {
     console.log('Start Game Button Clicked'); // Debugging
     startGame();
 });
-
-// Handle Clear Leaderboard Button Click with Password Protection
-clearLeaderboardButton.addEventListener('click', () => {
-    const password = prompt('Enter password to clear leaderboard:');
-    if (password === 'ban00bles') {
-        // Confirm action
-        const confirmClear = confirm('Are you sure you want to clear the leaderboard? This action cannot be undone.');
-        if (confirmClear) {
-            clearLeaderboardData();
-        }
-    } else {
-        alert('Incorrect password. Leaderboard not cleared.');
-    }
-});
-
-// Function to Clear Leaderboard Data
-async function clearLeaderboardData() {
-    try {
-        await clearLeaderboard(); // Assumes clearLeaderboard is defined in firebase-config.js
-        alert('Leaderboard has been cleared.');
-        // Refresh the leaderboard display
-        initializeLeaderboard();
-    } catch (error) {
-        console.error('Error clearing leaderboard:', error);
-        alert('An error occurred while clearing the leaderboard.');
-    }
-}
 
 // Initialize Leaderboard on Page Load
 initializeLeaderboard();
