@@ -28,7 +28,7 @@ const ctx = gameCanvas.getContext('2d');
 
 // Game Variables
 let totalCircles = 10; // Total number of circles to pop
-let circlesDiameter = 75; // Diameter of each circle in px
+let circlesDiameter = calculateCircleDiameter(); // Diameter of each circle in px (dynamic)
 let circlesPopped = 0;
 let circlesMissed = 0;
 let clickCount = 0;
@@ -44,7 +44,7 @@ let isAnimating = false; // Flag to indicate if an animation is in progress
 let lastInteractionTime = 0;
 const debounceDuration = 150; // in ms
 
-// Set Canvas Size to Fill Screen
+// Set Canvas Size to Fill Screen and Calculate Circle Size
 function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
     const displayWidth = window.innerWidth;
@@ -61,13 +61,27 @@ function resizeCanvas() {
 
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
+    // Recalculate circle diameter based on new screen size
+    circlesDiameter = calculateCircleDiameter();
+
     if (activeCircle) {
         activeCircle.draw();
     }
 }
 
+// Calculate Circle Diameter Based on Screen Size
+function calculateCircleDiameter() {
+    const minDimension = Math.min(window.innerWidth, window.innerHeight);
+    // Set circle diameter to 15% of the smaller screen dimension
+    return Math.floor(minDimension * 0.15);
+}
+
+// Initial Resize
+resizeCanvas();
+
+// Listen for window resize and orientation change
 window.addEventListener('resize', resizeCanvas);
-resizeCanvas(); // Call resizeCanvas on initial load
+window.addEventListener('orientationchange', resizeCanvas);
 
 // Circle Class
 class Circle {
@@ -281,7 +295,7 @@ gameCanvas.addEventListener('pointerdown', (e) => {
 // Animation Function
 function animatePop(circle) {
     isAnimating = true; // Set flag to indicate animation is in progress
-    const duration = 50; // in ms
+    const duration = 100; // in ms
     const start = performance.now();
 
     // Define the maximum scale factor
