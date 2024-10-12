@@ -4,21 +4,26 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #ffffff; /* Changed to white */
+    background-color: #ffffff; /* Set background to white */
 }
 
 /* Screens */
 .screen {
-    display: none;
-    padding: 20px;
-    text-align: center;
+    display: none; /* Hide all screens by default */
+    position: absolute; /* Position screens on top of each other */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 2rem;
+    box-sizing: border-box;
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    flex-direction: column; /* Stack children vertically */
 }
 
 .screen.active {
-    display: flex; /* Changed to flex for alignment */
-    flex-direction: column;
-    align-items: center; /* Centers child elements horizontally */
-    justify-content: center; /* Centers child elements vertically */
+    display: flex; /* Show active screen as flex container */
 }
 
 /* Leaderboard Screen Layout */
