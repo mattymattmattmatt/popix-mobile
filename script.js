@@ -281,11 +281,15 @@ function animatePop(circle) {
     const duration = 100; // in ms
     const start = performance.now();
 
+    // Define the maximum scale factor
+    const maxScale = 2; // Scale up to twice the size
+
+    // Animation Loop
     function animateFrame(time) {
         const elapsed = time - start;
         const progress = Math.min(elapsed / duration, 1);
-        const scale = 1 + progress; // Scale from 1 to 2
-        const opacity = 1 - progress; // Fade from 1 to 0
+        const scale = 1 + progress * (maxScale - 1); // Linear scaling
+        const opacity = 1 - progress; // Fade out
 
         // Calculate the scaled radius
         const scaledRadius = circle.radius * scale;
@@ -301,14 +305,30 @@ function animatePop(circle) {
         // Draw the animated circle with scaled radius and decreasing opacity
         ctx.beginPath();
         ctx.arc(circle.x, circle.y, scaledRadius, 0, 2 * Math.PI);
-        ctx.fillStyle = `rgba(255, 87, 34, ${opacity})`; // #FF5722 with opacity
+        ctx.fillStyle = `rgba(255, 87, 34, ${opacity})`; // #FF5722 with dynamic opacity
         ctx.fill();
         ctx.closePath();
+
+        // Draw the flash effect during the first 30% of the animation
+        if (progress < 0.3) { // Flash occurs during the first 30% of the animation
+            const flashOpacity = 1 - (progress / 0.3); // Fade out the flash
+            ctx.fillStyle = `rgba(255, 255, 255, ${flashOpacity * 0.7})`; // Semi-transparent white
+            ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
+        }
+
+        // Optional: Brief color change before popping
+        if (progress === 0) {
+            ctx.beginPath();
+            ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#FF9800'; // Change to a lighter orange
+            ctx.fill();
+            ctx.closePath();
+        }
 
         if (progress < 1) {
             requestAnimationFrame(animateFrame);
         } else {
-            // Final clear to ensure no residual artifacts
+            // Final clear to remove any residual artifacts
             ctx.clearRect(clearX, clearY, clearSize, clearSize);
 
             // Reset activeCircle and spawn next circle or end game
