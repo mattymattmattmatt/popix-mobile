@@ -123,7 +123,7 @@ class Circle {
 
 // Utility Functions
 function getRandomPosition() {
-    const padding = circlesDiameter;
+    const padding = circlesDiameter / 2 + 10; // Additional padding to prevent touching edges
     let x, y;
     let attempts = 0;
     const maxAttempts = 100;
