@@ -75,6 +75,7 @@ body {
     left: 1rem;
     font-size: 1.5rem;
     font-weight: bold;
+    display: none; /* Hide timer by default */
 }
 
 /* Modal Styles */
