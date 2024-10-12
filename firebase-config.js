@@ -42,3 +42,9 @@ export function getLeaderboard(callback) {
         }
     });
 }
+
+// Function to reset the leaderboard
+export function resetLeaderboard() {
+    const scoresRef = ref(database, 'scores');
+    return set(scoresRef, null); // This will remove all scores
+}
