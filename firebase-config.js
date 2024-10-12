@@ -1,8 +1,9 @@
 // firebase-config.js
 
-// Import Firebase App and Firestore functions from Firebase v9 (Modular) via CDN
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
-import { getFirestore, collection, getDocs, addDoc } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js';
+// Import Firebase scripts
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+import { getDatabase, ref, push, onValue, query, limitToLast } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -18,31 +19,26 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const database = getDatabase(app);
 
-// Function to Push Score
-export async function pushScore(score) {
-    try {
-        const scoresCollection = collection(db, 'leaderboard');
-        await addDoc(scoresCollection, score);
-    } catch (error) {
-        console.error('Error adding document: ', error);
-        throw error;
-    }
+// Function to push a new score to the database
+export function pushScore(scoreData) {
+    const scoresRef = ref(database, 'scores');
+    return push(scoresRef, scoreData);
 }
 
-// Function to Get Leaderboard
-export async function getLeaderboard(callback) {
-    try {
-        const scoresCollection = collection(db, 'leaderboard');
-        const snapshot = await getDocs(scoresCollection);
-        const entries = snapshot.docs.map(doc => doc.data());
-        callback(entries);
-    } catch (error) {
-        console.error('Error getting documents: ', error);
-        callback([]);
-    }
-}
+// Function to retrieve the leaderboard data
+export function getLeaderboard(callback) {
+    const scoresRef = ref(database, 'scores');
+    const topScoresQuery = query(scoresRef, limitToLast(100)); // Adjust limit as needed
 
-// Export the db instance if needed elsewhere
-export { db };
+    onValue(topScoresQuery, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            const entries = Object.values(data);
+            callback(entries);
+        } else {
+            callback([]);
+        }
+    });
+}
