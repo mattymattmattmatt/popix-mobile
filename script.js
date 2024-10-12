@@ -23,7 +23,7 @@ const ctx = gameCanvas.getContext('2d');
 
 // Game Variables
 let totalCircles = 10; // Total number of circles
-let circlesDiameter = 200;
+let circlesDiameter = 150; 
 let circlesPopped = 0;
 let circlesMissed = 0;
 let clickCount = 0;
@@ -80,15 +80,19 @@ function getRandomPosition() {
     let x, y;
     let attempts = 0;
     const maxAttempts = 100;
+    const minDistance = 2 * circlesDiameter; // Minimum distance between centers
 
     do {
         x = Math.random() * (gameCanvas.width / (window.devicePixelRatio || 1) - 2 * padding) + padding;
         y = Math.random() * (gameCanvas.height / (window.devicePixelRatio || 1) - 2 * padding) + padding;
         attempts++;
-        if (attempts > maxAttempts) break; // Prevent infinite loop
+        if (attempts > maxAttempts) {
+            console.warn('Max attempts reached. Placing circle without full spacing.');
+            break; // Prevent infinite loop; place the circle anyway
+        }
     } while (activeCircles.some(circle => {
         const distance = Math.hypot(x - circle.x, y - circle.y);
-        return distance < circlesDiameter; // Ensure at least one diameter spacing
+        return distance < minDistance; // Ensure at least two diameters spacing
     }));
 
     return { x, y };
@@ -287,8 +291,8 @@ function addNewCircle() {
 
 // Animation Function
 function animatePop(circle) {
-    // Simple pop animation: scaling up and fading out
-    const duration = 100; // in ms
+    // Updated pop animation: scaling up and fading out three times quicker
+    const duration = 100; // in ms (originally 300ms)
     const start = performance.now();
 
     function animateFrame(time) {
