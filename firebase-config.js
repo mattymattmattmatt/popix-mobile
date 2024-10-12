@@ -60,3 +60,6 @@ export async function clearLeaderboard() {
         throw error;
     }
 }
+
+// Export the db instance if needed elsewhere
+export { db };
