@@ -1,13 +1,14 @@
 // firebase-config.js
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
+import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
 
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDkbedWccvhnLdMBDnlVy9YLhky-rKYZtg",
   authDomain: "popix-mobile.firebaseapp.com",
+  databaseURL: "https://popix-mobile-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "popix-mobile",
   storageBucket: "popix-mobile.appspot.com",
   messagingSenderId: "255908119305",
@@ -33,5 +34,8 @@ export function getLeaderboard(callback) {
         } else {
             callback([]);
         }
+    }, (error) => {
+        console.error("Error fetching leaderboard:", error);
+        callback([]);
     });
 }
