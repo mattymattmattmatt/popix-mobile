@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Popix Mobile Game</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Ensures responsive scaling -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Link to the CSS file -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Leaderboard Screen -->
     <div id="leaderboardScreen" class="screen active">
-        <h1>Popix Mobile</h1>
+        <!-- Replace the title text with an image -->
+        <img src="assets/images/PopixMobile.jpg" alt="Popix Mobile Logo" id="gameTitle">
         <button id="startGameButton" class="btn">Start Game</button>
         <button id="rulesButton" class="btn">Rules</button>
-        <button id="resetScoreButton" class="btn reset-btn">Reset Score</button> <!-- New Reset Score Button -->
+        <button id="resetScoreButton" class="btn reset-btn">Reset Score</button> <!-- Reset Score Button -->
         <h2>Leaderboard</h2>
         <table>
             <thead>
@@ -69,43 +70,9 @@
         <div class="modal-content">
             <span id="closeRulesButton" class="close-button">&times;</span>
             <h2>Game Rules</h2>
-            <ol>
-                <li><strong>Objective:</strong> Pop as many circles as possible by tapping or clicking on them.</li>
-                <li><strong>How to Play:</strong>
-                    <ul>
-                        <li><strong>Start the Game:</strong> Tap the <strong>Start Game</strong> button to begin.</li>
-                        <li><strong>Pop Circles:</strong> A single circle will appear on the screen. Tap or click on it to pop.</li>
-                        <li><strong>Avoid Misses:</strong> Clicking or tapping outside the circle counts as a miss and will add a slight penalty to your total time.</li>
-                        <li><strong>Progression:</strong> After popping a circle, a new one will appear in a different location.</li>
-                        <li><strong>End of Game:</strong> The game ends after you pop a predefined number of circles (e.g., 10).</li>
-                    </ul>
-                </li>
-                <li><strong>Scoring:</strong>
-                    <ul>
-                        <li><strong>Fast Pops:</strong> Pop circles quickly to achieve a better time.</li>
-                        <li><strong>Penalties:</strong> Each miss adds a small penalty to your total time, affecting your overall score.</li>
-                    </ul>
-                </li>
-                <li><strong>Leaderboard:</strong>
-                    <ul>
-                        <li><strong>Compete Globally:</strong> Compare your times with players worldwide.</li>
-                        <li><strong>Submit Your Score:</strong> After the game, enter your name to save your time to the leaderboard.</li>
-                    </ul>
-                </li>
-                <li><strong>Additional Features:</strong>
-                    <ul>
-                        <li><strong>Sound Effects:</strong> Enjoy satisfying pop sounds when you successfully pop a circle.</li>
-                        <li><strong>Vibration Feedback:</strong> Feel a subtle vibration on mobile devices upon popping a circle.</li>
-                    </ul>
-                </li>
-                <li><strong>Tips for Success:</strong>
-                    <ul>
-                        <li><strong>Stay Focused:</strong> Concentrate on the active circle to minimize misses.</li>
-                        <li><strong>Quick Reflexes:</strong> The faster you pop circles, the better your time will be.</li>
-                        <li><strong>Manage Misses:</strong> Avoid unnecessary taps or clicks to keep your total time low.</li>
-                    </ul>
-                </li>
-            </ol>
+            <p>
+                Pop as many circles as possible by tapping or clicking on them. Each successful pop advances the game, while missing adds a time penalty. Aim to achieve the best time by maintaining accuracy and speed. The game consists of 20 circles, each appearing in random locations to test your reflexes and concentration. Submit your name after the game to compete on the global leaderboard. Enjoy sound effects and vibration feedback for an immersive experience. Stay focused, manage your misses wisely, and strive for top rankings!
+            </p>
         </div>
     </div>
 
