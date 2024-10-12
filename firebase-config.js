@@ -19,25 +19,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-// Export Database functions
-/**
- * Push a new score to the leaderboard
- * @param {number} level - The current level
- * @param {object} scoreData - The score data object
- * @returns {Promise}
- */
-export function pushScore(level, scoreData) {
-    const leaderboardRef = ref(database, `leaderboard/level${level}`);
-    return push(leaderboardRef, scoreData);
+export function pushScore(scoreData) {
+    return push(ref(database, 'leaderboard'), scoreData);
 }
 
-/**
- * Get the leaderboard for a specific level
- * @param {number} level - The level to fetch
- * @param {function} callback - Callback function to handle the data
- */
-export function getLeaderboard(level, callback) {
-    const leaderboardRef = ref(database, `leaderboard/level${level}`);
+export function getLeaderboard(callback) {
+    const leaderboardRef = ref(database, 'leaderboard');
     onValue(leaderboardRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
