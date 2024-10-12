@@ -31,7 +31,7 @@ body, html {
     position: relative;
     padding: 20px;
     box-sizing: border-box;
-    overflow: hidden; /* Prevent scrollbars */
+    overflow: auto; /* Allow scrolling if content overflows */
 }
 
 /* The active screen is displayed */
@@ -227,6 +227,11 @@ form button:hover {
 
 #endLevelScreen h2 {
     margin-bottom: 20px;
+    color: #333333;
+}
+
+#endLevelScreen h3 {
+    margin-top: 30px;
     color: #333333;
 }
 
