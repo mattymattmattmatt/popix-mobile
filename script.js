@@ -153,9 +153,15 @@ function createCircle() {
 
 function showScreen(screen) {
     // Hide all screens
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const screens = document.querySelectorAll('.screen');
+    screens.forEach(s => {
+        s.classList.remove('active');
+        s.style.display = 'none';
+    });
+
     // Show the selected screen
     screen.classList.add('active');
+    screen.style.display = 'flex';
 }
 
 function displayLeaderboard(leaderboardBodyElement) {
@@ -258,6 +264,7 @@ function endGame() {
     // Display leaderboard on end game screen
     displayLeaderboard(endGameLeaderboardBody);
 
+    // Show end game screen
     showScreen(endGameScreen);
 }
 
