@@ -8,12 +8,10 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Game Title Image -->
-    <img src="assets/images/PopixMobile.jpg" alt="Popix Mobile Logo" id="gameTitle">
-
     <!-- Leaderboard Screen -->
     <div id="leaderboardScreen" class="screen active">
-        <!-- Leaderboard content -->
+        <!-- Game Title Image -->
+        <img src="assets/images/PopixMobile.jpg" alt="Popix Mobile Logo" id="gameTitle">
         <button id="startGameButton" class="btn">Start Game</button>
         <button id="rulesButton" class="btn">Rules</button>
         <button id="resetScoreButton" class="btn reset-btn">Reset Score</button>
@@ -42,6 +40,8 @@
 
     <!-- End Game Screen -->
     <div id="endGameScreen" class="screen">
+        <!-- Game Title Image (optional, if you want to show it here as well) -->
+        <img src="assets/images/PopixMobile.jpg" alt="Popix Mobile Logo" id="gameTitleEnd">
         <h2>Game Over</h2>
         <p id="endGameScore">Your Time: 0.00s</p>
         <form id="nameForm">
