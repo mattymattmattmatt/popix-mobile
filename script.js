@@ -1,7 +1,7 @@
 // script.js
 
-import { pushScore, getLeaderboard, clearLeaderboard, db } from './firebase-config.js'; // Ensure this path is correct
-import { SoundManager } from './soundManager.js'; // Import the SoundManager class
+import { pushScore, getLeaderboard, clearLeaderboard, db } from './firebase-config.js';
+import { SoundManager } from './soundManager.js'; // Ensure this path is correct
 
 // Initialize SoundManager
 const soundManager = new SoundManager();
@@ -423,7 +423,7 @@ nameForm.addEventListener('submit', (e) => {
     const playerName = playerNameInput.value.trim();
     if (playerName === '') return;
 
-    // Push score to Firebase via separate firebase-config.js
+    // Push score to Firebase via firebase-config.js
     pushScore({
         name: playerName,
         time: parseFloat(totalTime),
