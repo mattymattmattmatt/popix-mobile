@@ -1,7 +1,8 @@
-// Import the Firebase modules
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
-import { getFirestore, collection, getDocs, addDoc, writeBatch } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js';
+// firebase-config.js
 
+// Import Firebase App and Firestore functions from Firebase v9 (Modular) via CDN
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
+import { getFirestore, collection, getDocs, addDoc } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -40,23 +41,6 @@ export async function getLeaderboard(callback) {
     } catch (error) {
         console.error('Error getting documents: ', error);
         callback([]);
-    }
-}
-
-// Function to Clear Leaderboard
-export async function clearLeaderboard() {
-    try {
-        const scoresCollection = collection(db, 'leaderboard');
-        const snapshot = await getDocs(scoresCollection);
-        const batch = writeBatch(db);
-        snapshot.forEach(doc => {
-            batch.delete(doc.ref);
-        });
-        await batch.commit();
-        console.log('Leaderboard cleared successfully.');
-    } catch (error) {
-        console.error('Error clearing leaderboard: ', error);
-        throw error;
     }
 }
 
