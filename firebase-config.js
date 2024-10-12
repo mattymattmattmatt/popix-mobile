@@ -21,7 +21,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // Function to Push Score
-async function pushScore(score) {
+export async function pushScore(score) {
     try {
         const scoresCollection = collection(db, 'leaderboard');
         await addDoc(scoresCollection, score);
@@ -32,7 +32,7 @@ async function pushScore(score) {
 }
 
 // Function to Get Leaderboard
-async function getLeaderboard(callback) {
+export async function getLeaderboard(callback) {
     try {
         const scoresCollection = collection(db, 'leaderboard');
         const snapshot = await getDocs(scoresCollection);
@@ -45,7 +45,7 @@ async function getLeaderboard(callback) {
 }
 
 // Function to Clear Leaderboard
-async function clearLeaderboard() {
+export async function clearLeaderboard() {
     try {
         const scoresCollection = collection(db, 'leaderboard');
         const snapshot = await getDocs(scoresCollection);
@@ -60,5 +60,3 @@ async function clearLeaderboard() {
         throw error;
     }
 }
-
-export { pushScore, getLeaderboard, clearLeaderboard, db };
