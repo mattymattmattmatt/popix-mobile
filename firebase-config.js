@@ -18,24 +18,47 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+const db = getFirestore(app);
 
-export function pushScore(scoreData) {
-    return push(ref(database, 'leaderboard'), scoreData);
+// Function to Push Score
+async function pushScore(score) {
+    try {
+        const scoresCollection = collection(db, 'leaderboard');
+        await addDoc(scoresCollection, score);
+    } catch (error) {
+        console.error('Error adding document: ', error);
+        throw error;
+    }
 }
 
-export function getLeaderboard(callback) {
-    const leaderboardRef = ref(database, 'leaderboard');
-    onValue(leaderboardRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            const entries = Object.values(data);
-            callback(entries);
-        } else {
-            callback([]);
-        }
-    }, (error) => {
-        console.error("Error fetching leaderboard:", error);
+// Function to Get Leaderboard
+async function getLeaderboard(callback) {
+    try {
+        const scoresCollection = collection(db, 'leaderboard');
+        const snapshot = await getDocs(scoresCollection);
+        const entries = snapshot.docs.map(doc => doc.data());
+        callback(entries);
+    } catch (error) {
+        console.error('Error getting documents: ', error);
         callback([]);
-    });
+    }
 }
+
+// Function to Clear Leaderboard
+async function clearLeaderboard() {
+    try {
+        const scoresCollection = collection(db, 'leaderboard');
+        const snapshot = await getDocs(scoresCollection);
+        const batch = writeBatch(db);
+        snapshot.forEach(doc => {
+            batch.delete(doc.ref);
+        });
+        await batch.commit();
+        console.log('Leaderboard cleared successfully.');
+    } catch (error) {
+        console.error('Error clearing leaderboard: ', error);
+        throw error;
+    }
+}
+
+export { pushScore, getLeaderboard, clearLeaderboard, db };
