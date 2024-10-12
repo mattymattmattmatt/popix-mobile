@@ -11,13 +11,13 @@ const rulesModal = document.getElementById('rulesModal');
 const closeRulesButton = document.getElementById('closeRulesButton');
 const gameScreen = document.getElementById('gameScreen');
 const gameCanvas = document.getElementById('gameCanvas');
-const endLevelScreen = document.getElementById('endLevelScreen');
-const endLevelScore = document.getElementById('endLevelScore');
+const endGameScreen = document.getElementById('endGameScreen');
+const endGameScore = document.getElementById('endGameScore');
 const nameForm = document.getElementById('nameForm');
 const playerNameInput = document.getElementById('playerName');
 const skipButton = document.getElementById('skipButton');
 const timerDisplay = document.getElementById('timer');
-const endLevelLeaderboardBody = document.getElementById('endLevelLeaderboardBody');
+const endGameLeaderboardBody = document.getElementById('endGameLeaderboardBody');
 
 const ctx = gameCanvas.getContext('2d');
 
@@ -88,7 +88,7 @@ function getRandomPosition() {
         if (attempts > maxAttempts) break; // Prevent infinite loop
     } while (activeCircles.some(circle => {
         const distance = Math.hypot(x - circle.x, y - circle.y);
-        return distance < circlesDiameter * 1.5; // Ensure no circle is within 1.5 times the diameter
+        return distance < circlesDiameter; // Ensure at least one diameter spacing
     }));
 
     return { x, y };
@@ -207,13 +207,13 @@ function endGame() {
     const timeEnd = performance.now();
     totalTime = ((timeEnd - timeStart) / 1000).toFixed(2);
 
-    // Show end level screen with time and leaderboard
-    endLevelScore.textContent = `Your Time: ${totalTime}s`;
+    // Show end game screen with time and leaderboard
+    endGameScore.textContent = `Your Time: ${totalTime}s`;
 
-    // Display leaderboard on end level screen
-    displayLeaderboard(endLevelLeaderboardBody);
+    // Display leaderboard on end game screen
+    displayLeaderboard(endGameLeaderboardBody);
 
-    showScreen(endLevelScreen);
+    showScreen(endGameScreen);
 }
 
 // Handle Circle Clicks
@@ -365,6 +365,7 @@ nameForm.addEventListener('submit', (e) => {
             nameForm.reset();
             // Display the leaderboard
             initializeLeaderboard();
+            // Return to initial screen
             showScreen(leaderboardScreen);
         })
         .catch((error) => {
@@ -378,6 +379,7 @@ skipButton.addEventListener('click', () => {
     console.log('Skip Button Clicked'); // Debugging
     // Display the leaderboard
     initializeLeaderboard();
+    // Return to initial screen
     showScreen(leaderboardScreen);
 });
 
