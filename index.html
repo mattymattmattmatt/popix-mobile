@@ -38,35 +38,33 @@
         <canvas id="gameCanvas"></canvas>
     </div>
 
-    <!-- End Game Screen -->
-    <div id="endGameScreen" class="screen">
-        <!-- Game Title Image (optional, if you want to show it here as well) -->
-        <img src="assets/images/PopixMobile.jpg" alt="Popix Mobile Logo" id="gameTitleEnd">
-        <h2>Game Over</h2>
-        <p id="endGameScore">Your Time: 0.00s</p>
-        <form id="nameForm">
-            <label for="playerName">Enter Your Name:</label>
-            <input type="text" id="playerName" name="playerName" required>
-            <button type="submit" class="btn">Submit Score</button>
-        </form>
-        <button id="skipButton" class="btn">Skip</button>
-        <h2>Leaderboard</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Name</th>
-                    <th>Time (s)</th>
-                    <th>Clicks</th>
-                    <th>Missed Clicks</th>
-                </tr>
-            </thead>
-            <tbody id="endGameLeaderboardBody">
-                <!-- Leaderboard entries will be inserted here -->
-            </tbody>
-        </table>
-    </div>
-
+   <!-- End Game Screen -->
+<div id="endGameScreen" class="screen">
+    <img src="assets/images/PopixMobile.jpg" alt="Popix Mobile Logo" id="gameTitleEnd">
+    <h2>Game Over</h2>
+    <p id="endGameScore">Your Time: 0.00s</p>
+    <form id="nameForm">
+        <label for="playerName">Enter Your Name:</label>
+        <input type="text" id="playerName" name="playerName" required>
+        <button type="submit" class="btn">Submit Score</button>
+    </form>
+    <button id="skipButton" class="btn">Skip</button>
+    <h2>Leaderboard</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Time (s)</th>
+                <th>Clicks</th>
+                <th>Missed Clicks</th>
+            </tr>
+        </thead>
+        <tbody id="endGameLeaderboardBody">
+            <!-- Leaderboard entries will be inserted here -->
+        </tbody>
+    </table>
+</div>
     <!-- Rules Modal -->
     <div id="rulesModal" class="modal">
         <div class="modal-content">
