@@ -162,6 +162,13 @@ function showScreen(screen) {
     // Show the selected screen
     screen.classList.add('active');
     screen.style.display = 'flex';
+
+    // Manage Timer Visibility
+    if (screen === gameScreen) {
+        timerDisplay.style.display = 'block'; // Show timer during game
+    } else {
+        timerDisplay.style.display = 'none'; // Hide timer on other screens
+    }
 }
 
 function displayLeaderboard(leaderboardBodyElement) {
