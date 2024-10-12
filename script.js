@@ -17,6 +17,7 @@ const nameForm = document.getElementById('nameForm');
 const playerNameInput = document.getElementById('playerName');
 const skipButton = document.getElementById('skipButton');
 const timerDisplay = document.getElementById('timer');
+const endLevelLeaderboardBody = document.getElementById('endLevelLeaderboardBody');
 
 const ctx = gameCanvas.getContext('2d');
 
@@ -206,8 +207,12 @@ function endGame() {
     const timeEnd = performance.now();
     totalTime = ((timeEnd - timeStart) / 1000).toFixed(2);
 
-    // Show end level screen with time
-    endLevelScore.textContent = `Time: ${totalTime}s`;
+    // Show end level screen with time and leaderboard
+    endLevelScore.textContent = `Your Time: ${totalTime}s`;
+
+    // Display leaderboard on end level screen
+    displayLeaderboard(endLevelLeaderboardBody);
+
     showScreen(endLevelScreen);
 }
 
