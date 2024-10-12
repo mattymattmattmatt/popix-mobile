@@ -1,6 +1,6 @@
 // script.js
 
-import { pushScore, getLeaderboard, clearLeaderboard, db } from './firebase-config.js';
+import { pushScore, getLeaderboard, clearLeaderboard } from './firebase-config.js';
 import { SoundManager } from './soundManager.js'; // Ensure this path is correct
 
 // Initialize SoundManager
