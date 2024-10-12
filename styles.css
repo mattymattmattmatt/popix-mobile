@@ -1,25 +1,29 @@
-/* styles.css */
-
 /* General Styles */
 body {
     margin: 0;
     font-family: Arial, sans-serif;
     background-color: #ffffff; /* Set background to white */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Game Title Image */
+#gameTitle {
+    max-width: 80%;
+    height: auto;
+    margin: 20px 0; /* Adds space above and below the image */
 }
 
 /* Screens */
 .screen {
     display: none; /* Hide all screens by default */
-    position: absolute; /* Position screens on top of each other */
-    top: 0;
-    left: 0;
     width: 100%;
-    height: 100%;
-    padding: 2rem;
-    box-sizing: border-box;
-    justify-content: center; /* Center content vertically */
-    align-items: center; /* Center content horizontally */
-    flex-direction: column; /* Stack children vertically */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .screen.active {
