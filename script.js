@@ -288,7 +288,7 @@ function addNewCircle() {
 // Animation Function
 function animatePop(circle) {
     // Simple pop animation: scaling up and fading out
-    const duration = 300; // in ms
+    const duration = 100; // in ms
     const start = performance.now();
 
     function animateFrame(time) {
