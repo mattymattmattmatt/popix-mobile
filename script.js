@@ -306,7 +306,7 @@ function handlePointerDown(e) {
         // Missed click
         circlesMissed++;
         // Apply penalty
-        totalTime = (parseFloat(totalTime) + 0.05).toFixed(2);
+        totalTime = (parseFloat(totalTime) + 0.50).toFixed(2);
         if (timerDisplay) {
             timerDisplay.textContent = `Time: ${totalTime}s`;
         }
