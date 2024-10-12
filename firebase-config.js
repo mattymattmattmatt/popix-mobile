@@ -2,7 +2,7 @@
 
 // Import Firebase scripts
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getDatabase, ref, push, onValue, query, limitToLast } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { getDatabase, ref, push, set, onValue, query, limitToLast } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
 
 // Your web app's Firebase configuration
