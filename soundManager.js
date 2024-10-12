@@ -13,16 +13,11 @@ export class SoundManager {
             miss: 'assets/sounds/miss.mp3'
         };
 
-        // Preload each sound with specified volume levels
+        // Preload each sound
         for (const [key, src] of Object.entries(soundFiles)) {
             const audio = new Audio(src);
             audio.preload = 'auto';
-            // Set default volume levels (0.0 to 1.0)
-            if (key === 'pop') {
-                audio.volume = 0.5; // 50% volume for pop sound
-            } else if (key === 'miss') {
-                audio.volume = 0.3; // 30% volume for miss sound
-            }
+            audio.volume = 0.5; // Adjust volume (0.0 to 1.0)
             this.sounds[key] = audio;
         }
     }
@@ -31,17 +26,10 @@ export class SoundManager {
         if (this.sounds[name]) {
             // Clone the audio to allow rapid successive plays
             const soundClone = this.sounds[name].cloneNode();
+            soundClone.volume = this.sounds[name].volume; // Ensure volume is retained
             soundClone.play().catch(error => {
                 console.error(`Error playing sound "${name}":`, error);
             });
-        } else {
-            console.warn(`Sound "${name}" does not exist.`);
-        }
-    }
-
-    setVolume(name, volume) {
-        if (this.sounds[name]) {
-            this.sounds[name].volume = Math.min(Math.max(volume, 0), 1); // Clamp between 0 and 1
         } else {
             console.warn(`Sound "${name}" does not exist.`);
         }
