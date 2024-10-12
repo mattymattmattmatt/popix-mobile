@@ -1,14 +1,10 @@
 // script.js
 
 import { pushScore, getLeaderboard } from './firebase-config.js';
-import { SoundManager } from './soundManager.js'; // Ensure this path is correct
+import { SoundManager } from './soundManager.js';
 
 // Initialize SoundManager
 const soundManager = new SoundManager();
-
-// Preload Sounds and Set Volume Levels
-soundManager.setVolume('pop', 0.5); // 50% volume for pop sound
-soundManager.setVolume('miss', 0.3); // 30% volume for miss sound
 
 // DOM Elements
 const leaderboardScreen = document.getElementById('leaderboardScreen');
@@ -47,36 +43,24 @@ let isAnimating = false; // Flag to indicate if an animation is in progress
 let lastInteractionTime = 0;
 const debounceDuration = 150; // in ms
 
-// Offscreen Canvas for Optimized Rendering
-const offscreenCanvas = new OffscreenCanvas(gameCanvas.width, gameCanvas.height);
-const offscreenCtx = offscreenCanvas.getContext('2d');
-
 // Set Canvas Size to Fill Screen
 function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
     gameCanvas.width = window.innerWidth * dpr;
     gameCanvas.height = window.innerHeight * dpr;
 
-    // Resize Offscreen Canvas
-    offscreenCanvas.width = gameCanvas.width;
-    offscreenCanvas.height = gameCanvas.height;
-
     // Reset any existing transforms before scaling
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    offscreenCtx.setTransform(1, 0, 0, 1, 0, 0);
 
     // Apply the new scale based on device pixel ratio
     ctx.scale(dpr, dpr);
-    offscreenCtx.scale(dpr, dpr);
 
-    // Clear the canvases to remove any previous drawings
+    // Clear the canvas to remove any previous drawings
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-    offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
 
     // Redraw the active circle if it exists
     if (activeCircle) {
-        activeCircle.draw(offscreenCtx);
-        drawOffscreenToMain();
+        activeCircle.draw();
     }
 }
 
@@ -91,12 +75,12 @@ class Circle {
         this.radius = circlesDiameter / 2;
     }
 
-    draw(context = ctx) {
-        context.beginPath();
-        context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-        context.fillStyle = '#000000'; // Black color
-        context.fill();
-        context.closePath();
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+        ctx.fillStyle = '#000000'; // Black color
+        ctx.fill();
+        ctx.closePath();
     }
 
     isClicked(clickX, clickY) {
@@ -129,8 +113,7 @@ function createCircle() {
     const pos = getRandomPosition();
     const circle = new Circle(pos.x, pos.y);
     activeCircle = circle;
-    circle.draw(offscreenCtx);
-    drawOffscreenToMain();
+    circle.draw();
 
     // Log the position of the active circle for debugging
     console.log(`New Circle: (x: ${circle.x}, y: ${circle.y})`);
@@ -194,13 +177,6 @@ function displayLeaderboard(leaderboardBodyElement) {
 // Initialize Leaderboard Screen
 function initializeLeaderboard() {
     displayLeaderboard(leaderboardBody);
-    displayLeaderboard(endGameLeaderboardBody);
-}
-
-// Function to Draw Offscreen Canvas to Main Canvas
-function drawOffscreenToMain() {
-    ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-    ctx.drawImage(offscreenCanvas, 0, 0);
 }
 
 // Start Game Function
@@ -220,7 +196,6 @@ function startGame() {
 
     // Clear any existing drawings
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-    offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
 
     // Start the timer
     timeStart = performance.now();
@@ -271,12 +246,13 @@ function handlePointerDown(e) {
     const clickY = (e.clientY - rect.top) * (gameCanvas.height / rect.height) / (window.devicePixelRatio || 1);
 
     if (activeCircle && activeCircle.isClicked(clickX, clickY)) {
+        // Vibrate on successful pop
+        vibrate();
         // Play pop animation and sound
         animatePop(activeCircle);
         playPopSound();
-
-        // Vibration Feedback (Mobile Only)
-        vibrate();
+        // Increment click count
+        clickCount++;
     } else {
         // Missed click
         circlesMissed++;
@@ -297,7 +273,7 @@ gameCanvas.addEventListener('pointerdown', (e) => {
     handlePointerDown(e);
 });
 
-// Animation Function with Offscreen Canvas Optimization
+// Animation Function
 function animatePop(circle) {
     isAnimating = true; // Set flag to indicate animation is in progress
     const duration = 100; // in ms
@@ -325,42 +301,38 @@ function animatePop(circle) {
         const clearY = circle.y - scaledRadius;
         const clearSize = scaledRadius * 2;
 
-        // Clear the area occupied by the animated circle on Offscreen Canvas
-        offscreenCtx.clearRect(clearX, clearY, clearSize, clearSize);
+        // Clear the area occupied by the animated circle
+        ctx.clearRect(clearX, clearY, clearSize, clearSize);
 
         // Draw the animated circle with scaled radius and decreasing opacity
-        offscreenCtx.beginPath();
-        offscreenCtx.arc(circle.x, circle.y, scaledRadius, 0, 2 * Math.PI);
-        offscreenCtx.fillStyle = `rgba(255, 87, 34, ${opacity})`; // #FF5722 with dynamic opacity
-        offscreenCtx.fill();
-        offscreenCtx.closePath();
+        ctx.beginPath();
+        ctx.arc(circle.x, circle.y, scaledRadius, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgba(255, 87, 34, ${opacity})`; // #FF5722 with dynamic opacity
+        ctx.fill();
+        ctx.closePath();
 
         // Draw the flash effect during the first 30% of the animation
         if (elapsed < duration * 0.3) { // Flash occurs during the first 30% of the animation
             const flashProgress = elapsed / (duration * 0.3);
             const flashOpacity = 0.7 * (1 - flashProgress); // Fade out the flash
-            offscreenCtx.fillStyle = `rgba(255, 255, 255, ${flashOpacity})`; // Semi-transparent white
-            offscreenCtx.fillRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+            ctx.fillStyle = `rgba(255, 255, 255, ${flashOpacity})`; // Semi-transparent white
+            ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
         }
 
         // Optional: Brief color change before popping
         if (elapsed === 0) {
-            offscreenCtx.beginPath();
-            offscreenCtx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-            offscreenCtx.fillStyle = '#FF9800'; // Change to a lighter orange
-            offscreenCtx.fill();
-            offscreenCtx.closePath();
+            ctx.beginPath();
+            ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#FF9800'; // Change to a lighter orange
+            ctx.fill();
+            ctx.closePath();
         }
-
-        // Update the main canvas with the offscreen canvas
-        drawOffscreenToMain();
 
         if (progress < 1) {
             requestAnimationFrame(animateFrame);
         } else {
             // Final clear to remove any residual artifacts
-            offscreenCtx.clearRect(clearX, clearY, clearSize, clearSize);
-            drawOffscreenToMain();
+            ctx.clearRect(clearX, clearY, clearSize, clearSize);
 
             // Reset activeCircle and spawn next circle or end game
             circlesPopped++;
@@ -393,7 +365,7 @@ function playMissSound() {
     soundManager.playSound('miss');
 }
 
-// Vibration Feedback Function (Mobile Only)
+// Vibration Feedback
 function vibrate() {
     if (navigator.vibrate) {
         navigator.vibrate(100); // Vibrate for 100ms
@@ -402,7 +374,7 @@ function vibrate() {
 
 // Initialize Rules Modal
 rulesButton.addEventListener('click', () => {
-    rulesModal.style.display = 'block';
+    rulesModal.style.display = 'flex';
 });
 
 closeRulesButton.addEventListener('click', () => {
@@ -422,7 +394,7 @@ nameForm.addEventListener('submit', (e) => {
     const playerName = playerNameInput.value.trim();
     if (playerName === '') return;
 
-    // Push score to Firebase via firebase-config.js
+    // Push score to Firebase via separate firebase-config.js
     pushScore({
         name: playerName,
         time: parseFloat(totalTime),
@@ -453,11 +425,11 @@ skipButton.addEventListener('click', () => {
     showScreen(leaderboardScreen);
 });
 
+// Initialize Leaderboard on Page Load
+initializeLeaderboard();
+
 // Handle Start Game Button Click
 startGameButton.addEventListener('click', () => {
     console.log('Start Game Button Clicked'); // Debugging
     startGame();
 });
-
-// Initialize Leaderboard on Page Load
-initializeLeaderboard();
