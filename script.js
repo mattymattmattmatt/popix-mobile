@@ -11,7 +11,7 @@ const leaderboardScreen = document.getElementById('leaderboardScreen');
 const leaderboardBody = document.getElementById('leaderboardBody');
 const startGameButton = document.getElementById('startGameButton');
 const rulesButton = document.getElementById('rulesButton');
-const resetScoreButton = document.getElementById('resetScoreButton'); // New Reset Score Button
+const resetScoreButton = document.getElementById('resetScoreButton'); // Reset Score Button
 const rulesModal = document.getElementById('rulesModal');
 const closeRulesButton = document.getElementById('closeRulesButton');
 const gameScreen = document.getElementById('gameScreen');
@@ -27,7 +27,7 @@ const endGameLeaderboardBody = document.getElementById('endGameLeaderboardBody')
 const ctx = gameCanvas.getContext('2d');
 
 // Game Variables
-let totalCircles = 10; // Total number of circles to pop
+let totalCircles = 20; // Increased from 10 to 20
 let circlesDiameter = calculateCircleDiameter(); // Diameter of each circle in px (dynamic)
 let circlesPopped = 0;
 let circlesMissed = 0;
@@ -82,6 +82,22 @@ resizeCanvas();
 // Listen for window resize and orientation change
 window.addEventListener('resize', resizeCanvas);
 window.addEventListener('orientationchange', resizeCanvas);
+
+// Adjust totalCircles based on orientation
+function adjustGameParameters() {
+    if (window.matchMedia("(orientation: landscape)").matches) {
+        totalCircles = 25; // More circles in landscape
+    } else {
+        totalCircles = 20; // Default number of circles in portrait
+    }
+}
+
+// Call this function on load and when orientation changes
+adjustGameParameters();
+window.addEventListener('orientationchange', () => {
+    adjustGameParameters();
+    resizeCanvas();
+});
 
 // Circle Class
 class Circle {
