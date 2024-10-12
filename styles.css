@@ -1,3 +1,5 @@
+/* styles.css */
+
 /* General Styles */
 body {
     margin: 0;
@@ -9,7 +11,7 @@ body {
 }
 
 /* Game Title Image */
-#gameTitle {
+#gameTitle, #gameTitleEnd {
     max-width: 80%;
     height: auto;
     margin: 20px 0; /* Adds space above and below the image */
@@ -28,20 +30,6 @@ body {
 
 .screen.active {
     display: flex; /* Show active screen as flex container */
-}
-
-/* Leaderboard Screen Layout */
-#leaderboardScreen {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centers child elements horizontally */
-    padding: 2rem;
-}
-
-@media (max-width: 768px) {
-    #leaderboardScreen {
-        padding: 1rem;
-    }
 }
 
 /* Buttons */
@@ -70,20 +58,14 @@ body {
     background-color: #da190b;
 }
 
-/* Game Title Image */
-#gameTitle {
-    display: block; /* Ensures the image behaves like a block element */
-    margin: 0 auto 1.5rem auto; /* Centers the image horizontally and adds bottom margin */
-    max-width: 80%;
-    height: auto;
-}
-
 /* Canvas */
 #gameCanvas {
     display: block;
     background-color: #ffffff;
     touch-action: none; /* Prevent touch actions like scrolling */
     margin: 0 auto; /* Center the canvas */
+    width: 90vw; /* Responsive width */
+    height: 70vh; /* Responsive height */
 }
 
 /* Timer Display */
@@ -205,8 +187,13 @@ form input[type="text"] {
         font-size: 0.9rem;
     }
 
-    #gameTitle {
+    #gameTitle, #gameTitleEnd {
         max-width: 90%;
+    }
+
+    #gameCanvas {
+        width: 95vw;
+        height: 60vh;
     }
 }
 
