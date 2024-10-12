@@ -33,6 +33,7 @@ let totalTime = 0.00; // in seconds
 
 // Game State
 let activeCircle = null; // Only one active circle at a time
+let isAnimating = false; // Flag to indicate if an animation is in progress
 
 // Set Canvas Size to Fill Screen
 function resizeCanvas() {
@@ -86,8 +87,6 @@ function getRandomPosition() {
     let x, y;
     let attempts = 0;
     const maxAttempts = 100;
-    const buffer = 20; // Additional spacing in px
-    const minDistance = 2 * circlesDiameter + buffer; // 270px + 20px = 290px
 
     do {
         x = Math.random() * (gameCanvas.width / (window.devicePixelRatio || 1) - 2 * padding) + padding;
@@ -97,7 +96,7 @@ function getRandomPosition() {
             console.warn('Max attempts reached. Placing circle without full spacing.');
             break; // Prevent infinite loop; place the circle anyway
         }
-    } while (activeCircle && Math.hypot(x - activeCircle.x, y - activeCircle.y) < minDistance);
+    } while (activeCircle && Math.hypot(x - activeCircle.x, y - activeCircle.y) < 2 * circlesDiameter + 20); // Ensures sufficient spacing
 
     return { x, y };
 }
@@ -224,6 +223,8 @@ function endGame() {
 
 // Handle Circle Clicks
 function handleClick(e) {
+    if (isAnimating) return; // Prevent clicks during animation
+
     const rect = gameCanvas.getBoundingClientRect();
     const clickX = (e.clientX - rect.left) * (gameCanvas.width / rect.width) / (window.devicePixelRatio || 1);
     const clickY = (e.clientY - rect.top) * (gameCanvas.height / rect.height) / (window.devicePixelRatio || 1);
@@ -232,19 +233,6 @@ function handleClick(e) {
         // Play pop animation and sound
         animatePop(activeCircle);
         playPopSound();
-
-        // Remove clicked circle
-        activeCircle = null;
-        circlesPopped++;
-        clickCount++;
-
-        // Add a new circle if any remain
-        if (circlesPopped < totalCircles) {
-            createCircle();
-        } else {
-            // All circles popped, end game
-            endGame();
-        }
     } else {
         // Missed click
         circlesMissed++;
@@ -262,6 +250,8 @@ gameCanvas.addEventListener('click', handleClick);
 // Handle Touch Events
 function handleTouch(e) {
     e.preventDefault();
+    if (isAnimating) return; // Prevent touches during animation
+
     const touch = e.touches[0];
     const rect = gameCanvas.getBoundingClientRect();
     const clickX = (touch.clientX - rect.left) * (gameCanvas.width / rect.width) / (window.devicePixelRatio || 1);
@@ -271,19 +261,6 @@ function handleTouch(e) {
         // Play pop animation and sound
         animatePop(activeCircle);
         playPopSound();
-
-        // Remove clicked circle
-        activeCircle = null;
-        circlesPopped++;
-        clickCount++;
-
-        // Add a new circle if any remain
-        if (circlesPopped < totalCircles) {
-            createCircle();
-        } else {
-            // All circles popped, end game
-            endGame();
-        }
     } else {
         // Missed click
         circlesMissed++;
@@ -300,7 +277,8 @@ gameCanvas.addEventListener('touchstart', handleTouch, { passive: false });
 
 // Animation Function
 function animatePop(circle) {
-    const duration = 100; // in ms (originally 300ms)
+    isAnimating = true; // Set flag to indicate animation is in progress
+    const duration = 100; // in ms
     const start = performance.now();
 
     function animateFrame(time) {
@@ -309,32 +287,41 @@ function animatePop(circle) {
         const scale = 1 + progress; // Scale from 1 to 2
         const opacity = 1 - progress; // Fade from 1 to 0
 
-        // Calculate the bounding box for the animated circle
+        // Calculate the scaled radius
         const scaledRadius = circle.radius * scale;
+
+        // Calculate the bounding box
         const clearX = circle.x - scaledRadius;
         const clearY = circle.y - scaledRadius;
         const clearSize = scaledRadius * 2;
 
-        // Clear only the area occupied by the animated circle
+        // Clear the area occupied by the animated circle
         ctx.clearRect(clearX, clearY, clearSize, clearSize);
 
-        // Draw the animated (popped) circle
-        ctx.save();
-        ctx.globalAlpha = opacity;
-        ctx.translate(circle.x, circle.y);
-        ctx.scale(scale, scale);
+        // Draw the animated circle with scaled radius and decreasing opacity
         ctx.beginPath();
-        ctx.arc(0, 0, circle.radius, 0, 2 * Math.PI);
-        ctx.fillStyle = '#FF5722'; // Different color for animation
+        ctx.arc(circle.x, circle.y, scaledRadius, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgba(255, 87, 34, ${opacity})`; // #FF5722 with opacity
         ctx.fill();
         ctx.closePath();
-        ctx.restore();
 
         if (progress < 1) {
             requestAnimationFrame(animateFrame);
         } else {
             // Final clear to ensure no residual artifacts
             ctx.clearRect(clearX, clearY, clearSize, clearSize);
+
+            // Reset activeCircle and spawn next circle or end game
+            circlesPopped++;
+            activeCircle = null;
+
+            if (circlesPopped < totalCircles) {
+                createCircle();
+            } else {
+                endGame();
+            }
+
+            isAnimating = false; // Reset animation flag
         }
     }
 
