@@ -22,8 +22,8 @@ const endGameLeaderboardBody = document.getElementById('endGameLeaderboardBody')
 const ctx = gameCanvas.getContext('2d');
 
 // Game Variables
-let totalCircles = 10; // Total number of circles
-let circlesDiameter = 135; // Increased to 135px (3 times original 45px)
+let totalCircles = 10; // Total number of circles to pop
+let circlesDiameter = 135; // Diameter of each circle in px
 let circlesPopped = 0;
 let circlesMissed = 0;
 let clickCount = 0;
@@ -32,8 +32,7 @@ let gameTimer = null;
 let totalTime = 0.00; // in seconds
 
 // Game State
-let circles = [];
-let activeCircles = []; // Currently displayed circles
+let activeCircle = null; // Only one active circle at a time
 
 // Set Canvas Size to Fill Screen
 function resizeCanvas() {
@@ -50,8 +49,10 @@ function resizeCanvas() {
     // Clear the canvas to remove any previous drawings
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
-    // Redraw active circles after resizing
-    activeCircles.forEach(circle => circle.draw());
+    // Redraw the active circle if it exists
+    if (activeCircle) {
+        activeCircle.draw();
+    }
 }
 
 window.addEventListener('resize', resizeCanvas);
@@ -96,24 +97,19 @@ function getRandomPosition() {
             console.warn('Max attempts reached. Placing circle without full spacing.');
             break; // Prevent infinite loop; place the circle anyway
         }
-    } while (activeCircles.some(circle => {
-        const distance = Math.hypot(x - circle.x, y - circle.y);
-        if (distance < minDistance) {
-            console.log(`Overlap detected: New Circle at (${x}, ${y}) overlaps with Circle at (${circle.x}, ${circle.y})`);
-            return true; // Overlapping
-        }
-        return false; // No overlap
-    }));
+    } while (activeCircle && Math.hypot(x - activeCircle.x, y - activeCircle.y) < minDistance);
 
     return { x, y };
 }
 
-function createCircles(count) {
-    circles = [];
-    for (let i = 0; i < count; i++) {
-        const pos = getRandomPosition();
-        circles.push(new Circle(pos.x, pos.y));
-    }
+function createCircle() {
+    const pos = getRandomPosition();
+    const circle = new Circle(pos.x, pos.y);
+    activeCircle = circle;
+    circle.draw();
+
+    // Log the position of the active circle for debugging
+    console.log(`New Circle: (x: ${circle.x}, y: ${circle.y})`);
 }
 
 function showScreen(screen) {
@@ -185,11 +181,8 @@ function startGame() {
     clickCount = 0;
     totalTime = 0.00;
 
-    // Initialize circles
-    createCircles(totalCircles);
-
-    // Clear active circles
-    activeCircles = [];
+    // Clear active circle
+    activeCircle = null;
 
     // Show game screen
     showScreen(gameScreen);
@@ -207,9 +200,8 @@ function startGame() {
         }
     }, 10); // Update every 10ms for higher precision
 
-    // Display initial 2 circles
-    addNewCircle();
-    addNewCircle();
+    // Display the first circle
+    createCircle();
 }
 
 // End Game Function
@@ -236,34 +228,24 @@ function handleClick(e) {
     const clickX = (e.clientX - rect.left) * (gameCanvas.width / rect.width) / (window.devicePixelRatio || 1);
     const clickY = (e.clientY - rect.top) * (gameCanvas.height / rect.height) / (window.devicePixelRatio || 1);
 
-    let clicked = false;
+    if (activeCircle && activeCircle.isClicked(clickX, clickY)) {
+        // Play pop animation and sound
+        animatePop(activeCircle);
+        playPopSound();
 
-    for (let i = 0; i < activeCircles.length; i++) {
-        const circle = activeCircles[i];
-        if (circle.isClicked(clickX, clickY)) {
-            // Play pop animation and sound
-            animatePop(circle);
-            playPopSound();
+        // Remove clicked circle
+        activeCircle = null;
+        circlesPopped++;
+        clickCount++;
 
-            // Remove clicked circle
-            activeCircles.splice(i, 1);
-            circlesPopped++;
-            clickCount++;
-
-            // Add a new circle if any remain
-            if (circlesPopped < totalCircles) {
-                addNewCircle();
-            } else {
-                // All circles popped, end game
-                endGame();
-            }
-
-            clicked = true;
-            break;
+        // Add a new circle if any remain
+        if (circlesPopped < totalCircles) {
+            createCircle();
+        } else {
+            // All circles popped, end game
+            endGame();
         }
-    }
-
-    if (!clicked) {
+    } else {
         // Missed click
         circlesMissed++;
         // Apply penalty
@@ -285,25 +267,36 @@ function handleTouch(e) {
     const clickX = (touch.clientX - rect.left) * (gameCanvas.width / rect.width) / (window.devicePixelRatio || 1);
     const clickY = (touch.clientY - rect.top) * (gameCanvas.height / rect.height) / (window.devicePixelRatio || 1);
 
-    handleClick({ clientX: touch.clientX, clientY: touch.clientY });
+    if (activeCircle && activeCircle.isClicked(clickX, clickY)) {
+        // Play pop animation and sound
+        animatePop(activeCircle);
+        playPopSound();
+
+        // Remove clicked circle
+        activeCircle = null;
+        circlesPopped++;
+        clickCount++;
+
+        // Add a new circle if any remain
+        if (circlesPopped < totalCircles) {
+            createCircle();
+        } else {
+            // All circles popped, end game
+            endGame();
+        }
+    } else {
+        // Missed click
+        circlesMissed++;
+        // Apply penalty
+        totalTime = (parseFloat(totalTime) + 0.05).toFixed(2);
+        if (timerDisplay) {
+            timerDisplay.textContent = `Time: ${totalTime}s`;
+        }
+        playMissSound();
+    }
 }
 
 gameCanvas.addEventListener('touchstart', handleTouch, { passive: false });
-
-// Add New Circle to Active Circles
-function addNewCircle() {
-    if (circles.length === 0) return;
-    const randomIndex = Math.floor(Math.random() * circles.length);
-    const circle = circles.splice(randomIndex, 1)[0];
-    activeCircles.push(circle);
-    circle.draw();
-
-    // Log the positions of all active circles for debugging
-    console.log('Active Circles Positions:');
-    activeCircles.forEach((activeCircle, index) => {
-        console.log(`Circle ${index + 1}: (x: ${activeCircle.x}, y: ${activeCircle.y})`);
-    });
-}
 
 // Animation Function
 function animatePop(circle) {
