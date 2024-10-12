@@ -307,6 +307,9 @@ function animatePop(circle) {
     const duration = 100; // in ms
     const start = performance.now();
 
+    // Trigger vibration immediately upon pop
+    vibrateDevice();
+
     // Define the maximum scale factor
     const maxScale = 2; // Scale up to twice the size
 
@@ -389,6 +392,9 @@ function animatePopOnMainCanvas(circle) {
     isAnimating = true; // Set flag to indicate animation is in progress
     const duration = 100; // in ms
     const start = performance.now();
+
+    // Trigger vibration immediately upon pop
+    vibrateDevice();
 
     // Define the maximum scale factor
     const maxScale = 2; // Scale up to twice the size
@@ -483,175 +489,57 @@ function vibrateDevice() {
     }
 }
 
-// Modify animatePop to include Vibration Feedback
-function animatePop(circle) {
-    if (!offscreenCtx) {
-        // If OffscreenCanvas is not supported, fallback to main canvas animation
-        animatePopOnMainCanvas(circle);
-        return;
-    }
+// Initialize Rules Modal
+rulesButton.addEventListener('click', () => {
+    rulesModal.style.display = 'flex';
+});
 
-    isAnimating = true; // Set flag to indicate animation is in progress
-    const duration = 100; // in ms
-    const start = performance.now();
+closeRulesButton.addEventListener('click', () => {
+    rulesModal.style.display = 'none';
+});
 
-    // Trigger vibration immediately upon pop
-    vibrateDevice();
+// Handle Name Submission
+nameForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const playerName = playerNameInput.value.trim();
+    if (playerName === '') return;
 
-    // Define the maximum scale factor
-    const maxScale = 2; // Scale up to twice the size
+    // Push score to Firebase via separate firebase-config.js
+    pushScore({
+        name: playerName,
+        time: parseFloat(totalTime),
+        clicks: clickCount,
+        missedClicks: circlesMissed
+    })
+        .then(() => {
+            console.log('Score submitted successfully.');
+            // Reset form
+            nameForm.reset();
+            // Display the leaderboard
+            initializeLeaderboard();
+            // Return to initial screen
+            showScreen(leaderboardScreen);
+        })
+        .catch((error) => {
+            console.error('Error submitting score:', error);
+            alert('Error submitting score. Please try again.');
+        });
+});
 
-    // Animation Loop using OffscreenCanvas
-    function animateFrame(time) {
-        const elapsed = time - start;
-        let progress = Math.min(elapsed / duration, 1);
+// Handle Skip Button
+skipButton.addEventListener('click', () => {
+    console.log('Skip Button Clicked'); // Debugging
+    // Display the leaderboard
+    initializeLeaderboard();
+    // Return to initial screen
+    showScreen(leaderboardScreen);
+});
 
-        // Apply an easing function for a smoother animation (easeOutQuad)
-        progress = easeOutQuad(progress);
+// Initialize Leaderboard on Page Load
+initializeLeaderboard();
 
-        const scale = 1 + progress * (maxScale - 1); // Linear scaling with easing
-        const opacity = 1 - progress; // Fade out
-
-        // Calculate the scaled radius
-        const scaledRadius = circle.radius * scale;
-
-        // Calculate the bounding box
-        const clearX = circle.x - scaledRadius;
-        const clearY = circle.y - scaledRadius;
-        const clearSize = scaledRadius * 2;
-
-        // Clear the OffscreenCanvas area occupied by the animated circle
-        offscreenCtx.clearRect(clearX, clearY, clearSize, clearSize);
-
-        // Draw the animated circle with scaled radius and decreasing opacity on OffscreenCanvas
-        offscreenCtx.beginPath();
-        offscreenCtx.arc(circle.x, circle.y, scaledRadius, 0, 2 * Math.PI);
-        offscreenCtx.fillStyle = `rgba(255, 87, 34, ${opacity})`; // #FF5722 with dynamic opacity
-        offscreenCtx.fill();
-        offscreenCtx.closePath();
-
-        // Draw the flash effect during the first 30% of the animation on OffscreenCanvas
-        if (elapsed < duration * 0.3) { // Flash occurs during the first 30% of the animation
-            const flashProgress = elapsed / (duration * 0.3);
-            const flashOpacity = 0.7 * (1 - flashProgress); // Fade out the flash
-            offscreenCtx.fillStyle = `rgba(255, 255, 255, ${flashOpacity})`; // Semi-transparent white
-            offscreenCtx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
-        }
-
-        // Optional: Brief color change before popping on OffscreenCanvas
-        if (elapsed === 0) {
-            offscreenCtx.beginPath();
-            offscreenCtx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-            offscreenCtx.fillStyle = '#FF9800'; // Change to a lighter orange
-            offscreenCtx.fill();
-            offscreenCtx.closePath();
-        }
-
-        // Transfer the OffscreenCanvas content to the main canvas
-        ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-        ctx.drawImage(offscreen, 0, 0);
-
-        if (progress < 1) {
-            requestAnimationFrame(animateFrame);
-        } else {
-            // Final clear to remove any residual artifacts
-            ctx.clearRect(clearX, clearY, clearSize, clearSize);
-            offscreenCtx.clearRect(clearX, clearY, clearSize, clearSize);
-
-            // Reset activeCircle and spawn next circle or end game
-            circlesPopped++;
-            activeCircle = null;
-
-            if (circlesPopped < totalCircles) {
-                createCircle();
-            } else {
-                endGame();
-            }
-
-            isAnimating = false; // Reset animation flag
-        }
-    }
-
-    requestAnimationFrame(animateFrame);
-}
-
-// Fallback Animation on Main Canvas if OffscreenCanvas is Unsupported
-function animatePopOnMainCanvas(circle) {
-    isAnimating = true; // Set flag to indicate animation is in progress
-    const duration = 100; // in ms
-    const start = performance.now();
-
-    // Trigger vibration immediately upon pop
-    vibrateDevice();
-
-    // Define the maximum scale factor
-    const maxScale = 2; // Scale up to twice the size
-
-    // Animation Loop
-    function animateFrame(time) {
-        const elapsed = time - start;
-        let progress = Math.min(elapsed / duration, 1);
-
-        // Apply an easing function for a smoother animation (easeOutQuad)
-        progress = easeOutQuad(progress);
-
-        const scale = 1 + progress * (maxScale - 1); // Linear scaling with easing
-        const opacity = 1 - progress; // Fade out
-
-        // Calculate the scaled radius
-        const scaledRadius = circle.radius * scale;
-
-        // Calculate the bounding box
-        const clearX = circle.x - scaledRadius;
-        const clearY = circle.y - scaledRadius;
-        const clearSize = scaledRadius * 2;
-
-        // Clear the area occupied by the animated circle
-        ctx.clearRect(clearX, clearY, clearSize, clearSize);
-
-        // Draw the animated circle with scaled radius and decreasing opacity
-        ctx.beginPath();
-        ctx.arc(circle.x, circle.y, scaledRadius, 0, 2 * Math.PI);
-        ctx.fillStyle = `rgba(255, 87, 34, ${opacity})`; // #FF5722 with dynamic opacity
-        ctx.fill();
-        ctx.closePath();
-
-        // Draw the flash effect during the first 30% of the animation
-        if (elapsed < duration * 0.3) { // Flash occurs during the first 30% of the animation
-            const flashProgress = elapsed / (duration * 0.3);
-            const flashOpacity = 0.7 * (1 - flashProgress); // Fade out the flash
-            ctx.fillStyle = `rgba(255, 255, 255, ${flashOpacity})`; // Semi-transparent white
-            ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
-        }
-
-        // Optional: Brief color change before popping
-        if (elapsed === 0) {
-            ctx.beginPath();
-            ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-            ctx.fillStyle = '#FF9800'; // Change to a lighter orange
-            ctx.fill();
-            ctx.closePath();
-        }
-
-        if (progress < 1) {
-            requestAnimationFrame(animateFrame);
-        } else {
-            // Final clear to remove any residual artifacts
-            ctx.clearRect(clearX, clearY, clearSize, clearSize);
-
-            // Reset activeCircle and spawn next circle or end game
-            circlesPopped++;
-            activeCircle = null;
-
-            if (circlesPopped < totalCircles) {
-                createCircle();
-            } else {
-                endGame();
-            }
-
-            isAnimating = false; // Reset animation flag
-        }
-    }
-
-    requestAnimationFrame(animateFrame);
-}
+// Handle Start Game Button Click
+startGameButton.addEventListener('click', () => {
+    console.log('Start Game Button Clicked'); // Debugging
+    startGame();
+});
