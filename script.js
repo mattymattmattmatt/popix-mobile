@@ -22,6 +22,7 @@ const endGamePenalty = document.getElementById('endGamePenalty'); // New Element
 const nameForm = document.getElementById('nameForm');
 const playerNameInput = document.getElementById('playerName');
 const skipButton = document.getElementById('skipButton');
+const tryAgainButton = document.getElementById('tryAgainButton'); // New Button
 const timerDisplay = document.getElementById('timer');
 const endGameLeaderboardBody = document.getElementById('endGameLeaderboardBody');
 
@@ -194,7 +195,7 @@ function showScreen(screen) {
     }
 }
 
-function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, finalTime = null) {
+function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, finalTime = null, callback = null) {
     getLeaderboard((entries) => {
         // Initialize an array to hold all entries including the current player's
         let allEntries = entries ? [...entries] : [];
@@ -214,6 +215,9 @@ function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, 
 
         // Update the leaderboard body
         leaderboardBodyElement.innerHTML = ''; // Clear existing entries
+
+        // Determine if 'You' are within top 5
+        let isInTop5 = false;
 
         if (allEntries.length > 0) {
             // Display top 5
@@ -248,16 +252,28 @@ function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, 
                 row.appendChild(penaltyCell);
 
                 leaderboardBodyElement.appendChild(row);
+
+                // Check if this entry is 'You'
+                if (entry.name === 'You') {
+                    if (index < 5) {
+                        isInTop5 = true;
+                    }
+                }
             });
         } else {
             // No entries yet
             const row = document.createElement('tr');
             const noDataCell = document.createElement('td');
-            noDataCell.colSpan = 4; // Adjusted colspan due to removed column
+            noDataCell.colSpan = 4;
             noDataCell.textContent = 'No entries yet.';
             noDataCell.style.textAlign = 'center';
             row.appendChild(noDataCell);
             leaderboardBodyElement.appendChild(row);
+        }
+
+        // Execute callback with isInTop5
+        if (callback && typeof callback === 'function') {
+            callback(isInTop5);
         }
     });
 }
@@ -328,7 +344,19 @@ function endGame() {
     }
 
     // Display leaderboard on end game screen with current entry penalty and final time
-    displayLeaderboard(endGameLeaderboardBody, totalPenalty, finalTime);
+    displayLeaderboard(endGameLeaderboardBody, totalPenalty, finalTime, (isInTop5) => {
+        if (isInTop5) {
+            // Show form and skip button
+            nameForm.style.display = 'block';
+            skipButton.style.display = 'block';
+            tryAgainButton.style.display = 'none';
+        } else {
+            // Show try again button, hide form and skip button
+            nameForm.style.display = 'none';
+            skipButton.style.display = 'none';
+            tryAgainButton.style.display = 'block';
+        }
+    });
 
     // Show end game screen
     showScreen(endGameScreen);
@@ -528,6 +556,12 @@ skipButton.addEventListener('click', () => {
     initializeLeaderboard();
     // Return to initial screen
     showScreen(leaderboardScreen);
+});
+
+// Handle Try Again Button
+tryAgainButton.addEventListener('click', () => {
+    console.log('Try Again Button Clicked'); // Debugging
+    startGame();
 });
 
 // Handle Reset Score Button
