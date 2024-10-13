@@ -105,6 +105,15 @@ table th {
    6. Buttons
    ========================= */
 
+/* Button Group for Main Menu Screen */
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Centers buttons horizontally */
+    gap: 1rem; /* Defines space between buttons */
+    margin-top: 1.5rem; /* Adds space above the button group */
+}
+
 /* Common Button Styles */
 .btn {
     padding: 0.75rem 1.5rem;
@@ -114,9 +123,9 @@ table th {
     border-radius: 0.5rem;
     cursor: pointer;
     font-size: 1rem;
-    margin: 0.5rem auto; /* Centers the button if it has a set width */
     transition: background-color 0.3s ease;
-    display: block; /* Ensures margin auto works for centering */
+    /* Removed display and margin properties to allow Flexbox to handle alignment */
+    min-width: 120px; /* Ensures buttons aren't too small */
 }
 
 /* Button Hover Effect */
@@ -131,14 +140,6 @@ table th {
 
 .reset-btn:hover {
     background-color: #da190b;
-}
-
-/* Button Group for Leaderboard Screen */
-.button-group {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 1rem;
 }
 
 /* =========================
@@ -176,15 +177,10 @@ form input[type="text"] {
 
 /* Submit Button within Form */
 form button.btn {
-    /* Option 1: Let the button size naturally */
+    /* Let the button size naturally and center it within the form */
     width: auto; /* Allows the button to size based on content */
     max-width: 200px;
     align-self: center; /* Centers the button within the form */
-    
-    /* Option 2: If you prefer a fixed width */
-    /* width: 50%; */
-    /* max-width: 200px; */
-    /* margin: 0.5rem auto; */
 }
 
 /* =========================
