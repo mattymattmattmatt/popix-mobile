@@ -17,7 +17,8 @@ const closeRulesButton = document.getElementById('closeRulesButton');
 const gameScreen = document.getElementById('gameScreen');
 const gameCanvas = document.getElementById('gameCanvas');
 const endGameScreen = document.getElementById('endGameScreen');
-const endGameScore = document.getElementById('endGameScore');
+const endGameTime = document.getElementById('endGameTime'); // Updated ID
+const endGamePenalty = document.getElementById('endGamePenalty'); // New Element
 const nameForm = document.getElementById('nameForm');
 const playerNameInput = document.getElementById('playerName');
 const skipButton = document.getElementById('skipButton');
@@ -34,7 +35,9 @@ let circlesMissed = 0;
 let clickCount = 0;
 let timeStart = null;
 let gameTimer = null;
-let totalTime = 0.00; // in seconds
+let actualTime = 0.00; // in seconds
+let finalTime = 0.00; // in seconds
+let totalPenalty = 0.0; // in seconds
 
 // Game State
 let activeCircle = null; // Only one active circle at a time
@@ -280,7 +283,9 @@ function startGame() {
     circlesPopped = 0;
     circlesMissed = 0;
     clickCount = 0;
-    totalTime = 0.00;
+    actualTime = 0.00;
+    finalTime = 0.00;
+    totalPenalty = 0.0;
 
     // Clear active circle
     activeCircle = null;
@@ -295,9 +300,9 @@ function startGame() {
     timeStart = performance.now();
     gameTimer = setInterval(() => {
         const now = performance.now();
-        totalTime = ((now - timeStart) / 1000).toFixed(2); // in seconds with two decimals
+        actualTime = ((now - timeStart) / 1000).toFixed(2); // in seconds with two decimals
         if (timerDisplay) {
-            timerDisplay.textContent = `Time: ${totalTime}s`;
+            timerDisplay.textContent = `Time: ${actualTime}s`;
         }
     }, 10); // Update every 10ms for higher precision
 
@@ -312,16 +317,22 @@ function endGame() {
 
     // Record end time
     const timeEnd = performance.now();
-    const actualTime = ((timeEnd - timeStart) / 1000); // in seconds
+    actualTime = ((timeEnd - timeStart) / 1000); // in seconds
 
     // Calculate total penalty
-    const totalPenalty = (circlesMissed * 0.5).toFixed(1); // 0.5s per miss
+    totalPenalty = (circlesMissed * 0.5).toFixed(1); // 0.5s per miss
 
     // Calculate final time
-    const finalTime = (actualTime + parseFloat(totalPenalty)).toFixed(2);
+    finalTime = (actualTime + parseFloat(totalPenalty)).toFixed(2);
 
-    // Show end game screen with time and leaderboard
-    endGameScore.textContent = `Your Time: ${finalTime}s`;
+    // Show end game screen with time and penalty
+    endGameTime.textContent = `Your Time: ${actualTime.toFixed(2)}s`;
+    
+    if (circlesMissed > 0) {
+        endGamePenalty.textContent = `Penalty: +${totalPenalty}s`;
+    } else {
+        endGamePenalty.textContent = ''; // Hide penalty if none
+    }
 
     // Display leaderboard on end game screen with current entry penalty and final time
     displayLeaderboard(endGameLeaderboardBody, totalPenalty, finalTime);
