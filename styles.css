@@ -1,20 +1,28 @@
 /* styles.css */
 
-/* Reset Margins and Padding */
+/* =========================
+   1. General Reset
+   ========================= */
+
+/* Reset Margins and Padding for All Elements */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Body Styling */
+/* Prevent Scroll Bars on Body */
 body {
     font-family: Arial, sans-serif;
     background-color: #ffffff; /* White background */
     position: relative;
     height: 100vh;
-    overflow: hidden;
+    overflow: hidden; /* Prevent scroll bars */
 }
+
+/* =========================
+   2. Timer Display
+   ========================= */
 
 /* Timer Display */
 #timer {
@@ -27,7 +35,11 @@ body {
     z-index: 1000;
 }
 
-/* Screens */
+/* =========================
+   3. Screens
+   ========================= */
+
+/* Common Styles for All Screens */
 .screen {
     display: none; /* Hide all screens by default */
     width: 100%;
@@ -40,12 +52,17 @@ body {
     left: 0;
     padding: 2rem;
     background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent background */
-    overflow-y: auto;
+    overflow-y: auto; /* Enable vertical scrolling if content overflows */
 }
 
+/* Active Screen */
 .screen.active {
     display: flex; /* Show active screen */
 }
+
+/* =========================
+   4. Game Title Images
+   ========================= */
 
 /* Game Title Images */
 #gameTitle, #gameTitleEnd {
@@ -54,7 +71,11 @@ body {
     margin: 20px 0; /* Adds space above and below the image */
 }
 
-/* Tables */
+/* =========================
+   5. Tables
+   ========================= */
+
+/* Leaderboard Tables */
 table {
     width: 90%;
     max-width: 800px;
@@ -62,6 +83,7 @@ table {
     margin: 1rem 0;
 }
 
+/* Table Headers and Cells */
 table th, table td {
     padding: 0.75rem;
     text-align: center;
@@ -69,15 +91,21 @@ table th, table td {
     font-size: 1rem;
 }
 
+/* Table Header Background */
 table th {
     background-color: #f2f2f2;
 }
 
+/* Penalty Text Styling */
 .penalty {
     color: red;
 }
 
-/* Buttons */
+/* =========================
+   6. Buttons
+   ========================= */
+
+/* Common Button Styles */
 .btn {
     padding: 0.75rem 1.5rem;
     background-color: #2196F3; /* Blue */
@@ -90,10 +118,12 @@ table th {
     transition: background-color 0.3s ease;
 }
 
+/* Button Hover Effect */
 .btn:hover {
     background-color: #0b7dda;
 }
 
+/* Reset Button Specific Styles */
 .reset-btn {
     background-color: #f44336; /* Red */
 }
@@ -110,7 +140,11 @@ table th {
     margin-top: 1rem;
 }
 
-/* Form Styles */
+/* =========================
+   7. Form Styles
+   ========================= */
+
+/* Form Container */
 form {
     margin-top: 1.5rem;
     display: flex;
@@ -120,6 +154,7 @@ form {
     max-width: 400px;
 }
 
+/* Form Labels */
 form label {
     display: block;
     margin-bottom: 0.5rem;
@@ -127,6 +162,7 @@ form label {
     text-align: center; /* Center label text */
 }
 
+/* Text Input Fields */
 form input[type="text"] {
     padding: 0.5rem;
     width: 80%;
@@ -137,12 +173,17 @@ form input[type="text"] {
     border-radius: 0.25rem;
 }
 
+/* Submit Button within Form */
 form button.btn {
     width: 50%; /* Adjust as needed */
     max-width: 200px;
 }
 
-/* Canvas */
+/* =========================
+   8. Canvas
+   ========================= */
+
+/* Game Canvas */
 #gameCanvas {
     background-color: #ffffff;
     touch-action: none; /* Prevent touch actions like scrolling */
@@ -151,9 +192,14 @@ form button.btn {
     height: 70vh; /* Responsive height */
     border: none; /* Removed border */
     border-radius: 0.5rem;
+    display: block; /* Ensure canvas is treated as a block element */
 }
 
-/* Modal Styles */
+/* =========================
+   9. Modal Styles
+   ========================= */
+
+/* Modal Background */
 .modal {
     display: none; /* Hidden by default */
     position: fixed;
@@ -166,6 +212,7 @@ form button.btn {
     background-color: rgba(0, 0, 0, 0.5); /* Black with opacity */
 }
 
+/* Modal Content */
 .modal-content {
     background-color: #fefefe;
     margin: 10% auto; /* 10% from the top and centered */
@@ -177,6 +224,7 @@ form button.btn {
     position: relative;
 }
 
+/* Close Button within Modal */
 .close-button {
     color: #aaa;
     position: absolute;
@@ -192,42 +240,64 @@ form button.btn {
     color: black;
 }
 
-/* Responsive Design */
+/* =========================
+   10. Responsive Design
+   ========================= */
+
+/* Adjustments for Screens with Maximum Width of 768px (e.g., Tablets and Small Devices) */
 @media (max-width: 768px) {
+    /* Canvas Adjustments */
     #gameCanvas {
         width: 95vw;
         height: 60vh;
     }
 
+    /* Leaderboard Tables */
     table {
         width: 100%;
     }
 
+    /* Form Input Fields */
     form input[type="text"] {
         width: 90%;
     }
 
+    /* Form Submit Button */
     form button.btn {
         width: 70%;
     }
+
+    /* Modal Content Padding */
+    .modal-content {
+        margin: 15% auto; /* Increase top margin for better visibility */
+    }
 }
 
+/* Adjustments for Landscape Orientation on Larger Screens (Minimum Width of 769px) */
 @media (orientation: landscape) and (min-width: 769px) {
-    /* Adjustments for landscape orientation on larger screens */
+    /* Canvas Adjustments */
     #gameCanvas {
         width: 80vw;
         height: 80vh;
     }
 
+    /* Leaderboard Tables */
     table {
         width: 80%;
     }
 
+    /* Form Container */
     form {
         max-width: 500px;
     }
 
+    /* Form Submit Button */
     form button.btn {
         width: 40%;
+    }
+
+    /* Modal Content Padding */
+    .modal-content {
+        margin: 10% auto; /* Consistent top margin */
     }
 }
