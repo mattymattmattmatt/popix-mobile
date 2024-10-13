@@ -171,7 +171,7 @@ function showScreen(screen) {
     }
 }
 
-function displayLeaderboard(leaderboardBodyElement) {
+function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, finalTime = null) {
     getLeaderboard((entries) => {
         leaderboardBodyElement.innerHTML = ''; // Clear existing entries
 
@@ -213,6 +213,39 @@ function displayLeaderboard(leaderboardBodyElement) {
 
                 leaderboardBodyElement.appendChild(row);
             });
+
+            // If currentEntryPenalty and finalTime are provided, add it as the last row
+            if (currentEntryPenalty !== null && finalTime !== null) {
+                const row = document.createElement('tr');
+
+                // Rank Cell
+                const rankCell = document.createElement('td');
+                rankCell.textContent = entries.length + 1;
+                row.appendChild(rankCell);
+
+                // Name Cell
+                const nameCell = document.createElement('td');
+                nameCell.textContent = 'You';
+                row.appendChild(nameCell);
+
+                // Time Cell
+                const timeCell = document.createElement('td');
+                timeCell.textContent = finalTime; // Use finalTime from endGame
+                row.appendChild(timeCell);
+
+                // Penalty Cell
+                const penaltyCell = document.createElement('td');
+                penaltyCell.textContent = currentEntryPenalty > 0 ? `+${currentEntryPenalty}s` : `${currentEntryPenalty}s`;
+
+                // Apply red color if penalty > 0
+                if (currentEntryPenalty > 0) {
+                    penaltyCell.classList.add('penalty');
+                }
+
+                row.appendChild(penaltyCell);
+
+                leaderboardBodyElement.appendChild(row);
+            }
         } else {
             // No entries yet
             const row = document.createElement('tr');
@@ -270,13 +303,19 @@ function endGame() {
 
     // Record end time
     const timeEnd = performance.now();
-    totalTime = ((timeEnd - timeStart) / 1000).toFixed(2);
+    const actualTime = ((timeEnd - timeStart) / 1000); // in seconds
+
+    // Calculate total penalty
+    const totalPenalty = (circlesMissed * 0.5).toFixed(1); // 0.5s per miss
+
+    // Calculate final time
+    const finalTime = (actualTime + parseFloat(totalPenalty)).toFixed(2);
 
     // Show end game screen with time and leaderboard
-    endGameScore.textContent = `Your Time: ${totalTime}s`;
+    endGameScore.textContent = `Your Time: ${finalTime}s`;
 
-    // Display leaderboard on end game screen
-    displayLeaderboard(endGameLeaderboardBody);
+    // Display leaderboard on end game screen with current entry penalty and final time
+    displayLeaderboard(endGameLeaderboardBody, totalPenalty, finalTime);
 
     // Show end game screen
     showScreen(endGameScreen);
@@ -312,11 +351,7 @@ function handlePointerDown(e) {
     } else {
         // Missed click
         circlesMissed++;
-        // Apply penalty
-        totalTime = (parseFloat(totalTime) + 0.50).toFixed(2); // Changed from 0.05 to 0.50
-        if (timerDisplay) {
-            timerDisplay.textContent = `Time: ${totalTime}s`;
-        }
+        // Do NOT apply penalty to running timer
         playMissSound();
     }
 }
@@ -453,7 +488,7 @@ nameForm.addEventListener('submit', (e) => {
     // Push score to Firebase via separate firebase-config.js
     pushScore({
         name: playerName,
-        time: parseFloat(totalTime),
+        time: parseFloat(finalTime), // Use finalTime from endGame
         clicks: clickCount,
         missedClicks: circlesMissed
     })
