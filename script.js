@@ -39,6 +39,8 @@ let actualTime = 0.00; // in seconds
 let finalTime = 0.00; // in seconds
 let totalPenalty = 0.0; // in seconds
 
+let currentCount = 20; // Initialize countdown starting from 20
+
 // Game State
 let activeCircle = null; // Only one active circle at a time
 let isAnimating = false; // Flag to indicate if an animation is in progress
@@ -47,78 +49,29 @@ let isAnimating = false; // Flag to indicate if an animation is in progress
 let lastInteractionTime = 0;
 const debounceDuration = 150; // in ms
 
-// Set Canvas Size to Fill Screen and Calculate Circle Size
-function resizeCanvas() {
-    const dpr = window.devicePixelRatio || 1;
-    const displayWidth = window.innerWidth;
-    const displayHeight = window.innerHeight;
-
-    // Define dynamic extra padding: 10% of screen width, capped at 50px
-    const extraPadding = Math.min(50, displayWidth * 0.1);
-    
-    gameCanvas.style.width = `${displayWidth}px`;
-    gameCanvas.style.height = `${displayHeight}px`;
-
-    gameCanvas.width = displayWidth * dpr;
-    gameCanvas.height = displayHeight * dpr;
-
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.scale(dpr, dpr);
-
-    ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-
-    // Recalculate circle diameter based on new screen size
-    circlesDiameter = calculateCircleDiameter();
-
-    if (activeCircle) {
-        activeCircle.draw();
-    }
-}
-
-// Calculate Circle Diameter Based on Screen Size
-function calculateCircleDiameter() {
-    const minDimension = Math.min(window.innerWidth, window.innerHeight);
-    // Set circle diameter to 15% of the smaller screen dimension
-    return Math.floor(minDimension * 0.15);
-}
-
-// Initial Resize
-resizeCanvas();
-
-// Listen for window resize and orientation change
-window.addEventListener('resize', resizeCanvas);
-window.addEventListener('orientationchange', resizeCanvas);
-
-// Adjust totalCircles based on orientation
-function adjustGameParameters() {
-    if (window.matchMedia("(orientation: landscape)").matches) {
-        totalCircles = 25; // More circles in landscape
-    } else {
-        totalCircles = 20; // Default number of circles in portrait
-    }
-}
-
-// Call this function on load and when orientation changes
-adjustGameParameters();
-window.addEventListener('orientationchange', () => {
-    adjustGameParameters();
-    resizeCanvas();
-});
-
 // Circle Class
 class Circle {
-    constructor(x, y) {
+    constructor(x, y, count) { // Added 'count' parameter
         this.x = x;
         this.y = y;
         this.radius = circlesDiameter / 2;
+        this.count = count; // Initialize countdown number
     }
 
     draw() {
+        // Draw the circle
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
         ctx.fillStyle = '#000000'; // Black color
         ctx.fill();
         ctx.closePath();
+
+        // Draw the countdown number
+        ctx.fillStyle = '#FFFFFF'; // White text
+        ctx.font = `${this.radius}px Arial`; // Font size proportional to circle radius
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(this.count, this.x, this.y);
     }
 
     isClicked(clickX, clickY) {
@@ -155,12 +108,12 @@ function getRandomPosition() {
 
 function createCircle() {
     const pos = getRandomPosition();
-    const circle = new Circle(pos.x, pos.y);
+    const circle = new Circle(pos.x, pos.y, currentCount); // Pass currentCount to the Circle
     activeCircle = circle;
     circle.draw();
 
-    // Log the position of the active circle for debugging
-    console.log(`New Circle: (x: ${circle.x}, y: ${circle.y})`);
+    // Log the position and count of the active circle for debugging
+    console.log(`New Circle: (x: ${circle.x}, y: ${circle.y}), Count: ${circle.count}`);
 }
 
 function showScreen(screen) {
@@ -185,15 +138,30 @@ function showScreen(screen) {
 
 function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, finalTime = null) {
     getLeaderboard((entries) => {
+        // Initialize an array to hold all entries including the current player's
+        let allEntries = entries ? [...entries] : [];
+
+        // If currentEntryPenalty and finalTime are provided, add the current player's entry
+        if (currentEntryPenalty !== null && finalTime !== null) {
+            allEntries.push({
+                name: 'You',
+                time: parseFloat(finalTime),
+                clicks: clickCount,
+                missedClicks: circlesMissed
+            });
+        }
+
+        // Sort all entries by time ascending
+        allEntries.sort((a, b) => a.time - b.time);
+
+        // Update the leaderboard body
         leaderboardBodyElement.innerHTML = ''; // Clear existing entries
 
-        if (entries && entries.length > 0) {
-            // Sort entries by time ascending
-            entries.sort((a, b) => a.time - b.time);
+        if (allEntries.length > 0) {
+            // Determine the rank for each entry
+            allEntries.forEach((entry, index) => {
+                if (index >= 5) return; // Display only top 5
 
-            // Display top 5
-            const topEntries = entries.slice(0, 5);
-            topEntries.forEach((entry, index) => {
                 const row = document.createElement('tr');
 
                 // Rank Cell
@@ -225,39 +193,6 @@ function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, 
 
                 leaderboardBodyElement.appendChild(row);
             });
-
-            // If currentEntryPenalty and finalTime are provided, add it as the last row
-            if (currentEntryPenalty !== null && finalTime !== null) {
-                const row = document.createElement('tr');
-
-                // Rank Cell
-                const rankCell = document.createElement('td');
-                rankCell.textContent = entries.length + 1;
-                row.appendChild(rankCell);
-
-                // Name Cell
-                const nameCell = document.createElement('td');
-                nameCell.textContent = 'You';
-                row.appendChild(nameCell);
-
-                // Time Cell
-                const timeCell = document.createElement('td');
-                timeCell.textContent = finalTime; // Use finalTime from endGame
-                row.appendChild(timeCell);
-
-                // Penalty Cell
-                const penaltyCell = document.createElement('td');
-                penaltyCell.textContent = currentEntryPenalty > 0 ? `+${currentEntryPenalty}s` : `${currentEntryPenalty}s`;
-
-                // Apply red color if penalty > 0
-                if (currentEntryPenalty > 0) {
-                    penaltyCell.classList.add('penalty');
-                }
-
-                row.appendChild(penaltyCell);
-
-                leaderboardBodyElement.appendChild(row);
-            }
         } else {
             // No entries yet
             const row = document.createElement('tr');
@@ -286,6 +221,8 @@ function startGame() {
     actualTime = 0.00;
     finalTime = 0.00;
     totalPenalty = 0.0;
+
+    currentCount = totalCircles; // Reset countdown to totalCircles
 
     // Clear active circle
     activeCircle = null;
@@ -450,6 +387,7 @@ function animatePop(circle) {
             activeCircle = null;
 
             if (circlesPopped < totalCircles) {
+                currentCount--; // Decrement the countdown
                 createCircle();
             } else {
                 endGame();
