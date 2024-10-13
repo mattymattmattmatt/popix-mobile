@@ -114,8 +114,9 @@ table th {
     border-radius: 0.5rem;
     cursor: pointer;
     font-size: 1rem;
-    margin: 0.5rem;
+    margin: 0.5rem auto; /* Centers the button if it has a set width */
     transition: background-color 0.3s ease;
+    display: block; /* Ensures margin auto works for centering */
 }
 
 /* Button Hover Effect */
@@ -149,7 +150,7 @@ form {
     margin-top: 1.5rem;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center items horizontally */
+    align-items: center; /* Centers children horizontally */
     width: 100%;
     max-width: 400px;
 }
@@ -175,8 +176,15 @@ form input[type="text"] {
 
 /* Submit Button within Form */
 form button.btn {
-    width: 50%; /* Adjust as needed */
+    /* Option 1: Let the button size naturally */
+    width: auto; /* Allows the button to size based on content */
     max-width: 200px;
+    align-self: center; /* Centers the button within the form */
+    
+    /* Option 2: If you prefer a fixed width */
+    /* width: 50%; */
+    /* max-width: 200px; */
+    /* margin: 0.5rem auto; */
 }
 
 /* =========================
