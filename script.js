@@ -49,6 +49,64 @@ let isAnimating = false; // Flag to indicate if an animation is in progress
 let lastInteractionTime = 0;
 const debounceDuration = 150; // in ms
 
+// Function to calculate circle diameter based on screen size
+function calculateCircleDiameter() {
+    const minDimension = Math.min(window.innerWidth, window.innerHeight);
+    // Set circle diameter to 15% of the smaller screen dimension
+    return Math.floor(minDimension * 0.15);
+}
+
+// Set Canvas Size to Fill Screen and Calculate Circle Size
+function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    const displayWidth = window.innerWidth;
+    const displayHeight = window.innerHeight;
+
+    // Define dynamic extra padding: 10% of screen width, capped at 50px
+    const extraPadding = Math.min(50, displayWidth * 0.1);
+    
+    gameCanvas.style.width = `${displayWidth}px`;
+    gameCanvas.style.height = `${displayHeight}px`;
+
+    gameCanvas.width = displayWidth * dpr;
+    gameCanvas.height = displayHeight * dpr;
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
+
+    ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+
+    // Recalculate circle diameter based on new screen size
+    circlesDiameter = calculateCircleDiameter();
+
+    if (activeCircle) {
+        activeCircle.draw();
+    }
+}
+
+// Initial Resize
+resizeCanvas();
+
+// Listen for window resize and orientation change
+window.addEventListener('resize', resizeCanvas);
+window.addEventListener('orientationchange', resizeCanvas);
+
+// Adjust totalCircles based on orientation
+function adjustGameParameters() {
+    if (window.matchMedia("(orientation: landscape)").matches) {
+        totalCircles = 25; // More circles in landscape
+    } else {
+        totalCircles = 20; // Default number of circles in portrait
+    }
+}
+
+// Call this function on load and when orientation changes
+adjustGameParameters();
+window.addEventListener('orientationchange', () => {
+    adjustGameParameters();
+    resizeCanvas();
+});
+
 // Circle Class
 class Circle {
     constructor(x, y, count) { // Added 'count' parameter
@@ -158,10 +216,8 @@ function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, 
         leaderboardBodyElement.innerHTML = ''; // Clear existing entries
 
         if (allEntries.length > 0) {
-            // Determine the rank for each entry
-            allEntries.forEach((entry, index) => {
-                if (index >= 5) return; // Display only top 5
-
+            // Display top 5
+            allEntries.slice(0, 5).forEach((entry, index) => {
                 const row = document.createElement('tr');
 
                 // Rank Cell
