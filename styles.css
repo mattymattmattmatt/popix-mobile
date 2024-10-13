@@ -143,6 +143,20 @@ table th {
 }
 
 /* =========================
+   10. End Game Screen Specific Styles
+   ========================= */
+
+/* Leaderboard Title Styling */
+.leaderboard-title {
+    margin-top: 2rem; /* Adds a 2rem gap above the Leaderboard heading */
+}
+
+/* Try Again Button Styling */
+#tryAgainButton {
+    margin-bottom: 1.5rem; /* Adds a 1.5rem gap below the Try Again button */
+}
+
+/* =========================
    7. Form Styles
    ========================= */
 
