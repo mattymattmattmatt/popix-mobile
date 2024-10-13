@@ -40,32 +40,35 @@
         <canvas id="gameCanvas"></canvas>
     </div>
 
-    <!-- End Game Screen -->
-    <div id="endGameScreen" class="screen">
-        <img src="assets/images/PopixMobile.jpg" alt="Popix Mobile Logo" id="gameTitleEnd">
-        <h2>Game Over</h2>
-        <p id="endGameScore">Your Time: 0.00s</p>
-        <form id="nameForm">
-            <label for="playerName">Enter Your Name:</label>
-            <input type="text" id="playerName" name="playerName" required>
-            <button type="submit" class="btn">Submit Score</button>
-        </form>
-        <button id="skipButton" class="btn">Skip</button>
-        <h2>Leaderboard</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Name</th>
-                    <th>Time (s)</th>
-                    <th>Penalty</th>
-                </tr>
-            </thead>
-            <tbody id="endGameLeaderboardBody">
-                <!-- Leaderboard entries will be inserted here -->
-            </tbody>
-        </table>
-    </div>
+   <!-- End Game Screen -->
+<div id="endGameScreen" class="screen">
+    <img src="assets/images/PopixMobile.jpg" alt="Popix Mobile Logo" id="gameTitleEnd">
+    <h2>Game Over</h2>
+    <!-- Final Time Display -->
+    <p id="endGameTime">Your Time: 0.00s</p>
+    <!-- Penalty Display -->
+    <p id="endGamePenalty">Penalty: +0.0s</p>
+    <form id="nameForm">
+        <label for="playerName">Enter Your Name:</label>
+        <input type="text" id="playerName" name="playerName" required>
+        <button type="submit" class="btn">Submit Score</button>
+    </form>
+    <button id="skipButton" class="btn">Skip</button>
+    <h2>Leaderboard</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Time (s)</th>
+                <th>Penalty</th>
+            </tr>
+        </thead>
+        <tbody id="endGameLeaderboardBody">
+            <!-- Leaderboard entries will be inserted here -->
+        </tbody>
+    </table>
+</div>
 
     <!-- Rules Modal -->
     <div id="rulesModal" class="modal">
