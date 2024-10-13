@@ -2,19 +2,55 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Popix Mobile Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Link to the CSS file -->
+    <title>Popix Mobile</title>
+    <!-- Link to CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Timer Display -->
+    <div id="timer">Time: 0.00s</div>
+
     <!-- Leaderboard Screen -->
     <div id="leaderboardScreen" class="screen active">
-        <!-- Game Title Image -->
         <img src="assets/images/PopixMobile.jpg" alt="Popix Mobile Logo" id="gameTitle">
-        <button id="startGameButton" class="btn">Start Game</button>
-        <button id="rulesButton" class="btn">Rules</button>
-        <button id="resetScoreButton" class="btn reset-btn">Reset Score</button>
+        <h1>Leaderboard</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Time (s)</th>
+                    <th>Penalty</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboardBody">
+                <!-- Leaderboard entries will be inserted here -->
+            </tbody>
+        </table>
+        <div class="button-group">
+            <button id="startGameButton" class="btn">Start Game</button>
+            <button id="rulesButton" class="btn">Rules</button>
+            <button id="resetScoreButton" class="btn reset-btn">Reset Leaderboard</button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="screen">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <!-- End Game Screen -->
+    <div id="endGameScreen" class="screen">
+        <img src="assets/images/PopixMobile.jpg" alt="Popix Mobile Logo" id="gameTitleEnd">
+        <h2>Game Over</h2>
+        <p id="endGameScore">Your Time: 0.00s</p>
+        <form id="nameForm">
+            <label for="playerName">Enter Your Name:</label>
+            <input type="text" id="playerName" name="playerName" required>
+            <button type="submit" class="btn">Submit Score</button>
+        </form>
+        <button id="skipButton" class="btn">Skip</button>
         <h2>Leaderboard</h2>
         <table>
             <thead>
@@ -22,61 +58,30 @@
                     <th>Rank</th>
                     <th>Name</th>
                     <th>Time (s)</th>
-                    <th>Clicks</th>
-                    <th>Missed Clicks</th>
+                    <th>Penalty</th>
                 </tr>
             </thead>
-            <tbody id="leaderboardBody">
+            <tbody id="endGameLeaderboardBody">
                 <!-- Leaderboard entries will be inserted here -->
             </tbody>
         </table>
     </div>
 
-    <!-- Game Screen -->
-    <div id="gameScreen" class="screen">
-        <div id="timer">Time: 0.00s</div>
-        <canvas id="gameCanvas"></canvas>
-    </div>
-
-   <!-- End Game Screen -->
-<div id="endGameScreen" class="screen">
-    <img src="assets/images/PopixMobile.jpg" alt="Popix Mobile Logo" id="gameTitleEnd">
-    <h2>Game Over</h2>
-    <p id="endGameScore">Your Time: 0.00s</p>
-    <form id="nameForm">
-        <label for="playerName">Enter Your Name:</label>
-        <input type="text" id="playerName" name="playerName" required>
-        <button type="submit" class="btn">Submit Score</button>
-    </form>
-    <button id="skipButton" class="btn">Skip</button>
-    <h2>Leaderboard</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Name</th>
-                <th>Time (s)</th>
-                <th>Clicks</th>
-                <th>Missed Clicks</th>
-            </tr>
-        </thead>
-        <tbody id="endGameLeaderboardBody">
-            <!-- Leaderboard entries will be inserted here -->
-        </tbody>
-    </table>
-</div>
     <!-- Rules Modal -->
     <div id="rulesModal" class="modal">
         <div class="modal-content">
             <span id="closeRulesButton" class="close-button">&times;</span>
             <h2>Game Rules</h2>
-            <p>
-                Pop as many circles as possible by tapping or clicking on them. Each successful pop advances the game, while missing adds a time penalty. Aim to achieve the best time by maintaining accuracy and speed. The game consists of 20 circles, each appearing in random locations to test your reflexes and concentration. Submit your name after the game to compete on the global leaderboard. Enjoy sound effects and vibration feedback for an immersive experience. Stay focused, manage your misses wisely, and strive for top rankings!
-            </p>
+            <ul>
+                <li>Tap on the circles as quickly as possible to pop them.</li>
+                <li>Each missed click adds a time penalty of +0.50s.</li>
+                <li>Try to achieve the best time on the leaderboard!</li>
+                <li>Be careful not to click outside the circles.</li>
+            </ul>
         </div>
     </div>
 
-    <!-- Include the JavaScript files -->
-    <script type="module" src="script.js"></script>
+    <!-- Link to JavaScript -->
+    <script src="script.js" type="module"></script>
 </body>
 </html>
