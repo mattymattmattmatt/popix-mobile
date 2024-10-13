@@ -22,6 +22,7 @@ const endGamePenalty = document.getElementById('endGamePenalty'); // New Element
 const nameForm = document.getElementById('nameForm');
 const playerNameInput = document.getElementById('playerName');
 const skipButton = document.getElementById('skipButton');
+const tryAgainButton = document.getElementById('tryAgainButton'); // New Button
 const timerDisplay = document.getElementById('timer');
 const endGameLeaderboardBody = document.getElementById('endGameLeaderboardBody');
 
@@ -39,6 +40,8 @@ let actualTime = 0.00; // in seconds
 let finalTime = 0.00; // in seconds
 let totalPenalty = 0.0; // in seconds
 
+let currentCount = 20; // Initialize countdown starting from 20
+
 // Game State
 let activeCircle = null; // Only one active circle at a time
 let isAnimating = false; // Flag to indicate if an animation is in progress
@@ -46,6 +49,13 @@ let isAnimating = false; // Flag to indicate if an animation is in progress
 // Debounce Variables
 let lastInteractionTime = 0;
 const debounceDuration = 150; // in ms
+
+// Function to calculate circle diameter based on screen size
+function calculateCircleDiameter() {
+    const minDimension = Math.min(window.innerWidth, window.innerHeight);
+    // Set circle diameter to 15% of the smaller screen dimension
+    return Math.floor(minDimension * 0.15);
+}
 
 // Set Canvas Size to Fill Screen and Calculate Circle Size
 function resizeCanvas() {
@@ -75,13 +85,6 @@ function resizeCanvas() {
     }
 }
 
-// Calculate Circle Diameter Based on Screen Size
-function calculateCircleDiameter() {
-    const minDimension = Math.min(window.innerWidth, window.innerHeight);
-    // Set circle diameter to 15% of the smaller screen dimension
-    return Math.floor(minDimension * 0.15);
-}
-
 // Initial Resize
 resizeCanvas();
 
@@ -107,18 +110,27 @@ window.addEventListener('orientationchange', () => {
 
 // Circle Class
 class Circle {
-    constructor(x, y) {
+    constructor(x, y, count) { // Added 'count' parameter
         this.x = x;
         this.y = y;
         this.radius = circlesDiameter / 2;
+        this.count = count; // Initialize countdown number
     }
 
     draw() {
+        // Draw the circle
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
         ctx.fillStyle = '#000000'; // Black color
         ctx.fill();
         ctx.closePath();
+
+        // Draw the countdown number
+        ctx.fillStyle = '#FFFFFF'; // White text
+        ctx.font = `${this.radius}px Arial`; // Font size proportional to circle radius
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(this.count, this.x, this.y);
     }
 
     isClicked(clickX, clickY) {
@@ -155,12 +167,12 @@ function getRandomPosition() {
 
 function createCircle() {
     const pos = getRandomPosition();
-    const circle = new Circle(pos.x, pos.y);
+    const circle = new Circle(pos.x, pos.y, currentCount); // Pass currentCount to the Circle
     activeCircle = circle;
     circle.draw();
 
-    // Log the position of the active circle for debugging
-    console.log(`New Circle: (x: ${circle.x}, y: ${circle.y})`);
+    // Log the position and count of the active circle for debugging
+    console.log(`New Circle: (x: ${circle.x}, y: ${circle.y}), Count: ${circle.count}`);
 }
 
 function showScreen(screen) {
@@ -183,17 +195,33 @@ function showScreen(screen) {
     }
 }
 
-function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, finalTime = null) {
+function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, finalTime = null, callback = null) {
     getLeaderboard((entries) => {
+        // Initialize an array to hold all entries including the current player's
+        let allEntries = entries ? [...entries] : [];
+
+        // If currentEntryPenalty and finalTime are provided, add the current player's entry
+        if (currentEntryPenalty !== null && finalTime !== null) {
+            allEntries.push({
+                name: 'You',
+                time: parseFloat(finalTime),
+                clicks: clickCount,
+                missedClicks: circlesMissed
+            });
+        }
+
+        // Sort all entries by time ascending
+        allEntries.sort((a, b) => a.time - b.time);
+
+        // Update the leaderboard body
         leaderboardBodyElement.innerHTML = ''; // Clear existing entries
 
-        if (entries && entries.length > 0) {
-            // Sort entries by time ascending
-            entries.sort((a, b) => a.time - b.time);
+        // Determine if 'You' are within top 5
+        let isInTop5 = false;
 
+        if (allEntries.length > 0) {
             // Display top 5
-            const topEntries = entries.slice(0, 5);
-            topEntries.forEach((entry, index) => {
+            allEntries.slice(0, 5).forEach((entry, index) => {
                 const row = document.createElement('tr');
 
                 // Rank Cell
@@ -224,49 +252,28 @@ function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, 
                 row.appendChild(penaltyCell);
 
                 leaderboardBodyElement.appendChild(row);
-            });
 
-            // If currentEntryPenalty and finalTime are provided, add it as the last row
-            if (currentEntryPenalty !== null && finalTime !== null) {
-                const row = document.createElement('tr');
-
-                // Rank Cell
-                const rankCell = document.createElement('td');
-                rankCell.textContent = entries.length + 1;
-                row.appendChild(rankCell);
-
-                // Name Cell
-                const nameCell = document.createElement('td');
-                nameCell.textContent = 'You';
-                row.appendChild(nameCell);
-
-                // Time Cell
-                const timeCell = document.createElement('td');
-                timeCell.textContent = finalTime; // Use finalTime from endGame
-                row.appendChild(timeCell);
-
-                // Penalty Cell
-                const penaltyCell = document.createElement('td');
-                penaltyCell.textContent = currentEntryPenalty > 0 ? `+${currentEntryPenalty}s` : `${currentEntryPenalty}s`;
-
-                // Apply red color if penalty > 0
-                if (currentEntryPenalty > 0) {
-                    penaltyCell.classList.add('penalty');
+                // Check if this entry is 'You'
+                if (entry.name === 'You') {
+                    if (index < 5) {
+                        isInTop5 = true;
+                    }
                 }
-
-                row.appendChild(penaltyCell);
-
-                leaderboardBodyElement.appendChild(row);
-            }
+            });
         } else {
             // No entries yet
             const row = document.createElement('tr');
             const noDataCell = document.createElement('td');
-            noDataCell.colSpan = 4; // Adjusted colspan due to removed column
+            noDataCell.colSpan = 4;
             noDataCell.textContent = 'No entries yet.';
             noDataCell.style.textAlign = 'center';
             row.appendChild(noDataCell);
             leaderboardBodyElement.appendChild(row);
+        }
+
+        // Execute callback with isInTop5
+        if (callback && typeof callback === 'function') {
+            callback(isInTop5);
         }
     });
 }
@@ -286,6 +293,8 @@ function startGame() {
     actualTime = 0.00;
     finalTime = 0.00;
     totalPenalty = 0.0;
+
+    currentCount = totalCircles; // Reset countdown to totalCircles
 
     // Clear active circle
     activeCircle = null;
@@ -335,7 +344,19 @@ function endGame() {
     }
 
     // Display leaderboard on end game screen with current entry penalty and final time
-    displayLeaderboard(endGameLeaderboardBody, totalPenalty, finalTime);
+    displayLeaderboard(endGameLeaderboardBody, totalPenalty, finalTime, (isInTop5) => {
+        if (isInTop5) {
+            // Show form and skip button
+            nameForm.style.display = 'block';
+            skipButton.style.display = 'block';
+            tryAgainButton.style.display = 'none';
+        } else {
+            // Show try again button, hide form and skip button
+            nameForm.style.display = 'none';
+            skipButton.style.display = 'none';
+            tryAgainButton.style.display = 'block';
+        }
+    });
 
     // Show end game screen
     showScreen(endGameScreen);
@@ -450,6 +471,7 @@ function animatePop(circle) {
             activeCircle = null;
 
             if (circlesPopped < totalCircles) {
+                currentCount--; // Decrement the countdown
                 createCircle();
             } else {
                 endGame();
@@ -534,6 +556,12 @@ skipButton.addEventListener('click', () => {
     initializeLeaderboard();
     // Return to initial screen
     showScreen(leaderboardScreen);
+});
+
+// Handle Try Again Button
+tryAgainButton.addEventListener('click', () => {
+    console.log('Try Again Button Clicked'); // Debugging
+    startGame();
 });
 
 // Handle Reset Score Button

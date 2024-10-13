@@ -105,6 +105,15 @@ table th {
    6. Buttons
    ========================= */
 
+/* Button Group for Main Menu Screen */
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Centers buttons horizontally */
+    gap: 1rem; /* Defines space between buttons */
+    margin-top: 1.5rem; /* Adds space above the button group */
+}
+
 /* Common Button Styles */
 .btn {
     padding: 0.75rem 1.5rem;
@@ -114,8 +123,9 @@ table th {
     border-radius: 0.5rem;
     cursor: pointer;
     font-size: 1rem;
-    margin: 0.5rem;
     transition: background-color 0.3s ease;
+    /* Removed display and margin properties to allow Flexbox to handle alignment */
+    min-width: 120px; /* Ensures buttons aren't too small */
 }
 
 /* Button Hover Effect */
@@ -132,12 +142,18 @@ table th {
     background-color: #da190b;
 }
 
-/* Button Group for Leaderboard Screen */
-.button-group {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 1rem;
+/* =========================
+   10. End Game Screen Specific Styles
+   ========================= */
+
+/* Leaderboard Title Styling */
+.leaderboard-title {
+    margin-top: 2rem; /* Adds a 2rem gap above the Leaderboard heading */
+}
+
+/* Try Again Button Styling */
+#tryAgainButton {
+    margin-bottom: 1.5rem; /* Adds a 1.5rem gap below the Try Again button */
 }
 
 /* =========================
@@ -149,7 +165,7 @@ form {
     margin-top: 1.5rem;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center items horizontally */
+    align-items: center; /* Centers children horizontally */
     width: 100%;
     max-width: 400px;
 }
@@ -175,8 +191,10 @@ form input[type="text"] {
 
 /* Submit Button within Form */
 form button.btn {
-    width: 50%; /* Adjust as needed */
+    /* Let the button size naturally and center it within the form */
+    width: auto; /* Allows the button to size based on content */
     max-width: 200px;
+    align-self: center; /* Centers the button within the form */
 }
 
 /* =========================
