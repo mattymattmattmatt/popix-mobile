@@ -50,6 +50,9 @@ function resizeCanvas() {
     const displayWidth = window.innerWidth;
     const displayHeight = window.innerHeight;
 
+    // Define dynamic extra padding: 10% of screen width, capped at 50px
+    const extraPadding = Math.min(50, displayWidth * 0.1);
+    
     gameCanvas.style.width = `${displayWidth}px`;
     gameCanvas.style.height = `${displayHeight}px`;
 
@@ -123,7 +126,12 @@ class Circle {
 
 // Utility Functions
 function getRandomPosition() {
-    const extraPadding = 50; // Additional padding in pixels
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    
+    // Define dynamic extra padding: 10% of screen width, capped at 50px
+    const extraPadding = Math.min(50, screenWidth * 0.1);
+    
     const padding = circlesDiameter / 2 + 10 + extraPadding; // Existing padding + extra padding
     let x, y;
     let attempts = 0;
