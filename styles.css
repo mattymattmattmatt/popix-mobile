@@ -1,40 +1,85 @@
 /* styles.css */
 
-/* General Styles */
-body {
+/* Reset Margins and Padding */
+* {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #ffffff; /* Set background to white */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* Game Title Image */
-#gameTitle, #gameTitleEnd {
-    max-width: 80%;
-    height: auto;
-    margin: 20px 0; /* Adds space above and below the image */
+/* Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff; /* White background */
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Timer Display */
+#timer {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: none; /* Hidden by default */
+    z-index: 1000;
 }
 
 /* Screens */
 .screen {
     display: none; /* Hide all screens by default */
     width: 100%;
-    flex-grow: 1;
-    display: flex;
+    height: 100%;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent background */
+    overflow-y: auto;
 }
 
 .screen.active {
-    display: flex; /* Show active screen as flex container */
+    display: flex; /* Show active screen */
+}
+
+/* Game Title Images */
+#gameTitle, #gameTitleEnd {
+    max-width: 80%;
+    height: auto;
+    margin: 20px 0; /* Adds space above and below the image */
+}
+
+/* Tables */
+table {
+    width: 90%;
+    max-width: 800px;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+table th, table td {
+    padding: 0.75rem;
+    text-align: center;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+}
+
+table th {
+    background-color: #f2f2f2;
+}
+
+.penalty {
+    color: red;
 }
 
 /* Buttons */
 .btn {
-    padding: 1rem 2rem;
+    padding: 0.75rem 1.5rem;
     background-color: #2196F3; /* Blue */
     color: white;
     border: none;
@@ -49,7 +94,6 @@ body {
     background-color: #0b7dda;
 }
 
-/* Reset Button Specific Styles */
 .reset-btn {
     background-color: #f44336; /* Red */
 }
@@ -58,87 +102,12 @@ body {
     background-color: #da190b;
 }
 
-/* Canvas */
-#gameCanvas {
-    display: block;
-    background-color: #ffffff;
-    touch-action: none; /* Prevent touch actions like scrolling */
-    margin: 0 auto; /* Center the canvas */
-    width: 90vw; /* Responsive width */
-    height: 70vh; /* Responsive height */
-}
-
-/* Timer Display */
-#timer {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    font-size: 1.5rem;
-    font-weight: bold;
-    display: none; /* Hide timer by default */
-}
-
-/* Modal Styles */
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 5% auto; /* 5% from the top and centered */
-    padding: 2rem;
-    border: 1px solid #888;
-    width: 90%; /* Could be more or less, depending on screen size */
-    max-width: 600px;
-    border-radius: 0.5rem;
-    text-align: left;
-}
-
-.close-button {
-    color: #aaa;
-    float: right;
-    font-size: 2rem;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close-button:hover,
-.close-button:focus {
-    color: black;
-    text-decoration: none;
-}
-
-/* Table Styles */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1.5rem;
-}
-
-table th, table td {
-    border: 1px solid #ddd;
-    padding: 0.75rem;
-}
-
-table th {
-    background-color: #2196F3;
-    color: white;
-}
-
-table tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
-table tr:hover {
-    background-color: #ddd;
+/* Button Group for Leaderboard Screen */
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1rem;
 }
 
 /* Form Styles */
@@ -147,6 +116,8 @@ form {
     display: flex;
     flex-direction: column;
     align-items: center; /* Center items horizontally */
+    width: 100%;
+    max-width: 400px;
 }
 
 form label {
@@ -167,71 +138,96 @@ form input[type="text"] {
 }
 
 form button.btn {
-    width: 50%; /* Optional: Adjust width as needed */
+    width: 50%; /* Adjust as needed */
     max-width: 200px;
 }
 
-/* Responsive Design Adjustments */
+/* Canvas */
+#gameCanvas {
+    background-color: #ffffff;
+    touch-action: none; /* Prevent touch actions like scrolling */
+    margin: 0 auto; /* Center the canvas */
+    width: 90vw; /* Responsive width */
+    height: 70vh; /* Responsive height */
+    border: 2px solid #000; /* Black border for visibility */
+    border-radius: 0.5rem;
+}
 
-/* Dynamic Sizing: Adjust circle size and UI elements based on screen size */
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 2000; /* Above other elements */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.5); /* Black with opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto; /* 10% from the top and centered */
+    padding: 2rem;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 0.5rem;
+    position: relative;
+}
+
+.close-button {
+    color: #aaa;
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-    #timer {
-        font-size: 1.2rem;
-    }
-
-    .btn {
-        padding: 0.75rem 1.5rem;
-        font-size: 0.9rem;
-    }
-
-    .modal-content {
-        padding: 1.5rem;
-    }
-
-    table th, table td {
-        padding: 0.5rem;
-        font-size: 0.9rem;
-    }
-
-    form label, form input[type="text"] {
-        font-size: 0.9rem;
-    }
-
-    #gameTitle, #gameTitleEnd {
-        max-width: 90%;
-    }
-
     #gameCanvas {
         width: 95vw;
         height: 60vh;
     }
-}
 
-/* Orientation Handling: Adjust layout based on orientation */
-@media (orientation: landscape) {
-    #gameCanvas {
-        height: 80vh; /* Adjust canvas height for landscape */
+    table {
+        width: 100%;
     }
 
-    .screen {
-        padding: 2rem;
+    form input[type="text"] {
+        width: 90%;
     }
 
-    .modal-content {
-        padding: 2rem;
+    form button.btn {
+        width: 70%;
     }
 }
 
-@media (orientation: portrait) {
+@media (orientation: landscape) and (min-width: 769px) {
+    /* Adjustments for landscape orientation on larger screens */
     #gameCanvas {
-        height: 70vh; /* Adjust canvas height for portrait */
+        width: 80vw;
+        height: 80vh;
     }
 
-    .screen {
-        padding: 1rem;
+    table {
+        width: 80%;
     }
 
-    .modal-content {
-        padding: 1.5rem;
+    form {
+        max-width: 500px;
+    }
+
+    form button.btn {
+        width: 40%;
     }
 }
