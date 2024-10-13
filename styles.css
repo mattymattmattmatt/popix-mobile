@@ -241,7 +241,23 @@ form button.btn {
 }
 
 /* =========================
-   10. Responsive Design
+   10. End Game Screen Specific Styles
+   ========================= */
+
+/* End Game Time and Penalty */
+#endGameTime {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+#endGamePenalty {
+    font-size: 1.2rem;
+    color: red;
+    margin-bottom: 1rem;
+}
+
+/* =========================
+   11. Responsive Design
    ========================= */
 
 /* Adjustments for Screens with Maximum Width of 768px (e.g., Tablets and Small Devices) */
