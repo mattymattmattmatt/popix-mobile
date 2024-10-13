@@ -27,7 +27,7 @@ const endGameLeaderboardBody = document.getElementById('endGameLeaderboardBody')
 const ctx = gameCanvas.getContext('2d');
 
 // Game Variables
-let totalCircles = 20; // Increased from 10 to 20
+let totalCircles = 20; // Default number of circles
 let circlesDiameter = calculateCircleDiameter(); // Diameter of each circle in px (dynamic)
 let circlesPopped = 0;
 let circlesMissed = 0;
@@ -184,25 +184,32 @@ function displayLeaderboard(leaderboardBodyElement) {
             topEntries.forEach((entry, index) => {
                 const row = document.createElement('tr');
 
+                // Rank Cell
                 const rankCell = document.createElement('td');
                 rankCell.textContent = index + 1;
                 row.appendChild(rankCell);
 
+                // Name Cell
                 const nameCell = document.createElement('td');
                 nameCell.textContent = entry.name;
                 row.appendChild(nameCell);
 
+                // Time Cell
                 const timeCell = document.createElement('td');
                 timeCell.textContent = entry.time.toFixed(2);
                 row.appendChild(timeCell);
 
-                const clicksCell = document.createElement('td');
-                clicksCell.textContent = entry.clicks;
-                row.appendChild(clicksCell);
+                // Penalty Cell
+                const penaltyCell = document.createElement('td');
+                const penaltyTime = (entry.missedClicks * 0.5).toFixed(1); // Calculate penalty
+                penaltyCell.textContent = penaltyTime > 0 ? `+${penaltyTime}s` : `${penaltyTime}s`;
 
-                const missedClicksCell = document.createElement('td');
-                missedClicksCell.textContent = entry.missedClicks;
-                row.appendChild(missedClicksCell);
+                // Apply red color if penalty > 0
+                if (penaltyTime > 0) {
+                    penaltyCell.classList.add('penalty');
+                }
+
+                row.appendChild(penaltyCell);
 
                 leaderboardBodyElement.appendChild(row);
             });
@@ -210,7 +217,7 @@ function displayLeaderboard(leaderboardBodyElement) {
             // No entries yet
             const row = document.createElement('tr');
             const noDataCell = document.createElement('td');
-            noDataCell.colSpan = 5;
+            noDataCell.colSpan = 4; // Adjusted colspan due to removed column
             noDataCell.textContent = 'No entries yet.';
             noDataCell.style.textAlign = 'center';
             row.appendChild(noDataCell);
@@ -306,7 +313,7 @@ function handlePointerDown(e) {
         // Missed click
         circlesMissed++;
         // Apply penalty
-        totalTime = (parseFloat(totalTime) + 0.50).toFixed(2);
+        totalTime = (parseFloat(totalTime) + 0.50).toFixed(2); // Changed from 0.05 to 0.50
         if (timerDisplay) {
             timerDisplay.textContent = `Time: ${totalTime}s`;
         }
