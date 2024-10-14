@@ -15,7 +15,6 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #ffffff; /* White background */
-    color: #000000; /* Black text */
     position: relative;
     height: 100vh;
     overflow: hidden; /* Prevent scroll bars */
@@ -30,7 +29,7 @@ body {
     position: absolute;
     top: 1rem;
     left: 1rem;
-    font-size: 2rem; /* Increased font size for better visibility */
+    font-size: 1.5rem;
     font-weight: bold;
     display: none; /* Hidden by default */
     z-index: 1000;
@@ -82,8 +81,6 @@ table {
     max-width: 800px;
     border-collapse: collapse;
     margin: 1rem 0;
-    background-color: #ffffff; /* Table background */
-    color: #000000; /* Table text */
 }
 
 /* Table Headers and Cells */
@@ -127,6 +124,7 @@ table th {
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.3s ease;
+    /* Removed display and margin properties to allow Flexbox to handle alignment */
     min-width: 120px; /* Ensures buttons aren't too small */
 }
 
@@ -145,8 +143,30 @@ table th {
 }
 
 /* =========================
+   10. End Game Screen Specific Styles
+   ========================= */
+
+/* Leaderboard Title Styling */
+.leaderboard-title {
+    margin-top: 2rem; /* Adds a 2rem gap above the Leaderboard heading */
+}
+
+/* Try Again Button Styling */
+#tryAgainButton {
+    margin-bottom: 1.5rem; /* Adds a 1.5rem gap below the Try Again button */
+}
+
+/* =========================
    7. Form Styles
    ========================= */
+
+/* Leaderboard Emoji Styling */
+.leaderboard-emoji {
+    font-size: 1.2rem;
+    vertical-align: middle;
+    margin-left: 5px;
+    cursor: default; /* Prevents text selection cursor */
+}
 
 /* Form Container */
 form {
@@ -194,10 +214,10 @@ form button.btn {
     background-color: #ffffff;
     touch-action: none; /* Prevent touch actions like scrolling */
     margin: 0 auto; /* Center the canvas */
-    width: 100vw; /* Full viewport width */
-    height: 100vh; /* Full viewport height */
+    width: 90vw; /* Responsive width */
+    height: 70vh; /* Responsive height */
     border: none; /* Removed border */
-    border-radius: 0; /* No border radius */
+    border-radius: 0.5rem;
     display: block; /* Ensure canvas is treated as a block element */
 }
 
@@ -262,22 +282,18 @@ form button.btn {
     margin-bottom: 1rem;
 }
 
-/* Leaderboard Title Styling */
-.leaderboard-title {
-    margin-top: 2rem; /* Adds a 2rem gap above the Leaderboard heading */
-}
-
-/* Try Again Button Styling */
-#tryAgainButton {
-    margin-bottom: 1.5rem; /* Adds a 1.5rem gap below the Try Again button */
-}
-
 /* =========================
    11. Responsive Design
    ========================= */
 
 /* Adjustments for Screens with Maximum Width of 768px (e.g., Tablets and Small Devices) */
 @media (max-width: 768px) {
+    /* Canvas Adjustments */
+    #gameCanvas {
+        width: 95vw;
+        height: 60vh;
+    }
+
     /* Leaderboard Tables */
     table {
         width: 100%;
@@ -301,6 +317,12 @@ form button.btn {
 
 /* Adjustments for Landscape Orientation on Larger Screens (Minimum Width of 769px) */
 @media (orientation: landscape) and (min-width: 769px) {
+    /* Canvas Adjustments */
+    #gameCanvas {
+        width: 80vw;
+        height: 80vh;
+    }
+
     /* Leaderboard Tables */
     table {
         width: 80%;
