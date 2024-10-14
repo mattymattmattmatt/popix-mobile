@@ -442,7 +442,7 @@ gameCanvas.addEventListener('pointerdown', (e) => {
 // Updated Animation Function
 function animatePop(circle) {
     isAnimating = true;
-    const duration = 100; // Animation duration in milliseconds
+    const duration = 25; // Animation duration in milliseconds
     const start = performance.now();
 
     // Store initial properties
