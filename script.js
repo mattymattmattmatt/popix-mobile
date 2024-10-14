@@ -223,7 +223,7 @@ if (entry.name === 'Cake') {
     // Create and style the emoji
     const cakeEmoji = document.createElement('span');
     cakeEmoji.textContent = ' 🧁';
-    cakeEmoji.title = 'Happy Birthday, Guihlem!';
+    cakeEmoji.title = 'Happy Birthday!';
     cakeEmoji.classList.add('leaderboard-emoji');
     
     nameCell.appendChild(cakeEmoji);
