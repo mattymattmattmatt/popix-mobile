@@ -25,7 +25,6 @@ const skipButton = document.getElementById('skipButton');
 const tryAgainButton = document.getElementById('tryAgainButton');
 const timerDisplay = document.getElementById('timer');
 const endGameLeaderboardBody = document.getElementById('endGameLeaderboardBody');
-const themeToggleButton = document.getElementById('themeToggle');
 
 // Initialize Game Context
 const ctx = gameCanvas.getContext('2d');
@@ -49,55 +48,6 @@ let isAnimating = false;
 
 let lastInteractionTime = 0;
 const debounceDuration = 150;
-
-// Theme Management
-function applyTheme(theme) {
-    if (theme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-    } else if (theme === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
-        localStorage.setItem('theme', 'light');
-    } else {
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.setAttribute('data-theme', 'dark');
-        } else {
-            document.documentElement.setAttribute('data-theme', 'light');
-        }
-    }
-
-    // Update the game title image based on the current theme
-    updateGameTitleImage();
-}
-
-// Event listener for the theme toggle button
-themeToggleButton.addEventListener('click', () => {
-    let currentTheme = document.documentElement.getAttribute('data-theme');
-    if (currentTheme === 'dark') {
-        applyTheme('light');
-    } else {
-        applyTheme('dark');
-    }
-});
-
-// On page load, apply the saved theme or system preference
-let savedTheme = localStorage.getItem('theme');
-applyTheme(savedTheme);
-
-// Function to update the game title image
-function updateGameTitleImage() {
-    const gameTitleImage = document.getElementById('gameTitle');
-    const gameTitleEndImage = document.getElementById('gameTitleEnd');
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-
-    if (currentTheme === 'dark') {
-        if (gameTitleImage) gameTitleImage.src = 'assets/images/PopixMobileDark.jpg';
-        if (gameTitleEndImage) gameTitleEndImage.src = 'assets/images/PopixMobileDark.jpg';
-    } else {
-        if (gameTitleImage) gameTitleImage.src = 'assets/images/PopixMobile.jpg';
-        if (gameTitleEndImage) gameTitleEndImage.src = 'assets/images/PopixMobile.jpg';
-    }
-}
 
 // Function to calculate circle diameter based on screen size
 function calculateCircleDiameter() {
@@ -137,18 +87,15 @@ class Circle {
     }
 
     draw() {
-        // Determine theme
-        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-
         // Draw the circle
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-        ctx.fillStyle = isDarkMode ? '#ffffff' : '#000000'; // White in dark mode, black in light mode
+        ctx.fillStyle = '#000000'; // Black circle
         ctx.fill();
         ctx.closePath();
 
         // Draw the countdown number
-        ctx.fillStyle = isDarkMode ? '#000000' : '#FFFFFF'; // Black text in dark mode, white in light mode
+        ctx.fillStyle = '#FFFFFF'; // White text
         ctx.font = `${this.radius}px Arial`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -577,7 +524,7 @@ resetScoreButton.addEventListener('click', () => {
         // User cancelled the prompt
         return;
     }
-    if (password === 'ban00bles') {
+    if (password === 'Ban00bles') {
         const confirmation = confirm('Are you sure you want to reset the leaderboard? This action cannot be undone.');
         if (confirmation) {
             resetLeaderboard()
