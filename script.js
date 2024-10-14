@@ -29,7 +29,7 @@ const endGameLeaderboardBody = document.getElementById('endGameLeaderboardBody')
 const ctx = gameCanvas.getContext('2d');
 
 // Game Variables
-let totalCircles = 20; // Default number of circles
+let totalCircles = 20; // Fixed number of circles
 let circlesDiameter = calculateCircleDiameter(); // Diameter of each circle in px (dynamic)
 let circlesPopped = 0;
 let circlesMissed = 0;
@@ -92,21 +92,7 @@ resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 window.addEventListener('orientationchange', resizeCanvas);
 
-// Adjust totalCircles based on orientation
-function adjustGameParameters() {
-    if (window.matchMedia("(orientation: landscape)").matches) {
-        totalCircles = 25; // More circles in landscape
-    } else {
-        totalCircles = 20; // Default number of circles in portrait
-    }
-}
-
-// Call this function on load and when orientation changes
-adjustGameParameters();
-window.addEventListener('orientationchange', () => {
-    adjustGameParameters();
-    resizeCanvas();
-});
+// Removed adjustGameParameters function and its calls
 
 // Circle Class
 class Circle {
