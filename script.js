@@ -11,44 +11,93 @@ const leaderboardScreen = document.getElementById('leaderboardScreen');
 const leaderboardBody = document.getElementById('leaderboardBody');
 const startGameButton = document.getElementById('startGameButton');
 const rulesButton = document.getElementById('rulesButton');
-const resetScoreButton = document.getElementById('resetScoreButton'); // Reset Score Button
+const resetScoreButton = document.getElementById('resetScoreButton');
 const rulesModal = document.getElementById('rulesModal');
 const closeRulesButton = document.getElementById('closeRulesButton');
 const gameScreen = document.getElementById('gameScreen');
 const gameCanvas = document.getElementById('gameCanvas');
 const endGameScreen = document.getElementById('endGameScreen');
-const endGameTime = document.getElementById('endGameTime'); // Updated ID
-const endGamePenalty = document.getElementById('endGamePenalty'); // New Element
+const endGameTime = document.getElementById('endGameTime');
+const endGamePenalty = document.getElementById('endGamePenalty');
 const nameForm = document.getElementById('nameForm');
 const playerNameInput = document.getElementById('playerName');
 const skipButton = document.getElementById('skipButton');
-const tryAgainButton = document.getElementById('tryAgainButton'); // New Button
+const tryAgainButton = document.getElementById('tryAgainButton');
 const timerDisplay = document.getElementById('timer');
 const endGameLeaderboardBody = document.getElementById('endGameLeaderboardBody');
+const themeToggleButton = document.getElementById('themeToggle');
 
+// Initialize Game Context
 const ctx = gameCanvas.getContext('2d');
 
 // Game Variables
-let totalCircles = 20; // Default number of circles
-let circlesDiameter = calculateCircleDiameter(); // Diameter of each circle in px (dynamic)
+let totalCircles = 20;
+let circlesDiameter = calculateCircleDiameter();
 let circlesPopped = 0;
 let circlesMissed = 0;
 let clickCount = 0;
 let timeStart = null;
 let gameTimer = null;
-let actualTime = 0.00; // in seconds
-let finalTime = 0.00; // in seconds
-let totalPenalty = 0.0; // in seconds
+let actualTime = 0.00;
+let finalTime = 0.00;
+let totalPenalty = 0.0;
 
-let currentCount = 20; // Initialize countdown starting from 20
+let currentCount = 20;
 
-// Game State
-let activeCircle = null; // Only one active circle at a time
-let isAnimating = false; // Flag to indicate if an animation is in progress
+let activeCircle = null;
+let isAnimating = false;
 
-// Debounce Variables
 let lastInteractionTime = 0;
-const debounceDuration = 150; // in ms
+const debounceDuration = 150;
+
+// Theme Management
+function applyTheme(theme) {
+    if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+    } else if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+    } else {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    }
+
+    // Update the game title image based on the current theme
+    updateGameTitleImage();
+}
+
+// Event listener for the theme toggle button
+themeToggleButton.addEventListener('click', () => {
+    let currentTheme = document.documentElement.getAttribute('data-theme');
+    if (currentTheme === 'dark') {
+        applyTheme('light');
+    } else {
+        applyTheme('dark');
+    }
+});
+
+// On page load, apply the saved theme or system preference
+let savedTheme = localStorage.getItem('theme');
+applyTheme(savedTheme);
+
+// Function to update the game title image
+function updateGameTitleImage() {
+    const gameTitleImage = document.getElementById('gameTitle');
+    const gameTitleEndImage = document.getElementById('gameTitleEnd');
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+
+    if (currentTheme === 'dark') {
+        if (gameTitleImage) gameTitleImage.src = 'assets/images/PopixMobileDark.jpg';
+        if (gameTitleEndImage) gameTitleEndImage.src = 'assets/images/PopixMobileDark.jpg';
+    } else {
+        if (gameTitleImage) gameTitleImage.src = 'assets/images/PopixMobile.jpg';
+        if (gameTitleEndImage) gameTitleEndImage.src = 'assets/images/PopixMobile.jpg';
+    }
+}
 
 // Function to calculate circle diameter based on screen size
 function calculateCircleDiameter() {
@@ -63,9 +112,6 @@ function resizeCanvas() {
     const displayWidth = window.innerWidth;
     const displayHeight = window.innerHeight;
 
-    // Define dynamic extra padding: 10% of screen width, capped at 50px
-    const extraPadding = Math.min(50, displayWidth * 0.1);
-    
     gameCanvas.style.width = `${displayWidth}px`;
     gameCanvas.style.height = `${displayHeight}px`;
 
@@ -92,42 +138,29 @@ resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 window.addEventListener('orientationchange', resizeCanvas);
 
-// Adjust totalCircles based on orientation
-function adjustGameParameters() {
-    if (window.matchMedia("(orientation: landscape)").matches) {
-        totalCircles = 25; // More circles in landscape
-    } else {
-        totalCircles = 20; // Default number of circles in portrait
-    }
-}
-
-// Call this function on load and when orientation changes
-adjustGameParameters();
-window.addEventListener('orientationchange', () => {
-    adjustGameParameters();
-    resizeCanvas();
-});
-
 // Circle Class
 class Circle {
-    constructor(x, y, count) { // Added 'count' parameter
+    constructor(x, y, count) {
         this.x = x;
         this.y = y;
         this.radius = circlesDiameter / 2;
-        this.count = count; // Initialize countdown number
+        this.count = count;
     }
 
     draw() {
+        // Determine theme
+        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+
         // Draw the circle
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-        ctx.fillStyle = '#000000'; // Black color
+        ctx.fillStyle = isDarkMode ? '#ffffff' : '#000000'; // White in dark mode, black in light mode
         ctx.fill();
         ctx.closePath();
 
         // Draw the countdown number
-        ctx.fillStyle = '#FFFFFF'; // White text
-        ctx.font = `${this.radius}px Arial`; // Font size proportional to circle radius
+        ctx.fillStyle = isDarkMode ? '#000000' : '#FFFFFF'; // Black text in dark mode, white in light mode
+        ctx.font = `${this.radius}px Arial`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(this.count, this.x, this.y);
@@ -143,11 +176,8 @@ class Circle {
 function getRandomPosition() {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
-    
-    // Define dynamic extra padding: 10% of screen width, capped at 50px
-    const extraPadding = Math.min(50, screenWidth * 0.1);
-    
-    const padding = circlesDiameter / 2 + 10 + extraPadding; // Existing padding + extra padding
+
+    const padding = circlesDiameter / 2 + 10;
     let x, y;
     let attempts = 0;
     const maxAttempts = 100;
@@ -158,16 +188,16 @@ function getRandomPosition() {
         attempts++;
         if (attempts > maxAttempts) {
             console.warn('Max attempts reached. Placing circle without full spacing.');
-            break; // Prevent infinite loop; place the circle anyway
+            break;
         }
-    } while (activeCircle && Math.hypot(x - activeCircle.x, y - activeCircle.y) < 2 * circlesDiameter + 20); // Ensures sufficient spacing
+    } while (activeCircle && Math.hypot(x - activeCircle.x, y - activeCircle.y) < 2 * circlesDiameter + 20);
 
     return { x, y };
 }
 
 function createCircle() {
     const pos = getRandomPosition();
-    const circle = new Circle(pos.x, pos.y, currentCount); // Pass currentCount to the Circle
+    const circle = new Circle(pos.x, pos.y, currentCount);
     activeCircle = circle;
     circle.draw();
 
@@ -229,9 +259,13 @@ function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, 
                 rankCell.textContent = index + 1;
                 row.appendChild(rankCell);
 
-                // Name Cell
+                // Name Cell with Cake and French Flag Emojis for "Guihlem"
                 const nameCell = document.createElement('td');
-                nameCell.textContent = entry.name;
+                if (entry.name === 'Cake') {
+                    nameCell.textContent = `${entry.name} 🧁🇫🇷`;
+                } else {
+                    nameCell.textContent = entry.name;
+                }
                 row.appendChild(nameCell);
 
                 // Time Cell
@@ -336,7 +370,7 @@ function endGame() {
 
     // Show end game screen with time and penalty
     endGameTime.textContent = `Your Time: ${actualTime.toFixed(2)}s`;
-    
+
     if (circlesMissed > 0) {
         endGamePenalty.textContent = `Penalty: +${totalPenalty}s`;
     } else {
@@ -405,7 +439,7 @@ gameCanvas.addEventListener('pointerdown', (e) => {
     handlePointerDown(e);
 });
 
-// Animation Function
+// Updated Animation Function
 function animatePop(circle) {
     isAnimating = true; // Set flag to indicate animation is in progress
     const duration = 100; // in ms
@@ -413,6 +447,11 @@ function animatePop(circle) {
 
     // Define the maximum scale factor
     const maxScale = 2; // Scale up to twice the size
+
+    // Store initial circle properties
+    const initialX = circle.x;
+    const initialY = circle.y;
+    const initialRadius = circle.radius;
 
     // Animation Loop
     function animateFrame(time) {
@@ -426,45 +465,23 @@ function animatePop(circle) {
         const opacity = 1 - progress; // Fade out
 
         // Calculate the scaled radius
-        const scaledRadius = circle.radius * scale;
+        const scaledRadius = initialRadius * scale;
 
-        // Calculate the bounding box
-        const clearX = circle.x - scaledRadius;
-        const clearY = circle.y - scaledRadius;
-        const clearSize = scaledRadius * 2;
+        // Clear the entire canvas
+        ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
-        // Clear the area occupied by the animated circle
-        ctx.clearRect(clearX, clearY, clearSize, clearSize);
-
-        // Draw the animated circle with scaled radius and decreasing opacity
+        // Redraw the animated circle
         ctx.beginPath();
-        ctx.arc(circle.x, circle.y, scaledRadius, 0, 2 * Math.PI);
+        ctx.arc(initialX, initialY, scaledRadius, 0, 2 * Math.PI);
         ctx.fillStyle = `rgba(255, 87, 34, ${opacity})`; // #FF5722 with dynamic opacity
         ctx.fill();
         ctx.closePath();
-
-        // Draw the flash effect during the first 30% of the animation
-        if (elapsed < duration * 0.3) { // Flash occurs during the first 30% of the animation
-            const flashProgress = elapsed / (duration * 0.3);
-            const flashOpacity = 0.7 * (1 - flashProgress); // Fade out the flash
-            ctx.fillStyle = `rgba(255, 255, 255, ${flashOpacity})`; // Semi-transparent white
-            ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
-        }
-
-        // Optional: Brief color change before popping
-        if (elapsed === 0) {
-            ctx.beginPath();
-            ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-            ctx.fillStyle = '#FF9800'; // Change to a lighter orange
-            ctx.fill();
-            ctx.closePath();
-        }
 
         if (progress < 1) {
             requestAnimationFrame(animateFrame);
         } else {
             // Final clear to remove any residual artifacts
-            ctx.clearRect(clearX, clearY, clearSize, clearSize);
+            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
             // Reset activeCircle and spawn next circle or end game
             circlesPopped++;
