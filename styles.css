@@ -160,6 +160,14 @@ table th {
    7. Form Styles
    ========================= */
 
+/* Leaderboard Emoji Styling */
+.leaderboard-emoji {
+    font-size: 1.2rem;
+    vertical-align: middle;
+    margin-left: 5px;
+    cursor: default; /* Prevents text selection cursor */
+}
+
 /* Form Container */
 form {
     margin-top: 1.5rem;
