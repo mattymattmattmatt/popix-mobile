@@ -14,7 +14,8 @@
 /* Prevent Scroll Bars on Body */
 body {
     font-family: Arial, sans-serif;
-    background-color: #ffffff; /* White background */
+    background-color: #ffffff; /* Light background */
+    color: #000000; /* Dark text */
     position: relative;
     height: 100vh;
     overflow: hidden; /* Prevent scroll bars */
@@ -142,31 +143,28 @@ table th {
     background-color: #da190b;
 }
 
-/* =========================
-   10. End Game Screen Specific Styles
-   ========================= */
-
-/* Leaderboard Title Styling */
-.leaderboard-title {
-    margin-top: 2rem; /* Adds a 2rem gap above the Leaderboard heading */
+/* Theme Toggle Button (Optional) */
+#themeToggle {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #555555;
+    color: #ffffff;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
 }
 
-/* Try Again Button Styling */
-#tryAgainButton {
-    margin-bottom: 1.5rem; /* Adds a 1.5rem gap below the Try Again button */
+#themeToggle:hover {
+    background-color: #333333;
 }
 
 /* =========================
    7. Form Styles
    ========================= */
-
-/* Leaderboard Emoji Styling */
-.leaderboard-emoji {
-    font-size: 1.2rem;
-    vertical-align: middle;
-    margin-left: 5px;
-    cursor: default; /* Prevents text selection cursor */
-}
 
 /* Form Container */
 form {
@@ -211,7 +209,7 @@ form button.btn {
 
 /* Game Canvas */
 #gameCanvas {
-    background-color: #ffffff;
+    background-color: transparent; /* Transparent background */
     touch-action: none; /* Prevent touch actions like scrolling */
     margin: 0 auto; /* Center the canvas */
     width: 90vw; /* Responsive width */
@@ -270,16 +268,21 @@ form button.btn {
    10. End Game Screen Specific Styles
    ========================= */
 
-/* End Game Time and Penalty */
-#endGameTime {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
+/* Leaderboard Title Styling */
+.leaderboard-title {
+    margin-top: 2rem; /* Adds a 2rem gap above the Leaderboard heading */
+    color: #000000; /* Ensure title is visible in light mode */
 }
 
-#endGamePenalty {
-    font-size: 1.2rem;
-    color: red;
-    margin-bottom: 1rem;
+@media (prefers-color-scheme: dark) {
+    .leaderboard-title {
+        color: #ffffff; /* Ensure title is visible in dark mode */
+    }
+}
+
+/* Try Again Button Styling */
+#tryAgainButton {
+    margin-bottom: 1.5rem; /* Adds a 1.5rem gap below the Try Again button */
 }
 
 /* =========================
@@ -342,4 +345,84 @@ form button.btn {
     .modal-content {
         margin: 10% auto; /* Consistent top margin */
     }
+}
+
+/* Dark Mode Styles (continued from earlier) */
+@media (prefers-color-scheme: dark) {
+    /* Body Background and Text Color */
+    body {
+        background-color: #121212; /* Dark background */
+        color: #ffffff; /* Light text */
+    }
+
+    /* Button Styles */
+    .btn {
+        background-color: #1f1f1f; /* Dark button background */
+        color: #ffffff; /* Light button text */
+        border: 1px solid #ffffff; /* Optional: Light border for buttons */
+    }
+
+    .btn:hover {
+        background-color: #333333; /* Slightly lighter on hover */
+    }
+
+    /* Leaderboard Table */
+    table {
+        background-color: #1e1e1e; /* Dark table background */
+        color: #ffffff; /* Light table text */
+        border: 1px solid #444444; /* Darker border */
+    }
+
+    table th {
+        background-color: #2c2c2c; /* Darker header */
+    }
+
+    /* Penalty Text Styling */
+    .penalty {
+        color: #ff6b6b; /* Lighter red for visibility */
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        background-color: #1e1e1e; /* Dark modal background */
+        color: #ffffff; /* Light modal text */
+        border: 1px solid #444444; /* Darker border */
+    }
+
+    /* Leaderboard Title */
+    .leaderboard-title {
+        color: #ffffff; /* Ensure title is visible */
+    }
+
+    /* Rules Modal Text */
+    #rulesModal p {
+        color: #ffffff;
+    }
+
+    /* Theme Toggle Button in Dark Mode */
+    #themeToggle {
+        background-color: #555555;
+        color: #ffffff;
+    }
+
+    #themeToggle:hover {
+        background-color: #333333;
+    }
+}
+
+/* Leaderboard Emoji Styling (Optional for Separate Emojis) */
+.leaderboard-emoji {
+    font-size: 1.2rem; /* Adjust the size as needed */
+    vertical-align: middle; /* Aligns the emoji vertically with the text */
+    margin-left: 5px; /* Space between name and emoji */
+    cursor: default; /* Prevents text selection cursor */
+}
+
+/* Leaderboard Flag Emoji Image Styling (Optional for Image Emojis) */
+.leaderboard-flag-img {
+    width: 20px; /* Adjust size as needed */
+    height: 20px;
+    margin-left: 5px; /* Space between name and emoji */
+    vertical-align: middle; /* Aligns the image vertically with the text */
+    cursor: default; /* Prevents text selection cursor */
 }
