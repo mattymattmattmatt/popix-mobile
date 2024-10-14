@@ -441,14 +441,11 @@ gameCanvas.addEventListener('pointerdown', (e) => {
 
 // Updated Animation Function
 function animatePop(circle) {
-    isAnimating = true; // Set flag to indicate animation is in progress
-    const duration = 100; // in ms
+    isAnimating = true;
+    const duration = 100; // Animation duration in milliseconds
     const start = performance.now();
 
-    // Define the maximum scale factor
-    const maxScale = 2; // Scale up to twice the size
-
-    // Store initial circle properties
+    // Store initial properties
     const initialX = circle.x;
     const initialY = circle.y;
     const initialRadius = circle.radius;
@@ -458,22 +455,28 @@ function animatePop(circle) {
         const elapsed = time - start;
         let progress = Math.min(elapsed / duration, 1);
 
-        // Apply an easing function for a smoother animation (easeOutQuad)
+        // Apply easing function for smoother animation
         progress = easeOutQuad(progress);
 
-        const scale = 1 + progress * (maxScale - 1); // Linear scaling with easing
-        const opacity = 1 - progress; // Fade out
+        const scale = 1 + progress * 0.5; // Scale up to 1.5 times
+        const opacity = 1 - progress;     // Fade out
 
         // Calculate the scaled radius
         const scaledRadius = initialRadius * scale;
 
-        // Clear the entire canvas
-        ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+        // Calculate the area to clear (add a small buffer)
+        const clearRadius = scaledRadius + 2;
+        ctx.clearRect(
+            initialX - clearRadius,
+            initialY - clearRadius,
+            clearRadius * 2,
+            clearRadius * 2
+        );
 
-        // Redraw the animated circle
+        // Draw the scaled circle
         ctx.beginPath();
         ctx.arc(initialX, initialY, scaledRadius, 0, 2 * Math.PI);
-        ctx.fillStyle = `rgba(255, 87, 34, ${opacity})`; // #FF5722 with dynamic opacity
+        ctx.fillStyle = `rgba(255, 87, 34, ${opacity})`;
         ctx.fill();
         ctx.closePath();
 
@@ -481,25 +484,31 @@ function animatePop(circle) {
             requestAnimationFrame(animateFrame);
         } else {
             // Final clear to remove any residual artifacts
-            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            ctx.clearRect(
+                initialX - clearRadius,
+                initialY - clearRadius,
+                clearRadius * 2,
+                clearRadius * 2
+            );
 
-            // Reset activeCircle and spawn next circle or end game
+            // Reset activeCircle and proceed
             circlesPopped++;
             activeCircle = null;
 
             if (circlesPopped < totalCircles) {
-                currentCount--; // Decrement the countdown
+                currentCount--;
                 createCircle();
             } else {
                 endGame();
             }
 
-            isAnimating = false; // Reset animation flag
+            isAnimating = false;
         }
     }
 
     requestAnimationFrame(animateFrame);
 }
+
 
 // Easing Function (easeOutQuad)
 function easeOutQuad(t) {
