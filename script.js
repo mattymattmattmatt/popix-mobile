@@ -215,10 +215,25 @@ function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, 
                 rankCell.textContent = index + 1;
                 row.appendChild(rankCell);
 
-                // Name Cell
-                const nameCell = document.createElement('td');
-                nameCell.textContent = entry.name;
-                row.appendChild(nameCell);
+                // Name Cell with Cake Emoji and Enhancements
+const nameCell = document.createElement('td');
+if (entry.name === 'Guihlem') {
+    nameCell.textContent = entry.name;
+    
+    // Create and style the emoji
+    const cakeEmoji = document.createElement('span');
+    cakeEmoji.textContent = ' 🧁';
+    cakeEmoji.title = 'Happy Birthday, Guihlem!';
+    cakeEmoji.classList.add('leaderboard-emoji');
+    
+    nameCell.appendChild(cakeEmoji);
+    
+    // Highlight the entire row
+    row.style.backgroundColor = '#ffe0b2'; // Light orange background
+} else {
+    nameCell.textContent = entry.name;
+}
+row.appendChild(nameCell);
 
                 // Time Cell
                 const timeCell = document.createElement('td');
