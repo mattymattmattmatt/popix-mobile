@@ -1,13 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Popix Mobile</title>
-    <!-- Link to CSS -->
     <link rel="stylesheet" href="styles.css">
-
     <!-- Define Favicon -->
     <link rel="icon" type="image/png" href="assets/images/favicon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
@@ -16,12 +12,13 @@
 </head>
 <body>
     <!-- Timer Display -->
-    <div id="timer">Time: 0.00s</div>
+    <div id="timer"></div>
 
-    <!-- Leaderboard Screen -->
+    <!-- Main Menu Screen -->
     <div id="leaderboardScreen" class="screen active">
-        <img src="assets/images/PopixMobile.jpg" alt="Popix Mobile Logo" id="gameTitle">
-        <h1>Leaderboard</h1>
+        <img id="gameTitle" src="assets/images/PopixMobile.jpg" alt="Popix Mobile">
+
+        <!-- Leaderboard Table -->
         <table>
             <thead>
                 <tr>
@@ -32,13 +29,17 @@
                 </tr>
             </thead>
             <tbody id="leaderboardBody">
-                <!-- Leaderboard entries will be inserted here -->
+                <!-- Leaderboard entries will be populated here -->
             </tbody>
         </table>
+
+        <!-- Button Group -->
         <div class="button-group">
             <button id="startGameButton" class="btn">Start Game</button>
             <button id="rulesButton" class="btn">Rules</button>
             <button id="resetScoreButton" class="btn reset-btn">Reset Leaderboard</button>
+            <!-- Theme Toggle Button -->
+            <button id="themeToggle" class="btn">Toggle Theme</button>
         </div>
     </div>
 
@@ -47,59 +48,59 @@
         <canvas id="gameCanvas"></canvas>
     </div>
 
-   <!-- End Game Screen -->
-<div id="endGameScreen" class="screen">
-    <img src="assets/images/PopixMobile.jpg" alt="Popix Mobile Logo" id="gameTitleEnd">
-    <h2>Game Over</h2>
-    <!-- Final Time Display -->
-    <p id="endGameTime">Your Time: 0.00s</p>
-    <!-- Penalty Display -->
-    <p id="endGamePenalty">Penalty: +0.0s</p>
-    
-    <!-- Name Submission Form (Initially Visible) -->
-    <form id="nameForm">
-        <label for="playerName">Enter Your Name:</label>
-        <input type="text" id="playerName" name="playerName" required>
-        <button type="submit" class="btn">Submit Score</button>
-    </form>
-    
-    <!-- Skip Button (Initially Visible) -->
-    <button id="skipButton" class="btn">Skip</button>
-    
-    <!-- Try Again Button (Initially Hidden) -->
-    <button id="tryAgainButton" class="btn" style="display: none;">Try Again</button>
-    
-    <!-- Leaderboard Heading with Added Class -->
-    <h2 class="leaderboard-title">Leaderboard</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Name</th>
-                <th>Time (s)</th>
-                <th>Penalty</th>
-            </tr>
-        </thead>
-        <tbody id="endGameLeaderboardBody">
-            <!-- Leaderboard entries will be inserted here -->
-        </tbody>
-    </table>
-</div>
+    <!-- End Game Screen -->
+    <div id="endGameScreen" class="screen">
+        <img id="gameTitleEnd" src="assets/images/PopixMobile.jpg" alt="Popix Mobile">
+        <div id="endGameTime"></div>
+        <div id="endGamePenalty"></div>
+
+        <!-- Name Submission Form -->
+        <form id="nameForm">
+            <label for="playerName">Enter Your Name:</label>
+            <input type="text" id="playerName" name="playerName" maxlength="10" required>
+            <button type="submit" class="btn">Submit Score</button>
+        </form>
+
+        <!-- Skip Button -->
+        <button id="skipButton" class="btn">Skip</button>
+
+        <!-- Try Again Button -->
+        <button id="tryAgainButton" class="btn">Try Again</button>
+
+        <!-- Leaderboard Table -->
+        <h2 class="leaderboard-title">Leaderboard</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Time (s)</th>
+                    <th>Penalty</th>
+                </tr>
+            </thead>
+            <tbody id="endGameLeaderboardBody">
+                <!-- Leaderboard entries will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
     <!-- Rules Modal -->
     <div id="rulesModal" class="modal">
         <div class="modal-content">
             <span id="closeRulesButton" class="close-button">&times;</span>
             <h2>Game Rules</h2>
+            <p>Welcome to Popix Mobile!</p>
+            <p>Your objective is to pop all the circles as quickly as possible.</p>
             <ul>
-                <li>Tap on the circles as quickly as possible to pop them.</li>
-                <li>Each missed click adds a time penalty of +0.50s.</li>
-                <li>Try to achieve the best time on the leaderboard!</li>
-                <li>Be careful not to click outside the circles.</li>
+                <li>Tap on the circles in order from 20 down to 1.</li>
+                <li>Each missed tap adds a 0.5-second penalty to your final time.</li>
+                <li>Try to achieve the fastest time possible!</li>
             </ul>
+            <p>Good luck and have fun!</p>
         </div>
     </div>
 
-    <!-- Link to JavaScript -->
-    <script src="script.js" type="module"></script>
+    <!-- Scripts -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>
