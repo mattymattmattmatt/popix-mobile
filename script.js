@@ -102,28 +102,17 @@ function updateGameTitleImage() {
 // Function to calculate circle diameter based on screen size
 function calculateCircleDiameter() {
     const minDimension = Math.min(window.innerWidth, window.innerHeight);
-    // Set circle diameter to 15% of the smaller screen dimension
-    return Math.floor(minDimension * 0.15);
+    return Math.floor(minDimension * 0.2); // 20% of the smaller screen dimension
 }
 
 // Set Canvas Size to Fill Screen and Calculate Circle Size
 function resizeCanvas() {
-    const dpr = window.devicePixelRatio || 1;
-    const displayWidth = window.innerWidth;
-    const displayHeight = window.innerHeight;
-
-    gameCanvas.style.width = `${displayWidth}px`;
-    gameCanvas.style.height = `${displayHeight}px`;
-
-    gameCanvas.width = displayWidth * dpr;
-    gameCanvas.height = displayHeight * dpr;
-
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.scale(dpr, dpr);
+    gameCanvas.width = window.innerWidth;
+    gameCanvas.height = window.innerHeight;
 
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
-    // Recalculate circle diameter based on new screen size
+    // Recalculate circle diameter
     circlesDiameter = calculateCircleDiameter();
 
     if (activeCircle) {
@@ -183,8 +172,8 @@ function getRandomPosition() {
     const maxAttempts = 100;
 
     do {
-        x = Math.random() * (gameCanvas.width / (window.devicePixelRatio || 1) - 2 * padding) + padding;
-        y = Math.random() * (gameCanvas.height / (window.devicePixelRatio || 1) - 2 * padding) + padding;
+        x = Math.random() * (screenWidth - 2 * padding) + padding;
+        y = Math.random() * (screenHeight - 2 * padding) + padding;
         attempts++;
         if (attempts > maxAttempts) {
             console.warn('Max attempts reached. Placing circle without full spacing.');
@@ -412,8 +401,8 @@ function handlePointerDown(e) {
     const scaleX = gameCanvas.width / rect.width;
     const scaleY = gameCanvas.height / rect.height;
 
-    const clickX = (e.clientX - rect.left) * scaleX / (window.devicePixelRatio || 1);
-    const clickY = (e.clientY - rect.top) * scaleY / (window.devicePixelRatio || 1);
+    const clickX = (e.clientX - rect.left) * scaleX;
+    const clickY = (e.clientY - rect.top) * scaleY;
 
     if (activeCircle && activeCircle.isClicked(clickX, clickY)) {
         // Vibrate on successful pop
@@ -439,13 +428,16 @@ gameCanvas.addEventListener('pointerdown', (e) => {
     handlePointerDown(e);
 });
 
-// Updated Animation Function
+// Reverted Animation Function
 function animatePop(circle) {
-    isAnimating = true;
-    const duration = 25; // Animation duration in milliseconds
+    isAnimating = true; // Set flag to indicate animation is in progress
+    const duration = 100; // in ms
     const start = performance.now();
 
-    // Store initial properties
+    // Define the maximum scale factor
+    const maxScale = 1.5; // Scale up to 1.5 times
+
+    // Store initial circle properties
     const initialX = circle.x;
     const initialY = circle.y;
     const initialRadius = circle.radius;
@@ -455,28 +447,22 @@ function animatePop(circle) {
         const elapsed = time - start;
         let progress = Math.min(elapsed / duration, 1);
 
-        // Apply easing function for smoother animation
+        // Apply an easing function for a smoother animation (easeOutQuad)
         progress = easeOutQuad(progress);
 
-        const scale = 1 + progress * 0.5; // Scale up to 1.5 times
-        const opacity = 1 - progress;     // Fade out
+        const scale = 1 + progress * (maxScale - 1); // Scale up
+        const opacity = 1 - progress; // Fade out
 
         // Calculate the scaled radius
         const scaledRadius = initialRadius * scale;
 
-        // Calculate the area to clear (add a small buffer)
-        const clearRadius = scaledRadius + 2;
-        ctx.clearRect(
-            initialX - clearRadius,
-            initialY - clearRadius,
-            clearRadius * 2,
-            clearRadius * 2
-        );
+        // Clear the canvas
+        ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
         // Draw the scaled circle
         ctx.beginPath();
         ctx.arc(initialX, initialY, scaledRadius, 0, 2 * Math.PI);
-        ctx.fillStyle = `rgba(255, 87, 34, ${opacity})`;
+        ctx.fillStyle = `rgba(255, 87, 34, ${opacity})`; // #FF5722 with dynamic opacity
         ctx.fill();
         ctx.closePath();
 
@@ -484,12 +470,7 @@ function animatePop(circle) {
             requestAnimationFrame(animateFrame);
         } else {
             // Final clear to remove any residual artifacts
-            ctx.clearRect(
-                initialX - clearRadius,
-                initialY - clearRadius,
-                clearRadius * 2,
-                clearRadius * 2
-            );
+            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
             // Reset activeCircle and proceed
             circlesPopped++;
@@ -502,13 +483,12 @@ function animatePop(circle) {
                 endGame();
             }
 
-            isAnimating = false;
+            isAnimating = false; // Reset animation flag
         }
     }
 
     requestAnimationFrame(animateFrame);
 }
-
 
 // Easing Function (easeOutQuad)
 function easeOutQuad(t) {
