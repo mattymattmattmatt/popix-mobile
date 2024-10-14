@@ -259,10 +259,10 @@ form button.btn {
     background-color: #ffffff;
     touch-action: none; /* Prevent touch actions like scrolling */
     margin: 0 auto; /* Center the canvas */
-    width: 90vw; /* Responsive width */
-    height: 70vh; /* Responsive height */
+    width: 100vw; /* Full viewport width */
+    height: 100vh; /* Full viewport height */
     border: none; /* Removed border */
-    border-radius: 0.5rem;
+    border-radius: 0; /* No border radius */
     display: block; /* Ensure canvas is treated as a block element */
 }
 
@@ -370,12 +370,6 @@ form button.btn {
 
 /* Adjustments for Screens with Maximum Width of 768px (e.g., Tablets and Small Devices) */
 @media (max-width: 768px) {
-    /* Canvas Adjustments */
-    #gameCanvas {
-        width: 95vw;
-        height: 60vh;
-    }
-
     /* Leaderboard Tables */
     table {
         width: 100%;
@@ -399,12 +393,6 @@ form button.btn {
 
 /* Adjustments for Landscape Orientation on Larger Screens (Minimum Width of 769px) */
 @media (orientation: landscape) and (min-width: 769px) {
-    /* Canvas Adjustments */
-    #gameCanvas {
-        width: 80vw;
-        height: 80vh;
-    }
-
     /* Leaderboard Tables */
     table {
         width: 80%;
