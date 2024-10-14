@@ -22,11 +22,9 @@ body {
 }
 
 /* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-    body {
-        background-color: #121212; /* Dark background */
-        color: #ffffff; /* Light text */
-    }
+[data-theme="dark"] body {
+    background-color: #121212; /* Dark background */
+    color: #ffffff; /* Light text */
 }
 
 /* =========================
@@ -45,10 +43,8 @@ body {
 }
 
 /* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-    #timer {
-        color: #ffffff; /* Ensure timer text is visible */
-    }
+[data-theme="dark"] #timer {
+    color: #ffffff; /* Ensure timer text is visible */
 }
 
 /* =========================
@@ -72,10 +68,8 @@ body {
 }
 
 /* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-    .screen {
-        background-color: rgba(18, 18, 18, 0.95); /* Dark background with transparency */
-    }
+[data-theme="dark"] .screen {
+    background-color: rgba(18, 18, 18, 0.95); /* Dark background with transparency */
 }
 
 /* Active Screen */
@@ -109,11 +103,9 @@ table {
 }
 
 /* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-    table {
-        background-color: #1e1e1e; /* Dark table background */
-        color: #ffffff; /* Light table text */
-    }
+[data-theme="dark"] table {
+    background-color: #1e1e1e; /* Dark table background */
+    color: #ffffff; /* Light table text */
 }
 
 /* Table Headers and Cells */
@@ -125,10 +117,8 @@ table th, table td {
 }
 
 /* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-    table th, table td {
-        border: 1px solid #444;
-    }
+[data-theme="dark"] table th, [data-theme="dark"] table td {
+    border: 1px solid #444;
 }
 
 /* Table Header Background */
@@ -137,10 +127,8 @@ table th {
 }
 
 /* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-    table th {
-        background-color: #2a2a2a;
-    }
+[data-theme="dark"] table th {
+    background-color: #2a2a2a;
 }
 
 /* Penalty Text Styling */
@@ -149,10 +137,8 @@ table th {
 }
 
 /* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-    .penalty {
-        color: #ff6b6b; /* Lighter red for visibility in dark mode */
-    }
+[data-theme="dark"] .penalty {
+    color: #ff6b6b; /* Lighter red for visibility in dark mode */
 }
 
 /* =========================
@@ -182,11 +168,9 @@ table th {
 }
 
 /* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-    .btn {
-        background-color: #1f1f1f; /* Dark button background */
-        color: #ffffff;
-    }
+[data-theme="dark"] .btn {
+    background-color: #1f1f1f; /* Dark button background */
+    color: #ffffff;
 }
 
 /* Button Hover Effect */
@@ -195,10 +179,8 @@ table th {
 }
 
 /* Dark Mode Hover Effect */
-@media (prefers-color-scheme: dark) {
-    .btn:hover {
-        background-color: #333333;
-    }
+[data-theme="dark"] .btn:hover {
+    background-color: #333333;
 }
 
 /* Reset Button Specific Styles */
@@ -207,10 +189,8 @@ table th {
 }
 
 /* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-    .reset-btn {
-        background-color: #b71c1c; /* Darker red */
-    }
+[data-theme="dark"] .reset-btn {
+    background-color: #b71c1c; /* Darker red */
 }
 
 .reset-btn:hover {
@@ -218,10 +198,8 @@ table th {
 }
 
 /* Dark Mode Hover Effect */
-@media (prefers-color-scheme: dark) {
-    .reset-btn:hover {
-        background-color: #c62828;
-    }
+[data-theme="dark"] .reset-btn:hover {
+    background-color: #c62828;
 }
 
 /* =========================
@@ -258,12 +236,10 @@ form input[type="text"] {
 }
 
 /* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-    form input[type="text"] {
-        background-color: #1e1e1e;
-        color: #ffffff;
-        border: 1px solid #444;
-    }
+[data-theme="dark"] form input[type="text"] {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border: 1px solid #444;
 }
 
 /* Submit Button within Form */
@@ -291,10 +267,8 @@ form button.btn {
 }
 
 /* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-    #gameCanvas {
-        background-color: #121212; /* Dark background */
-    }
+[data-theme="dark"] #gameCanvas {
+    background-color: #121212; /* Dark background */
 }
 
 /* =========================
@@ -327,12 +301,10 @@ form button.btn {
 }
 
 /* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-    .modal-content {
-        background-color: #1e1e1e;
-        border: 1px solid #444;
-        color: #ffffff;
-    }
+[data-theme="dark"] .modal-content {
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+    color: #ffffff;
 }
 
 /* Close Button within Modal */
@@ -352,15 +324,13 @@ form button.btn {
 }
 
 /* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-    .close-button {
-        color: #ccc;
-    }
+[data-theme="dark"] .close-button {
+    color: #ccc;
+}
 
-    .close-button:hover,
-    .close-button:focus {
-        color: #fff;
-    }
+[data-theme="dark"] .close-button:hover,
+[data-theme="dark"] .close-button:focus {
+    color: #fff;
 }
 
 /* =========================
@@ -380,10 +350,8 @@ form button.btn {
 }
 
 /* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-    #endGamePenalty {
-        color: #ff6b6b; /* Lighter red for visibility in dark mode */
-    }
+[data-theme="dark"] #endGamePenalty {
+    color: #ff6b6b; /* Lighter red for visibility in dark mode */
 }
 
 /* Leaderboard Title Styling */
