@@ -227,9 +227,6 @@ if (entry.name === 'Guihlem') {
     cakeEmoji.classList.add('leaderboard-emoji');
     
     nameCell.appendChild(cakeEmoji);
-    
-    // Highlight the entire row
-    row.style.backgroundColor = '#ffe0b2'; // Light orange background
 } else {
     nameCell.textContent = entry.name;
 }
