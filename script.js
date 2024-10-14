@@ -222,7 +222,7 @@ if (entry.name === 'Guihlem') {
     
     // Create and style the emoji
     const cakeEmoji = document.createElement('span');
-    cakeEmoji.textContent = ' alt="🇫🇷"></span> 🧁';
+    cakeEmoji.textContent = ' 🧁';
     cakeEmoji.title = 'Happy Birthday, Guihlem!';
     cakeEmoji.classList.add('leaderboard-emoji');
     
