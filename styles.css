@@ -1,47 +1,47 @@
 /* styles.css */
 
-/* =========================
-   1. General Reset
-   ========================= */
-
-/* Reset Margins and Padding for All Elements */
+/* General Reset */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Prevent Scroll Bars on Body */
+/* Body Styles */
 body {
     font-family: Arial, sans-serif;
-    background-color: #ffffff; /* White background */
+    background-color: #ffffff;
+    color: #000000;
     position: relative;
     height: 100vh;
-    overflow: hidden; /* Prevent scroll bars */
+    overflow: hidden;
 }
 
-/* =========================
-   2. Timer Display
-   ========================= */
+/* Dark Mode Styles */
+[data-theme="dark"] body {
+    background-color: #121212;
+    color: #ffffff;
+}
 
 /* Timer Display */
 #timer {
     position: absolute;
     top: 1rem;
     left: 1rem;
-    font-size: 1.5rem;
+    font-size: 2rem; /* Increased font size */
     font-weight: bold;
     display: none; /* Hidden by default */
     z-index: 1000;
 }
 
-/* =========================
-   3. Screens
-   ========================= */
+/* Dark Mode Timer Text */
+[data-theme="dark"] #timer {
+    color: #ffffff;
+}
 
-/* Common Styles for All Screens */
+/* Screens */
 .screen {
-    display: none; /* Hide all screens by default */
+    display: none;
     width: 100%;
     height: 100%;
     flex-direction: column;
@@ -51,39 +51,41 @@ body {
     top: 0;
     left: 0;
     padding: 2rem;
-    background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent background */
-    overflow-y: auto; /* Enable vertical scrolling if content overflows */
+    background-color: rgba(255, 255, 255, 0.95);
+    overflow-y: auto;
 }
 
-/* Active Screen */
+/* Dark Mode Screen Background */
+[data-theme="dark"] .screen {
+    background-color: rgba(18, 18, 18, 0.95);
+}
+
 .screen.active {
-    display: flex; /* Show active screen */
+    display: flex;
 }
-
-/* =========================
-   4. Game Title Images
-   ========================= */
 
 /* Game Title Images */
 #gameTitle, #gameTitleEnd {
     max-width: 80%;
     height: auto;
-    margin: 20px 0; /* Adds space above and below the image */
+    margin: 20px 0;
 }
 
-/* =========================
-   5. Tables
-   ========================= */
-
-/* Leaderboard Tables */
+/* Tables */
 table {
     width: 90%;
     max-width: 800px;
     border-collapse: collapse;
     margin: 1rem 0;
+    background-color: #ffffff;
+    color: #000000;
 }
 
-/* Table Headers and Cells */
+[data-theme="dark"] table {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
 table th, table td {
     padding: 0.75rem;
     text-align: center;
@@ -91,102 +93,93 @@ table th, table td {
     font-size: 1rem;
 }
 
-/* Table Header Background */
+[data-theme="dark"] table th, [data-theme="dark"] table td {
+    border: 1px solid #444;
+}
+
 table th {
     background-color: #f2f2f2;
 }
 
-/* Penalty Text Styling */
+[data-theme="dark"] table th {
+    background-color: #2a2a2a;
+}
+
 .penalty {
     color: red;
 }
 
-/* =========================
-   6. Buttons
-   ========================= */
+[data-theme="dark"] .penalty {
+    color: #ff6b6b;
+}
 
-/* Button Group for Main Menu Screen */
+/* Buttons */
 .button-group {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center; /* Centers buttons horizontally */
-    gap: 1rem; /* Defines space between buttons */
-    margin-top: 1.5rem; /* Adds space above the button group */
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
 }
 
-/* Common Button Styles */
 .btn {
     padding: 0.75rem 1.5rem;
-    background-color: #2196F3; /* Blue */
+    background-color: #2196F3;
     color: white;
     border: none;
     border-radius: 0.5rem;
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.3s ease;
-    /* Removed display and margin properties to allow Flexbox to handle alignment */
-    min-width: 120px; /* Ensures buttons aren't too small */
+    min-width: 120px;
 }
 
-/* Button Hover Effect */
+[data-theme="dark"] .btn {
+    background-color: #1f1f1f;
+    color: #ffffff;
+}
+
 .btn:hover {
     background-color: #0b7dda;
 }
 
-/* Reset Button Specific Styles */
+[data-theme="dark"] .btn:hover {
+    background-color: #333333;
+}
+
 .reset-btn {
-    background-color: #f44336; /* Red */
+    background-color: #f44336;
+}
+
+[data-theme="dark"] .reset-btn {
+    background-color: #b71c1c;
 }
 
 .reset-btn:hover {
     background-color: #da190b;
 }
 
-/* =========================
-   10. End Game Screen Specific Styles
-   ========================= */
-
-/* Leaderboard Title Styling */
-.leaderboard-title {
-    margin-top: 2rem; /* Adds a 2rem gap above the Leaderboard heading */
+[data-theme="dark"] .reset-btn:hover {
+    background-color: #c62828;
 }
 
-/* Try Again Button Styling */
-#tryAgainButton {
-    margin-bottom: 1.5rem; /* Adds a 1.5rem gap below the Try Again button */
-}
-
-/* =========================
-   7. Form Styles
-   ========================= */
-
-/* Leaderboard Emoji Styling */
-.leaderboard-emoji {
-    font-size: 1.2rem;
-    vertical-align: middle;
-    margin-left: 5px;
-    cursor: default; /* Prevents text selection cursor */
-}
-
-/* Form Container */
+/* Forms */
 form {
     margin-top: 1.5rem;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centers children horizontally */
+    align-items: center;
     width: 100%;
     max-width: 400px;
 }
 
-/* Form Labels */
 form label {
     display: block;
     margin-bottom: 0.5rem;
     font-size: 1rem;
-    text-align: center; /* Center label text */
+    text-align: center;
 }
 
-/* Text Input Fields */
 form input[type="text"] {
     padding: 0.5rem;
     width: 80%;
@@ -197,51 +190,48 @@ form input[type="text"] {
     border-radius: 0.25rem;
 }
 
-/* Submit Button within Form */
-form button.btn {
-    /* Let the button size naturally and center it within the form */
-    width: auto; /* Allows the button to size based on content */
-    max-width: 200px;
-    align-self: center; /* Centers the button within the form */
+[data-theme="dark"] form input[type="text"] {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border: 1px solid #444;
 }
 
-/* =========================
-   8. Canvas
-   ========================= */
+form button.btn {
+    width: auto;
+    max-width: 200px;
+    align-self: center;
+}
 
 /* Game Canvas */
 #gameCanvas {
     background-color: #ffffff;
-    touch-action: none; /* Prevent touch actions like scrolling */
-    margin: 0 auto; /* Center the canvas */
-    width: 90vw; /* Responsive width */
-    height: 70vh; /* Responsive height */
-    border: none; /* Removed border */
-    border-radius: 0.5rem;
-    display: block; /* Ensure canvas is treated as a block element */
+    touch-action: none;
+    margin: 0 auto;
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
-/* =========================
-   9. Modal Styles
-   ========================= */
+[data-theme="dark"] #gameCanvas {
+    background-color: #121212;
+}
 
-/* Modal Background */
+/* Modal Styles */
 .modal {
-    display: none; /* Hidden by default */
+    display: none;
     position: fixed;
-    z-index: 2000; /* Above other elements */
+    z-index: 2000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0, 0, 0, 0.5); /* Black with opacity */
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
-/* Modal Content */
 .modal-content {
     background-color: #fefefe;
-    margin: 10% auto; /* 10% from the top and centered */
+    margin: 10% auto;
     padding: 2rem;
     border: 1px solid #888;
     width: 80%;
@@ -250,7 +240,12 @@ form button.btn {
     position: relative;
 }
 
-/* Close Button within Modal */
+[data-theme="dark"] .modal-content {
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+    color: #ffffff;
+}
+
 .close-button {
     color: #aaa;
     position: absolute;
@@ -266,11 +261,16 @@ form button.btn {
     color: black;
 }
 
-/* =========================
-   10. End Game Screen Specific Styles
-   ========================= */
+[data-theme="dark"] .close-button {
+    color: #ccc;
+}
 
-/* End Game Time and Penalty */
+[data-theme="dark"] .close-button:hover,
+[data-theme="dark"] .close-button:focus {
+    color: #fff;
+}
+
+/* End Game Screen Styles */
 #endGameTime {
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
@@ -282,64 +282,51 @@ form button.btn {
     margin-bottom: 1rem;
 }
 
-/* =========================
-   11. Responsive Design
-   ========================= */
+[data-theme="dark"] #endGamePenalty {
+    color: #ff6b6b;
+}
 
-/* Adjustments for Screens with Maximum Width of 768px (e.g., Tablets and Small Devices) */
+.leaderboard-title {
+    margin-top: 2rem;
+}
+
+#tryAgainButton {
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-    /* Canvas Adjustments */
-    #gameCanvas {
-        width: 95vw;
-        height: 60vh;
-    }
-
-    /* Leaderboard Tables */
     table {
         width: 100%;
     }
 
-    /* Form Input Fields */
     form input[type="text"] {
         width: 90%;
     }
 
-    /* Form Submit Button */
     form button.btn {
         width: 70%;
     }
 
-    /* Modal Content Padding */
     .modal-content {
-        margin: 15% auto; /* Increase top margin for better visibility */
+        margin: 15% auto;
     }
 }
 
-/* Adjustments for Landscape Orientation on Larger Screens (Minimum Width of 769px) */
 @media (orientation: landscape) and (min-width: 769px) {
-    /* Canvas Adjustments */
-    #gameCanvas {
-        width: 80vw;
-        height: 80vh;
-    }
-
-    /* Leaderboard Tables */
     table {
         width: 80%;
     }
 
-    /* Form Container */
     form {
         max-width: 500px;
     }
 
-    /* Form Submit Button */
     form button.btn {
         width: 40%;
     }
 
-    /* Modal Content Padding */
     .modal-content {
-        margin: 10% auto; /* Consistent top margin */
+        margin: 10% auto;
     }
 }
