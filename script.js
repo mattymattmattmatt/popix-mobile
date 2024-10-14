@@ -25,7 +25,6 @@ const skipButton = document.getElementById('skipButton');
 const tryAgainButton = document.getElementById('tryAgainButton'); // New Button
 const timerDisplay = document.getElementById('timer');
 const endGameLeaderboardBody = document.getElementById('endGameLeaderboardBody');
-const themeToggle = document.getElementById('themeToggle'); // Theme Toggle Button
 
 const ctx = gameCanvas.getContext('2d');
 
@@ -61,10 +60,14 @@ function calculateCircleDiameter() {
 // Set Canvas Size to Fill Screen and Calculate Circle Size
 function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
-    const rect = gameCanvas.getBoundingClientRect();
+    const displayWidth = window.innerWidth;
+    const displayHeight = window.innerHeight;
 
-    gameCanvas.width = rect.width * dpr;
-    gameCanvas.height = rect.height * dpr;
+    gameCanvas.style.width = `${displayWidth}px`;
+    gameCanvas.style.height = `${displayHeight}px`;
+
+    gameCanvas.width = displayWidth * dpr;
+    gameCanvas.height = displayHeight * dpr;
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
@@ -88,24 +91,28 @@ window.addEventListener('orientationchange', resizeCanvas);
 
 // Circle Class
 class Circle {
-    constructor(x, y, count) { // Added 'count' parameter
+    constructor(x, y, count) {
         this.x = x;
         this.y = y;
         this.radius = circlesDiameter / 2;
-        this.count = count; // Initialize countdown number
+        this.count = count;
     }
 
     draw() {
         // Draw the circle
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-        ctx.fillStyle = '#000000'; // Black color
+
+        // Circle color based on system theme
+        const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        ctx.fillStyle = isDarkMode ? '#ffffff' : '#000000'; // White in dark mode, black in light mode
+
         ctx.fill();
         ctx.closePath();
 
         // Draw the countdown number
-        ctx.fillStyle = '#FFFFFF'; // White text
-        ctx.font = `${this.radius}px Arial`; // Font size proportional to circle radius
+        ctx.fillStyle = isDarkMode ? '#000000' : '#FFFFFF'; // Black text in dark mode, white in light mode
+        ctx.font = `${this.radius}px Arial`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(this.count, this.x, this.y);
@@ -121,11 +128,8 @@ class Circle {
 function getRandomPosition() {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
-    
-    // Define dynamic extra padding: 10% of screen width, capped at 50px
-    const extraPadding = Math.min(50, screenWidth * 0.1);
-    
-    const padding = circlesDiameter / 2 + 10 + extraPadding; // Existing padding + extra padding
+
+    const padding = circlesDiameter / 2 + 10;
     let x, y;
     let attempts = 0;
     const maxAttempts = 100;
@@ -136,16 +140,16 @@ function getRandomPosition() {
         attempts++;
         if (attempts > maxAttempts) {
             console.warn('Max attempts reached. Placing circle without full spacing.');
-            break; // Prevent infinite loop; place the circle anyway
+            break;
         }
-    } while (activeCircle && Math.hypot(x - activeCircle.x, y - activeCircle.y) < 2 * circlesDiameter + 20); // Ensures sufficient spacing
+    } while (activeCircle && Math.hypot(x - activeCircle.x, y - activeCircle.y) < 2 * circlesDiameter + 20);
 
     return { x, y };
 }
 
 function createCircle() {
     const pos = getRandomPosition();
-    const circle = new Circle(pos.x, pos.y, currentCount); // Pass currentCount to the Circle
+    const circle = new Circle(pos.x, pos.y, currentCount);
     activeCircle = circle;
     circle.draw();
 
@@ -210,35 +214,7 @@ function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, 
                 // Name Cell with Cake and French Flag Emojis for "Guihlem"
                 const nameCell = document.createElement('td');
                 if (entry.name === 'Cake') {
-                    // Option 1: Using Emoji as Text
                     nameCell.textContent = `${entry.name} 🧁🇫🇷`;
-
-                    // Option 2: Using Separate Text Nodes for Better Styling
-                    /*
-                    nameCell.textContent = entry.name;
-                    const cakeEmoji = document.createElement('span');
-                    cakeEmoji.textContent = ' 🧁';
-                    cakeEmoji.classList.add('leaderboard-emoji');
-                    const flagEmoji = document.createElement('span');
-                    flagEmoji.textContent = ' 🇫🇷';
-                    flagEmoji.classList.add('leaderboard-emoji');
-                    nameCell.appendChild(cakeEmoji);
-                    nameCell.appendChild(flagEmoji);
-                    */
-
-                    // Option 3: Using Image for the French Flag Emoji (More Control)
-                    /*
-                    nameCell.textContent = entry.name;
-                    const cakeEmoji = document.createElement('span');
-                    cakeEmoji.textContent = ' 🧁';
-                    cakeEmoji.classList.add('leaderboard-emoji');
-                    const flagEmojiImg = document.createElement('img');
-                    flagEmojiImg.src = 'https://twemoji.maxcdn.com/v/latest/72x72/1f1eb-1f1f7.png'; // French flag emoji image
-                    flagEmojiImg.alt = 'French Flag';
-                    flagEmojiImg.classList.add('leaderboard-flag-img');
-                    nameCell.appendChild(cakeEmoji);
-                    nameCell.appendChild(flagEmojiImg);
-                    */
                 } else {
                     nameCell.textContent = entry.name;
                 }
@@ -346,7 +322,7 @@ function endGame() {
 
     // Show end game screen with time and penalty
     endGameTime.textContent = `Your Time: ${actualTime.toFixed(2)}s`;
-    
+
     if (circlesMissed > 0) {
         endGamePenalty.textContent = `Penalty: +${totalPenalty}s`;
     } else {
@@ -415,7 +391,7 @@ gameCanvas.addEventListener('pointerdown', (e) => {
     handlePointerDown(e);
 });
 
-// Animation Function
+// Updated Animation Function
 function animatePop(circle) {
     isAnimating = true; // Set flag to indicate animation is in progress
     const duration = 100; // in ms
@@ -423,6 +399,11 @@ function animatePop(circle) {
 
     // Define the maximum scale factor
     const maxScale = 2; // Scale up to twice the size
+
+    // Store initial circle properties
+    const initialX = circle.x;
+    const initialY = circle.y;
+    const initialRadius = circle.radius;
 
     // Animation Loop
     function animateFrame(time) {
@@ -436,45 +417,30 @@ function animatePop(circle) {
         const opacity = 1 - progress; // Fade out
 
         // Calculate the scaled radius
-        const scaledRadius = circle.radius * scale;
+        const scaledRadius = initialRadius * scale;
 
-        // Calculate the bounding box
-        const clearX = circle.x - scaledRadius;
-        const clearY = circle.y - scaledRadius;
-        const clearSize = scaledRadius * 2;
+        // Clear the entire canvas
+        ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
-        // Clear the area occupied by the animated circle
-        ctx.clearRect(clearX, clearY, clearSize, clearSize);
-
-        // Draw the animated circle with scaled radius and decreasing opacity
+        // Redraw the animated circle
         ctx.beginPath();
-        ctx.arc(circle.x, circle.y, scaledRadius, 0, 2 * Math.PI);
+        ctx.arc(initialX, initialY, scaledRadius, 0, 2 * Math.PI);
         ctx.fillStyle = `rgba(255, 87, 34, ${opacity})`; // #FF5722 with dynamic opacity
         ctx.fill();
         ctx.closePath();
 
-        // Draw the flash effect during the first 30% of the animation
-        if (elapsed < duration * 0.3) { // Flash occurs during the first 30% of the animation
-            const flashProgress = elapsed / (duration * 0.3);
-            const flashOpacity = 0.7 * (1 - flashProgress); // Fade out the flash
-            ctx.fillStyle = `rgba(255, 255, 255, ${flashOpacity})`; // Semi-transparent white
-            ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
-        }
-
-        // Optional: Brief color change before popping
-        if (elapsed === 0) {
-            ctx.beginPath();
-            ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-            ctx.fillStyle = '#FF9800'; // Change to a lighter orange
-            ctx.fill();
-            ctx.closePath();
+        // Redraw the timer (if needed)
+        if (timerDisplay && timerDisplay.style.display === 'block') {
+            ctx.font = '1.5rem Arial';
+            ctx.fillStyle = '#000000';
+            ctx.fillText(`Time: ${actualTime}s`, 20, 40);
         }
 
         if (progress < 1) {
             requestAnimationFrame(animateFrame);
         } else {
             // Final clear to remove any residual artifacts
-            ctx.clearRect(clearX, clearY, clearSize, clearSize);
+            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
             // Reset activeCircle and spawn next circle or end game
             circlesPopped++;
@@ -596,34 +562,6 @@ resetScoreButton.addEventListener('click', () => {
         }
     } else {
         alert('Incorrect password. Leaderboard reset denied.');
-    }
-});
-
-// Theme Toggle Functionality
-function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-
-    // Update button text
-    if (document.body.classList.contains('dark-mode')) {
-        themeToggle.textContent = 'Light Mode';
-        localStorage.setItem('theme', 'dark');
-    } else {
-        themeToggle.textContent = 'Dark Mode';
-        localStorage.setItem('theme', 'light');
-    }
-}
-
-// Event Listener for Toggle Button
-themeToggle.addEventListener('click', toggleDarkMode);
-
-// On Page Load, check for saved theme preference
-window.addEventListener('DOMContentLoaded', () => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        themeToggle.textContent = 'Light Mode';
-    } else {
-        themeToggle.textContent = 'Dark Mode';
     }
 });
 
