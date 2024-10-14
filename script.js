@@ -25,6 +25,7 @@ const skipButton = document.getElementById('skipButton');
 const tryAgainButton = document.getElementById('tryAgainButton'); // New Button
 const timerDisplay = document.getElementById('timer');
 const endGameLeaderboardBody = document.getElementById('endGameLeaderboardBody');
+const themeToggle = document.getElementById('themeToggle'); // Theme Toggle Button
 
 const ctx = gameCanvas.getContext('2d');
 
@@ -60,17 +61,10 @@ function calculateCircleDiameter() {
 // Set Canvas Size to Fill Screen and Calculate Circle Size
 function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
-    const displayWidth = window.innerWidth;
-    const displayHeight = window.innerHeight;
+    const rect = gameCanvas.getBoundingClientRect();
 
-    // Define dynamic extra padding: 10% of screen width, capped at 50px
-    const extraPadding = Math.min(50, displayWidth * 0.1);
-    
-    gameCanvas.style.width = `${displayWidth}px`;
-    gameCanvas.style.height = `${displayHeight}px`;
-
-    gameCanvas.width = displayWidth * dpr;
-    gameCanvas.height = displayHeight * dpr;
+    gameCanvas.width = rect.width * dpr;
+    gameCanvas.height = rect.height * dpr;
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
@@ -91,8 +85,6 @@ resizeCanvas();
 // Listen for window resize and orientation change
 window.addEventListener('resize', resizeCanvas);
 window.addEventListener('orientationchange', resizeCanvas);
-
-// Removed adjustGameParameters function and its calls
 
 // Circle Class
 class Circle {
@@ -215,22 +207,42 @@ function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, 
                 rankCell.textContent = index + 1;
                 row.appendChild(rankCell);
 
-                // Name Cell with Cake Emoji and Enhancements
-const nameCell = document.createElement('td');
-if (entry.name === 'Guihlem') {
-    nameCell.textContent = entry.name;
-    
-    // Create and style the emoji
-    const cakeEmoji = document.createElement('span');
-    cakeEmoji.textContent = ' 🧁';
-    cakeEmoji.title = 'Happy Birthday, Guihlem!';
-    cakeEmoji.classList.add('leaderboard-emoji');
-    
-    nameCell.appendChild(cakeEmoji);
-} else {
-    nameCell.textContent = entry.name;
-}
-row.appendChild(nameCell);
+                // Name Cell with Cake and French Flag Emojis for "Guihlem"
+                const nameCell = document.createElement('td');
+                if (entry.name === 'Cake') {
+                    // Option 1: Using Emoji as Text
+                    nameCell.textContent = `${entry.name} 🧁🇫🇷`;
+
+                    // Option 2: Using Separate Text Nodes for Better Styling
+                    /*
+                    nameCell.textContent = entry.name;
+                    const cakeEmoji = document.createElement('span');
+                    cakeEmoji.textContent = ' 🧁';
+                    cakeEmoji.classList.add('leaderboard-emoji');
+                    const flagEmoji = document.createElement('span');
+                    flagEmoji.textContent = ' 🇫🇷';
+                    flagEmoji.classList.add('leaderboard-emoji');
+                    nameCell.appendChild(cakeEmoji);
+                    nameCell.appendChild(flagEmoji);
+                    */
+
+                    // Option 3: Using Image for the French Flag Emoji (More Control)
+                    /*
+                    nameCell.textContent = entry.name;
+                    const cakeEmoji = document.createElement('span');
+                    cakeEmoji.textContent = ' 🧁';
+                    cakeEmoji.classList.add('leaderboard-emoji');
+                    const flagEmojiImg = document.createElement('img');
+                    flagEmojiImg.src = 'https://twemoji.maxcdn.com/v/latest/72x72/1f1eb-1f1f7.png'; // French flag emoji image
+                    flagEmojiImg.alt = 'French Flag';
+                    flagEmojiImg.classList.add('leaderboard-flag-img');
+                    nameCell.appendChild(cakeEmoji);
+                    nameCell.appendChild(flagEmojiImg);
+                    */
+                } else {
+                    nameCell.textContent = entry.name;
+                }
+                row.appendChild(nameCell);
 
                 // Time Cell
                 const timeCell = document.createElement('td');
@@ -584,6 +596,34 @@ resetScoreButton.addEventListener('click', () => {
         }
     } else {
         alert('Incorrect password. Leaderboard reset denied.');
+    }
+});
+
+// Theme Toggle Functionality
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+
+    // Update button text
+    if (document.body.classList.contains('dark-mode')) {
+        themeToggle.textContent = 'Light Mode';
+        localStorage.setItem('theme', 'dark');
+    } else {
+        themeToggle.textContent = 'Dark Mode';
+        localStorage.setItem('theme', 'light');
+    }
+}
+
+// Event Listener for Toggle Button
+themeToggle.addEventListener('click', toggleDarkMode);
+
+// On Page Load, check for saved theme preference
+window.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeToggle.textContent = 'Light Mode';
+    } else {
+        themeToggle.textContent = 'Dark Mode';
     }
 });
 
