@@ -261,7 +261,7 @@ function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, 
 
                 // Name Cell with Cake and French Flag Emojis for "Guihlem"
                 const nameCell = document.createElement('td');
-                if (entry.name === 'Guihlem') {
+                if (entry.name === 'Cake') {
                     nameCell.textContent = `${entry.name} 🧁🇫🇷`;
                 } else {
                     nameCell.textContent = entry.name;
