@@ -11,44 +11,93 @@ const leaderboardScreen = document.getElementById('leaderboardScreen');
 const leaderboardBody = document.getElementById('leaderboardBody');
 const startGameButton = document.getElementById('startGameButton');
 const rulesButton = document.getElementById('rulesButton');
-const resetScoreButton = document.getElementById('resetScoreButton'); // Reset Score Button
+const resetScoreButton = document.getElementById('resetScoreButton');
 const rulesModal = document.getElementById('rulesModal');
 const closeRulesButton = document.getElementById('closeRulesButton');
 const gameScreen = document.getElementById('gameScreen');
 const gameCanvas = document.getElementById('gameCanvas');
 const endGameScreen = document.getElementById('endGameScreen');
-const endGameTime = document.getElementById('endGameTime'); // Updated ID
-const endGamePenalty = document.getElementById('endGamePenalty'); // New Element
+const endGameTime = document.getElementById('endGameTime');
+const endGamePenalty = document.getElementById('endGamePenalty');
 const nameForm = document.getElementById('nameForm');
 const playerNameInput = document.getElementById('playerName');
 const skipButton = document.getElementById('skipButton');
-const tryAgainButton = document.getElementById('tryAgainButton'); // New Button
+const tryAgainButton = document.getElementById('tryAgainButton');
 const timerDisplay = document.getElementById('timer');
 const endGameLeaderboardBody = document.getElementById('endGameLeaderboardBody');
+const themeToggleButton = document.getElementById('themeToggle');
 
+// Initialize Game Context
 const ctx = gameCanvas.getContext('2d');
 
 // Game Variables
-let totalCircles = 20; // Fixed number of circles
-let circlesDiameter = calculateCircleDiameter(); // Diameter of each circle in px (dynamic)
+let totalCircles = 20;
+let circlesDiameter = calculateCircleDiameter();
 let circlesPopped = 0;
 let circlesMissed = 0;
 let clickCount = 0;
 let timeStart = null;
 let gameTimer = null;
-let actualTime = 0.00; // in seconds
-let finalTime = 0.00; // in seconds
-let totalPenalty = 0.0; // in seconds
+let actualTime = 0.00;
+let finalTime = 0.00;
+let totalPenalty = 0.0;
 
-let currentCount = 20; // Initialize countdown starting from 20
+let currentCount = 20;
 
-// Game State
-let activeCircle = null; // Only one active circle at a time
-let isAnimating = false; // Flag to indicate if an animation is in progress
+let activeCircle = null;
+let isAnimating = false;
 
-// Debounce Variables
 let lastInteractionTime = 0;
-const debounceDuration = 150; // in ms
+const debounceDuration = 150;
+
+// Theme Management
+function applyTheme(theme) {
+    if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+    } else if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+    } else {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    }
+
+    // Update the game title image based on the current theme
+    updateGameTitleImage();
+}
+
+// Event listener for the theme toggle button
+themeToggleButton.addEventListener('click', () => {
+    let currentTheme = document.documentElement.getAttribute('data-theme');
+    if (currentTheme === 'dark') {
+        applyTheme('light');
+    } else {
+        applyTheme('dark');
+    }
+});
+
+// On page load, apply the saved theme or system preference
+let savedTheme = localStorage.getItem('theme');
+applyTheme(savedTheme);
+
+// Function to update the game title image
+function updateGameTitleImage() {
+    const gameTitleImage = document.getElementById('gameTitle');
+    const gameTitleEndImage = document.getElementById('gameTitleEnd');
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+
+    if (currentTheme === 'dark') {
+        if (gameTitleImage) gameTitleImage.src = 'assets/images/PopixMobileDark.jpg';
+        if (gameTitleEndImage) gameTitleEndImage.src = 'assets/images/PopixMobileDark.jpg';
+    } else {
+        if (gameTitleImage) gameTitleImage.src = 'assets/images/PopixMobile.jpg';
+        if (gameTitleEndImage) gameTitleEndImage.src = 'assets/images/PopixMobile.jpg';
+    }
+}
 
 // Function to calculate circle diameter based on screen size
 function calculateCircleDiameter() {
@@ -99,14 +148,13 @@ class Circle {
     }
 
     draw() {
+        // Determine theme
+        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+
         // Draw the circle
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-
-        // Circle color based on system theme
-        const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
         ctx.fillStyle = isDarkMode ? '#ffffff' : '#000000'; // White in dark mode, black in light mode
-
         ctx.fill();
         ctx.closePath();
 
@@ -213,7 +261,7 @@ function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, 
 
                 // Name Cell with Cake and French Flag Emojis for "Guihlem"
                 const nameCell = document.createElement('td');
-                if (entry.name === 'Cake') {
+                if (entry.name === 'Guihlem') {
                     nameCell.textContent = `${entry.name} 🧁🇫🇷`;
                 } else {
                     nameCell.textContent = entry.name;
@@ -428,13 +476,6 @@ function animatePop(circle) {
         ctx.fillStyle = `rgba(255, 87, 34, ${opacity})`; // #FF5722 with dynamic opacity
         ctx.fill();
         ctx.closePath();
-
-        // Redraw the timer (if needed)
-        if (timerDisplay && timerDisplay.style.display === 'block') {
-            ctx.font = '1.5rem Arial';
-            ctx.fillStyle = '#000000';
-            ctx.fillText(`Time: ${actualTime}s`, 20, 40);
-        }
 
         if (progress < 1) {
             requestAnimationFrame(animateFrame);
