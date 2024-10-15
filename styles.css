@@ -14,11 +14,17 @@
 /* Prevent Scroll Bars on Body */
 body {
     font-family: Arial, sans-serif;
-    background-color: var(--background-color, #ffffff); /* White background */
-    color: var(--text-color, #000000); /* Black text */
+    background-color: var(--background-color, #ffffff); /* White background by default */
+    color: var(--text-color, #000000); /* Black text by default */
     position: relative;
     height: 100vh;
     overflow: hidden; /* Prevent scroll bars */
+}
+
+/* Dark Mode Styles */
+[data-theme="dark"] body {
+    background-color: #121212; /* Dark background */
+    color: #ffffff; /* Light text */
 }
 
 /* =========================
@@ -122,6 +128,7 @@ table {
     margin: 1rem 0;
     background-color: var(--background-color); /* Table background based on theme */
     color: var(--text-color); /* Table text based on theme */
+    font-size: 1rem; /* Base font size */
 }
 
 /* Dark Mode Styles */
@@ -135,7 +142,7 @@ table th, table td {
     padding: 0.75rem;
     text-align: center;
     border: 1px solid #ddd;
-    font-size: 1rem;
+    font-size: 1rem; /* Base font size */
 }
 
 /* Dark Mode Styles */
@@ -395,21 +402,56 @@ form button.btn {
     /* Leaderboard Tables */
     table {
         width: 100%;
+        font-size: 1.1rem; /* Increased font size for better readability */
     }
 
     /* Form Input Fields */
     form input[type="text"] {
         width: 90%;
+        font-size: 1.1rem; /* Increased font size */
     }
 
     /* Form Submit Button */
     form button.btn {
         width: 70%;
+        font-size: 1.1rem; /* Increased font size */
     }
 
     /* Modal Content Padding */
     .modal-content {
         margin: 15% auto; /* Increase top margin for better visibility */
+        font-size: 1.1rem; /* Increased font size within modal */
+    }
+
+    /* Timer Display */
+    #timer {
+        font-size: 1.8rem; /* Increased font size for better visibility */
+    }
+
+    /* Table Headers and Cells */
+    table th, table td {
+        padding: 1rem;
+        font-size: 1.1rem; /* Increased font size */
+    }
+
+    /* Buttons */
+    .btn {
+        font-size: 1.1rem; /* Increased font size */
+        padding: 0.85rem 1.75rem; /* Increased padding for better touch targets */
+    }
+
+    /* Form Labels */
+    form label {
+        font-size: 1.1rem; /* Increased font size */
+    }
+
+    /* End Game Time and Penalty */
+    #endGameTime {
+        font-size: 1.7rem; /* Increased font size */
+    }
+
+    #endGamePenalty {
+        font-size: 1.3rem; /* Increased font size */
     }
 }
 
@@ -424,6 +466,7 @@ form button.btn {
     /* Leaderboard Tables */
     table {
         width: 80%;
+        font-size: 1.1rem; /* Slightly increased font size */
     }
 
     /* Form Container */
@@ -434,10 +477,43 @@ form button.btn {
     /* Form Submit Button */
     form button.btn {
         width: 40%;
+        font-size: 1.1rem; /* Slightly increased font size */
     }
 
     /* Modal Content Padding */
     .modal-content {
         margin: 10% auto; /* Consistent top margin */
+        font-size: 1.1rem; /* Increased font size within modal */
+    }
+
+    /* Timer Display */
+    #timer {
+        font-size: 1.8rem; /* Increased font size for better visibility */
+    }
+
+    /* Table Headers and Cells */
+    table th, table td {
+        padding: 1rem;
+        font-size: 1.1rem; /* Increased font size */
+    }
+
+    /* Buttons */
+    .btn {
+        font-size: 1.1rem; /* Increased font size */
+        padding: 0.85rem 1.75rem; /* Increased padding for better touch targets */
+    }
+
+    /* Form Labels */
+    form label {
+        font-size: 1.1rem; /* Increased font size */
+    }
+
+    /* End Game Time and Penalty */
+    #endGameTime {
+        font-size: 1.7rem; /* Increased font size */
+    }
+
+    #endGamePenalty {
+        font-size: 1.3rem; /* Increased font size */
     }
 }
