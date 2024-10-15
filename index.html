@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,11 +17,7 @@
 
     <!-- Main Menu Screen -->
     <div id="leaderboardScreen" class="screen active">
-        <!-- Game Title with Picture Element for Automatic Image Switching -->
-        <picture>
-            <source srcset="assets/images/PopixMobileDark.jpg" media="(prefers-color-scheme: dark)">
-            <img id="gameTitle" src="assets/images/PopixMobile.jpg" alt="Popix Mobile">
-        </picture>
+        <img id="gameTitle" src="assets/images/PopixMobile.jpg" alt="Popix Mobile">
 
         <!-- Leaderboard Table -->
         <table>
@@ -42,10 +39,8 @@
             <button id="startGameButton" class="btn">Start Game</button>
             <button id="rulesButton" class="btn">Rules</button>
             <button id="resetScoreButton" class="btn reset-btn">Reset Leaderboard</button>
-            <!-- Theme Toggle Button with ARIA Label and Icon -->
-            <button id="themeToggle" class="btn" aria-label="Toggle Dark Mode">
-                🌓
-            </button>
+            <!-- Theme Toggle Button -->
+            <button id="themeToggle" class="btn">Toggle Theme</button>
         </div>
     </div>
 
@@ -56,11 +51,7 @@
 
     <!-- End Game Screen -->
     <div id="endGameScreen" class="screen">
-        <!-- Game Title End with Picture Element for Automatic Image Switching -->
-        <picture>
-            <source srcset="assets/images/PopixMobileDark.jpg" media="(prefers-color-scheme: dark)">
-            <img id="gameTitleEnd" src="assets/images/PopixMobile.jpg" alt="Popix Mobile">
-        </picture>
+        <img id="gameTitleEnd" src="assets/images/PopixMobile.jpg" alt="Popix Mobile">
         <div id="endGameTime"></div>
         <div id="endGamePenalty"></div>
 
