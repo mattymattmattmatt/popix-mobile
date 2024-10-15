@@ -51,10 +51,8 @@ let currentCount = 20;
 let activeCircle = null;
 
 // ------------------------
-// Debounce Variables
+// Removed Debounce Variables
 // ------------------------
-let lastInteractionTime = 0; // Tracks the timestamp of the last interaction
-const debounceDuration = 150; // Time in milliseconds to debounce interactions
 
 // Theme Management
 function applyTheme(theme) {
@@ -447,12 +445,7 @@ function endGame() {
 
 // Handle Pointer Events (Unified for Mouse and Touch)
 function handlePointerDown(e) {
-    // Debounce to prevent rapid interactions
-    const currentTime = Date.now();
-    if (currentTime - lastInteractionTime < debounceDuration) {
-        return; // Ignore this interaction
-    }
-    lastInteractionTime = currentTime;
+    // Removed debounce logic to allow multiple rapid clicks
 
     // Calculate click/touch coordinates
     const rect = gameCanvas.getBoundingClientRect();
@@ -521,14 +514,14 @@ function flashCircle(circle) {
     const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
 
     // Change fill color to indicate pop
-    ctx.fillStyle = isDarkMode ? '#FFD700' : '#FFD700'; // Gold color
+    ctx.fillStyle = '#FFD700'; // Gold color
     ctx.beginPath();
     ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
     ctx.fill();
     ctx.closePath();
 
     // Change text color
-    ctx.fillStyle = isDarkMode ? '#000000' : '#000000'; // Black text
+    ctx.fillStyle = '#000000'; // Black text
     ctx.font = `${circle.radius}px Arial`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
