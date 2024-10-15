@@ -67,6 +67,7 @@ let activeCircle = null;
 let isFlashing = false;
 let flashEndTime = 0;
 const flashDuration = 100; // in milliseconds
+let lastFlashCircle = null;
 
 // Theme Management
 function applyTheme(theme) {
@@ -210,9 +211,6 @@ class Circle {
 
 // Utility Functions
 function getRandomPosition() {
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-
     const padding = circlesDiameter / 2 + 10;
     let x, y;
     let attempts = 0;
@@ -365,22 +363,24 @@ function render(currentTime) {
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
     // Handle Flashing Effect
-    if (isFlashing) {
+    if (isFlashing && lastFlashCircle) {
         if (currentTime < flashEndTime) {
-            ctx.fillStyle = '#FFD700'; // Flash color
+            // Flash color
+            ctx.fillStyle = '#FFD700'; // Gold color
             ctx.beginPath();
-            ctx.arc(activeCircle ? activeCircle.x : 0, activeCircle ? activeCircle.y : 0, activeCircle ? activeCircle.radius : 0, 0, 2 * Math.PI);
+            ctx.arc(lastFlashCircle.x, lastFlashCircle.y, lastFlashCircle.radius, 0, 2 * Math.PI);
             ctx.fill();
             ctx.closePath();
 
-            // Set text color to black during flash
-            ctx.fillStyle = '#000000';
-            ctx.font = `${activeCircle ? activeCircle.radius : 0}px Arial`;
+            // Flash text color
+            ctx.fillStyle = '#000000'; // Black text
+            ctx.font = `${lastFlashCircle.radius}px Arial`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(activeCircle ? activeCircle.count : '', activeCircle ? activeCircle.x : 0, activeCircle ? activeCircle.y : 0);
+            ctx.fillText(lastFlashCircle.count, lastFlashCircle.x, lastFlashCircle.y);
         } else {
             isFlashing = false; // Reset flashing state
+            lastFlashCircle = null;
         }
     }
 
@@ -390,13 +390,14 @@ function render(currentTime) {
         const circleColor = styles.getPropertyValue('--circle-color').trim();
         const textColor = styles.getPropertyValue('--circle-text-color').trim();
 
+        // Draw the circle
         ctx.fillStyle = circleColor;
         ctx.beginPath();
         ctx.arc(activeCircle.x, activeCircle.y, activeCircle.radius, 0, 2 * Math.PI);
         ctx.fill();
         ctx.closePath();
 
-        // Set text color based on theme
+        // Draw the countdown number
         ctx.fillStyle = textColor;
         ctx.font = `${activeCircle.radius}px Arial`;
         ctx.textAlign = 'center';
@@ -505,6 +506,9 @@ function handlePointerDown(e) {
         isFlashing = true;
         flashEndTime = performance.now() + flashDuration;
 
+        // Store the last flashed circle
+        lastFlashCircle = { ...activeCircle };
+
         // Remove the circle instantly
         activeCircle = null;
         circlesPopped++;
@@ -519,7 +523,7 @@ function handlePointerDown(e) {
     } else {
         // Missed click
         circlesMissed++;
-        // Do NOT apply penalty to running timer
+        // Play miss sound
         playMissSound();
     }
 }
