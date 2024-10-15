@@ -26,7 +26,7 @@ const tryAgainButton = document.getElementById('tryAgainButton');
 const timerDisplay = document.getElementById('timer');
 const endGameLeaderboardBody = document.getElementById('endGameLeaderboardBody');
 const themeToggleButton = document.getElementById('themeToggle');
-const themeIcon = document.getElementById('themeIcon'); // New Element for Icon
+const themeIcon = document.getElementById('themeIcon'); // Icon Element
 
 // Initialize Game Context
 const ctx = gameCanvas.getContext('2d');
@@ -46,6 +46,59 @@ let totalPenalty = 0.0;
 let currentCount = 20;
 
 let activeCircle = null;
+
+// Particle System Initialization
+class Particle {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 3 + 2; // Particle size between 2 and 5
+        this.speedX = (Math.random() - 0.5) * 2; // Horizontal speed between -1 and 1
+        this.speedY = (Math.random() - 0.5) * 2; // Vertical speed between -1 and 1
+        this.opacity = 1;
+        this.lifespan = 60; // Frames
+    }
+
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.opacity -= 1 / this.lifespan;
+    }
+
+    draw(ctx) {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = '#FF5722'; // Orange color
+        ctx.fill();
+        ctx.closePath();
+        ctx.restore();
+    }
+}
+
+class ParticleSystem {
+    constructor() {
+        this.particles = [];
+    }
+
+    emit(x, y, count = 15) {
+        for (let i = 0; i < count; i++) {
+            this.particles.push(new Particle(x, y));
+        }
+    }
+
+    update() {
+        this.particles = this.particles.filter(particle => particle.opacity > 0);
+        this.particles.forEach(particle => particle.update());
+    }
+
+    draw(ctx) {
+        this.particles.forEach(particle => particle.draw(ctx));
+    }
+}
+
+const particleSystem = new ParticleSystem();
 
 // Theme Management
 function applyTheme(theme) {
@@ -330,6 +383,25 @@ function initializeLeaderboard() {
     displayLeaderboard(leaderboardBody);
 }
 
+// Rendering Loop for Game and Particles
+function render() {
+    ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+
+    // Draw Active Circle
+    if (activeCircle) {
+        activeCircle.draw();
+    }
+
+    // Update and Draw Particles
+    particleSystem.update();
+    particleSystem.draw(ctx);
+
+    requestAnimationFrame(render);
+}
+
+// Start the rendering loop
+render();
+
 // Start Game Function
 function startGame() {
     console.log('Starting game...'); // Debugging
@@ -433,14 +505,14 @@ function handlePointerDown(e) {
         playPopSound();
         // Increment click count
         clickCount++;
+        // Emit particles at circle's position
+        particleSystem.emit(activeCircle.x, activeCircle.y);
         // Remove the circle instantly
         activeCircle = null;
         circlesPopped++;
 
         if (circlesPopped < totalCircles) {
             currentCount--; // Decrement the countdown
-            // Clear the canvas
-            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
             // Create the next circle
             createCircle();
         } else {
