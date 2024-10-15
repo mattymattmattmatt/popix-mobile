@@ -46,10 +46,6 @@ let totalPenalty = 0.0;
 let currentCount = 20;
 
 let activeCircle = null;
-let isAnimating = false;
-
-let lastInteractionTime = 0;
-const debounceDuration = 150;
 
 // Theme Management
 function applyTheme(theme) {
@@ -422,8 +418,6 @@ function handlePointerDown(e) {
     }
     lastInteractionTime = currentTime;
 
-    if (isAnimating) return; // Prevent interactions during animation
-
     // Calculate click/touch coordinates
     const rect = gameCanvas.getBoundingClientRect();
     const scaleX = gameCanvas.width / rect.width;
@@ -435,11 +429,23 @@ function handlePointerDown(e) {
     if (activeCircle && activeCircle.isClicked(clickX, clickY)) {
         // Vibrate on successful pop
         vibrate();
-        // Play pop animation and sound
-        animatePop(activeCircle);
+        // Play pop sound
         playPopSound();
         // Increment click count
         clickCount++;
+        // Remove the circle instantly
+        activeCircle = null;
+        circlesPopped++;
+
+        if (circlesPopped < totalCircles) {
+            currentCount--; // Decrement the countdown
+            // Clear the canvas
+            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            // Create the next circle
+            createCircle();
+        } else {
+            endGame();
+        }
     } else {
         // Missed click
         circlesMissed++;
@@ -455,73 +461,6 @@ gameCanvas.addEventListener('pointerdown', (e) => {
     }
     handlePointerDown(e);
 });
-
-// Updated Animation Function
-function animatePop(circle) {
-    isAnimating = true; // Set flag to indicate animation is in progress
-    const duration = 100; // in ms
-    const start = performance.now();
-
-    // Define the maximum scale factor
-    const maxScale = 2; // Scale up to twice the size
-
-    // Store initial circle properties
-    const initialX = circle.x;
-    const initialY = circle.y;
-    const initialRadius = circle.radius;
-
-    // Animation Loop
-    function animateFrame(time) {
-        const elapsed = time - start;
-        let progress = Math.min(elapsed / duration, 1);
-
-        // Apply an easing function for a smoother animation (easeOutQuad)
-        progress = easeOutQuad(progress);
-
-        const scale = 1 + progress * (maxScale - 1); // Linear scaling with easing
-        const opacity = 1 - progress; // Fade out
-
-        // Calculate the scaled radius
-        const scaledRadius = initialRadius * scale;
-
-        // Clear the entire canvas
-        ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-
-        // Redraw the animated circle
-        ctx.beginPath();
-        ctx.arc(initialX, initialY, scaledRadius, 0, 2 * Math.PI);
-        ctx.fillStyle = `rgba(255, 87, 34, ${opacity})`; // #FF5722 with dynamic opacity
-        ctx.fill();
-        ctx.closePath();
-
-        if (progress < 1) {
-            requestAnimationFrame(animateFrame);
-        } else {
-            // Final clear to remove any residual artifacts
-            ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-
-            // Reset activeCircle and spawn next circle or end game
-            circlesPopped++;
-            activeCircle = null;
-
-            if (circlesPopped < totalCircles) {
-                currentCount--; // Decrement the countdown
-                createCircle();
-            } else {
-                endGame();
-            }
-
-            isAnimating = false; // Reset animation flag
-        }
-    }
-
-    requestAnimationFrame(animateFrame);
-}
-
-// Easing Function (easeOutQuad)
-function easeOutQuad(t) {
-    return t * (2 - t);
-}
 
 // Sound Functions (Using SoundManager)
 function playPopSound() {
