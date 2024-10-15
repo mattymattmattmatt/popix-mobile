@@ -145,23 +145,28 @@ function calculateCircleDiameter() {
 
 // Set Canvas Size to Fill Screen and Calculate Circle Size
 function resizeCanvas() {
-    const displayWidth = window.innerWidth;
-    const displayHeight = window.innerHeight;
-
-    gameCanvas.style.width = `${displayWidth}px`;
-    gameCanvas.style.height = `${displayHeight}px`;
-
-    gameCanvas.width = displayWidth * dpr;
-    gameCanvas.height = displayHeight * dpr;
-
+    // Get the computed styles of the canvas
+    const computedStyle = getComputedStyle(gameCanvas);
+    
+    // Extract width and height from CSS (e.g., '90vw' -> 0.9 * viewport width)
+    const width = parseFloat(computedStyle.width);
+    const height = parseFloat(computedStyle.height);
+    
+    // Set the canvas's internal size based on CSS dimensions and device pixel ratio
+    gameCanvas.width = width * dpr;
+    gameCanvas.height = height * dpr;
+    
+    // Scale the context to account for device pixel ratio
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
-
+    
+    // Clear the canvas
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-
+    
     // Recalculate circle diameter based on new screen size
     circlesDiameter = calculateCircleDiameter();
-
+    
+    // Redraw the active circle if it exists
     if (activeCircle) {
         activeCircle.draw();
     }
@@ -211,20 +216,12 @@ class Circle {
 
 // Utility Functions
 function getRandomPosition() {
-    const padding = circlesDiameter / 2 + 10;
-    let x, y;
-    let attempts = 0;
-    const maxAttempts = 100;
+    const padding = circlesDiameter / 2 + 20; // Increased padding to prevent edge spawning
+    const canvasWidth = gameCanvas.width / dpr;
+    const canvasHeight = gameCanvas.height / dpr;
 
-    do {
-        x = Math.random() * (gameCanvas.width / dpr - 2 * padding) + padding;
-        y = Math.random() * (gameCanvas.height / dpr - 2 * padding) + padding;
-        attempts++;
-        if (attempts > maxAttempts) {
-            console.warn('Max attempts reached. Placing circle without full spacing.');
-            break;
-        }
-    } while (activeCircle && Math.hypot(x - activeCircle.x, y - activeCircle.y) < 2 * circlesDiameter + 20);
+    const x = Math.random() * (canvasWidth - 2 * padding) + padding;
+    const y = Math.random() * (canvasHeight - 2 * padding) + padding;
 
     return { x, y };
 }
@@ -312,7 +309,7 @@ function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, 
                 const penaltyTime = (entry.missedClicks * 0.5).toFixed(1); // Calculate penalty
                 penaltyCell.textContent = penaltyTime > 0 ? `+${penaltyTime}s` : `${penaltyTime}s`;
 
-                // Apply red color if penalty > 0
+                // Apply penalty class for styling
                 if (penaltyTime > 0) {
                     penaltyCell.classList.add('penalty');
                 }
@@ -484,8 +481,6 @@ function endGame() {
 
 // Handle Pointer Events (Unified for Mouse and Touch)
 function handlePointerDown(e) {
-    // Removed debounce logic to allow multiple rapid clicks
-
     // Calculate click/touch coordinates
     const rect = gameCanvas.getBoundingClientRect();
     const scaleX = gameCanvas.width / rect.width;
