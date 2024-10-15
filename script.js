@@ -68,29 +68,34 @@ class Particle {
     update() {
         this.x += this.speedX;
         this.y += this.speedY;
-        this.opacity -= 1 / this.lifespan;
+        this.opacity -= 0.016; // Fixed decrement for smoother fading
+        if (this.opacity < 0) this.opacity = 0; // Prevent negative opacity
     }
 
     draw(ctx) {
-        ctx.save();
         ctx.globalAlpha = this.opacity;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fillStyle = '#FF5722'; // Orange color
         ctx.fill();
         ctx.closePath();
-        ctx.restore();
+        ctx.globalAlpha = 1; // Reset alpha to default
     }
 }
 
 class ParticleSystem {
-    constructor() {
+    constructor(maxParticles = 100) {
         this.particles = [];
+        this.maxParticles = maxParticles;
     }
 
-    emit(x, y, count = 15) {
+    emit(x, y, count = 10) { // Reduced to 10 particles per burst
         for (let i = 0; i < count; i++) {
-            this.particles.push(new Particle(x, y));
+            if (this.particles.length < this.maxParticles) {
+                this.particles.push(new Particle(x, y));
+            } else {
+                break; // Stop emitting if maxParticles is reached
+            }
         }
     }
 
