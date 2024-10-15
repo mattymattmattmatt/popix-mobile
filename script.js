@@ -50,7 +50,27 @@ let isAnimating = false;
 let lastInteractionTime = 0;
 const debounceDuration = 150;
 
+// =========================
+// Debounce Function
+// =========================
+function debounce(func, delay) {
+    let debounceTimer;
+    return function() {
+        const context = this;
+        const args = arguments;
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => func.apply(context, args), delay);
+    };
+}
+
+// =========================
 // Theme Management
+// =========================
+
+/**
+ * Applies the specified theme to the document.
+ * @param {string|null} theme - 'dark', 'light', or null for system preference.
+ */
 function applyTheme(theme) {
     if (theme === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
@@ -59,6 +79,9 @@ function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', 'light');
         localStorage.setItem('theme', 'light');
     } else {
+        // Reset to system preference
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.removeItem('theme');
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             document.documentElement.setAttribute('data-theme', 'dark');
         } else {
@@ -68,23 +91,19 @@ function applyTheme(theme) {
 
     // Update the game title image based on the current theme
     updateGameTitleImage();
+
+    // Add a class to trigger theme transition animation
+    document.body.classList.add('theme-transition');
+
+    // Remove the class after animation completes
+    setTimeout(() => {
+        document.body.classList.remove('theme-transition');
+    }, 300); // Duration should match the CSS transition
 }
 
-// Event listener for the theme toggle button
-themeToggleButton.addEventListener('click', () => {
-    let currentTheme = document.documentElement.getAttribute('data-theme');
-    if (currentTheme === 'dark') {
-        applyTheme('light');
-    } else {
-        applyTheme('dark');
-    }
-});
-
-// On page load, apply the saved theme or system preference
-let savedTheme = localStorage.getItem('theme');
-applyTheme(savedTheme);
-
-// Function to update the game title image
+/**
+ * Updates the game title images based on the active theme.
+ */
 function updateGameTitleImage() {
     const gameTitleImage = document.getElementById('gameTitle');
     const gameTitleEndImage = document.getElementById('gameTitleEnd');
@@ -99,14 +118,48 @@ function updateGameTitleImage() {
     }
 }
 
-// Function to calculate circle diameter based on screen size
+// Event listener for the theme toggle button with debounce
+themeToggleButton.addEventListener('click', debounce(() => {
+    let currentTheme = document.documentElement.getAttribute('data-theme');
+    if (currentTheme === 'dark') {
+        applyTheme('light');
+    } else if (currentTheme === 'light') {
+        applyTheme(null); // Reset to system preference
+    } else {
+        applyTheme('dark');
+    }
+}, 300)); // 300ms debounce delay
+
+// On page load, apply the saved theme or system preference
+let savedTheme = localStorage.getItem('theme');
+applyTheme(savedTheme);
+
+// Listen for changes in system color scheme
+const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+mediaQuery.addEventListener('change', (e) => {
+    const savedTheme = localStorage.getItem('theme');
+    if (!savedTheme) { // Only apply system preference if user hasn't set a preference
+        applyTheme(e.matches ? 'dark' : 'light');
+    }
+});
+
+// =========================
+// Canvas and Circle Management
+// =========================
+
+/**
+ * Calculates the diameter of the circles based on the current screen size.
+ * @returns {number} The calculated diameter in pixels.
+ */
 function calculateCircleDiameter() {
     const minDimension = Math.min(window.innerWidth, window.innerHeight);
     // Set circle diameter to 15% of the smaller screen dimension
     return Math.floor(minDimension * 0.15);
 }
 
-// Set Canvas Size to Fill Screen and Calculate Circle Size
+/**
+ * Resizes the canvas to fill the screen and recalculates circle sizes.
+ */
 function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
     const displayWidth = window.innerWidth;
@@ -147,6 +200,9 @@ class Circle {
         this.count = count;
     }
 
+    /**
+     * Draws the circle and its countdown number on the canvas.
+     */
     draw() {
         // Determine theme
         const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -166,13 +222,22 @@ class Circle {
         ctx.fillText(this.count, this.x, this.y);
     }
 
+    /**
+     * Determines if a click/touch event occurred within the circle.
+     * @param {number} clickX - The X-coordinate of the click/touch.
+     * @param {number} clickY - The Y-coordinate of the click/touch.
+     * @returns {boolean} True if clicked, else false.
+     */
     isClicked(clickX, clickY) {
         const distance = Math.hypot(clickX - this.x, clickY - this.y);
         return distance <= this.radius;
     }
 }
 
-// Utility Functions
+/**
+ * Generates a random position for a new circle, ensuring it doesn't overlap with the active circle.
+ * @returns {{x: number, y: number}} The X and Y coordinates for the new circle.
+ */
 function getRandomPosition() {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
@@ -195,6 +260,9 @@ function getRandomPosition() {
     return { x, y };
 }
 
+/**
+ * Creates and displays a new circle on the canvas.
+ */
 function createCircle() {
     const pos = getRandomPosition();
     const circle = new Circle(pos.x, pos.y, currentCount);
@@ -205,6 +273,10 @@ function createCircle() {
     console.log(`New Circle: (x: ${circle.x}, y: ${circle.y}), Count: ${circle.count}`);
 }
 
+/**
+ * Displays the specified screen and hides others.
+ * @param {HTMLElement} screen - The screen element to display.
+ */
 function showScreen(screen) {
     // Hide all screens
     const screens = document.querySelectorAll('.screen');
@@ -225,6 +297,13 @@ function showScreen(screen) {
     }
 }
 
+/**
+ * Retrieves and displays the leaderboard.
+ * @param {HTMLElement} leaderboardBodyElement - The table body element to populate.
+ * @param {number|null} currentEntryPenalty - Penalty time for the current player.
+ * @param {number|null} finalTime - Final time for the current player.
+ * @param {Function|null} callback - Optional callback after leaderboard is displayed.
+ */
 function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, finalTime = null, callback = null) {
     getLeaderboard((entries) => {
         // Initialize an array to hold all entries including the current player's
@@ -312,12 +391,20 @@ function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, 
     });
 }
 
-// Initialize Leaderboard Screen
+/**
+ * Initializes the leaderboard screen by fetching and displaying entries.
+ */
 function initializeLeaderboard() {
     displayLeaderboard(leaderboardBody);
 }
 
-// Start Game Function
+// =========================
+// Game Control Functions
+// =========================
+
+/**
+ * Starts the game by resetting variables, displaying the game screen, and initiating the timer.
+ */
 function startGame() {
     console.log('Starting game...'); // Debugging
     // Reset game variables
@@ -353,7 +440,9 @@ function startGame() {
     createCircle();
 }
 
-// End Game Function
+/**
+ * Ends the game by stopping the timer, calculating penalties, and displaying the end game screen.
+ */
 function endGame() {
     console.log('Ending game...'); // Debugging
     clearInterval(gameTimer);
@@ -396,7 +485,14 @@ function endGame() {
     showScreen(endGameScreen);
 }
 
-// Handle Pointer Events (Unified for Mouse and Touch)
+// =========================
+// User Interaction Handlers
+// =========================
+
+/**
+ * Handles pointer (mouse/touch) events on the game canvas.
+ * @param {PointerEvent} e - The pointer event.
+ */
 function handlePointerDown(e) {
     // Debounce to prevent rapid interactions
     const currentTime = Date.now();
@@ -439,7 +535,14 @@ gameCanvas.addEventListener('pointerdown', (e) => {
     handlePointerDown(e);
 });
 
-// Updated Animation Function
+// =========================
+// Animation and Feedback
+// =========================
+
+/**
+ * Animates the popping of a circle.
+ * @param {Circle} circle - The circle to animate.
+ */
 function animatePop(circle) {
     isAnimating = true; // Set flag to indicate animation is in progress
     const duration = 100; // in ms
@@ -501,26 +604,41 @@ function animatePop(circle) {
     requestAnimationFrame(animateFrame);
 }
 
-// Easing Function (easeOutQuad)
+/**
+ * Easing function for animations (easeOutQuad).
+ * @param {number} t - The current time progress (0 to 1).
+ * @returns {number} The eased value.
+ */
 function easeOutQuad(t) {
     return t * (2 - t);
 }
 
-// Sound Functions (Using SoundManager)
+/**
+ * Plays the pop sound effect.
+ */
 function playPopSound() {
     soundManager.playSound('pop');
 }
 
+/**
+ * Plays the miss sound effect.
+ */
 function playMissSound() {
     soundManager.playSound('miss');
 }
 
-// Vibration Feedback
+/**
+ * Triggers vibration feedback on supported devices.
+ */
 function vibrate() {
     if (navigator.vibrate) {
         navigator.vibrate(100); // Vibrate for 100ms
     }
 }
+
+// =========================
+// Modal Management
+// =========================
 
 // Initialize Rules Modal
 rulesButton.addEventListener('click', () => {
@@ -538,7 +656,14 @@ window.addEventListener('click', (event) => {
     }
 });
 
-// Handle Name Submission
+// =========================
+// Form and Leaderboard Handlers
+// =========================
+
+/**
+ * Handles the submission of the player's name and score.
+ * @param {Event} e - The form submission event.
+ */
 nameForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const playerName = playerNameInput.value.trim();
@@ -566,7 +691,9 @@ nameForm.addEventListener('submit', (e) => {
         });
 });
 
-// Handle Skip Button
+/**
+ * Handles the "Skip" button click on the end game screen.
+ */
 skipButton.addEventListener('click', () => {
     console.log('Skip Button Clicked'); // Debugging
     // Display the leaderboard
@@ -575,13 +702,17 @@ skipButton.addEventListener('click', () => {
     showScreen(leaderboardScreen);
 });
 
-// Handle Try Again Button
+/**
+ * Handles the "Try Again" button click on the end game screen.
+ */
 tryAgainButton.addEventListener('click', () => {
     console.log('Try Again Button Clicked'); // Debugging
     startGame();
 });
 
-// Handle Reset Score Button
+/**
+ * Handles the "Reset Leaderboard" button click on the main menu screen.
+ */
 resetScoreButton.addEventListener('click', () => {
     const password = prompt('Enter the password to reset the leaderboard:');
     if (password === null) {
@@ -605,6 +736,10 @@ resetScoreButton.addEventListener('click', () => {
         alert('Incorrect password. Leaderboard reset denied.');
     }
 });
+
+// =========================
+// Initialization
+// =========================
 
 // Initialize Leaderboard on Page Load
 initializeLeaderboard();
