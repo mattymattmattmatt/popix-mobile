@@ -31,6 +31,9 @@ const themeIcon = document.getElementById('themeIcon'); // Icon Element
 // Initialize Game Context
 const ctx = gameCanvas.getContext('2d');
 
+// Precompute device pixel ratio
+const dpr = window.devicePixelRatio || 1;
+
 // Game Variables
 let totalCircles = 20;
 let circlesDiameter = calculateCircleDiameter();
@@ -58,16 +61,9 @@ function applyTheme(theme) {
     if (theme === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
         localStorage.setItem('theme', 'dark');
-    } else if (theme === 'light') {
+    } else {
         document.documentElement.setAttribute('data-theme', 'light');
         localStorage.setItem('theme', 'light');
-    } else {
-        // Detect system preference
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.setAttribute('data-theme', 'dark');
-        } else {
-            document.documentElement.setAttribute('data-theme', 'light');
-        }
     }
 
     // Update the game title image based on the current theme
@@ -127,7 +123,6 @@ function calculateCircleDiameter() {
 
 // Set Canvas Size to Fill Screen and Calculate Circle Size
 function resizeCanvas() {
-    const dpr = window.devicePixelRatio || 1;
     const displayWidth = window.innerWidth;
     const displayHeight = window.innerHeight;
 
@@ -170,19 +165,22 @@ class Circle {
         // Determine theme
         const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
 
-        // Draw the circle
+        // Set styles once
+        ctx.fillStyle = isDarkMode ? '#ffffff' : '#000000'; // Circle color
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-        ctx.fillStyle = isDarkMode ? '#ffffff' : '#000000'; // White in dark mode, black in light mode
         ctx.fill();
         ctx.closePath();
 
-        // Draw the countdown number
-        ctx.fillStyle = isDarkMode ? '#000000' : '#FFFFFF'; // Black text in dark mode, white in light mode
+        // Set text color based on theme
+        ctx.fillStyle = isDarkMode ? '#000000' : '#FFFFFF';
         ctx.font = `${this.radius}px Arial`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(this.count, this.x, this.y);
+
+        // Reset fillStyle for next elements
+        ctx.fillStyle = isDarkMode ? '#ffffff' : '#000000';
     }
 
     isClicked(clickX, clickY) {
@@ -202,8 +200,8 @@ function getRandomPosition() {
     const maxAttempts = 100;
 
     do {
-        x = Math.random() * (gameCanvas.width / (window.devicePixelRatio || 1) - 2 * padding) + padding;
-        y = Math.random() * (gameCanvas.height / (window.devicePixelRatio || 1) - 2 * padding) + padding;
+        x = Math.random() * (gameCanvas.width / dpr - 2 * padding) + padding;
+        y = Math.random() * (gameCanvas.height / dpr - 2 * padding) + padding;
         attempts++;
         if (attempts > maxAttempts) {
             console.warn('Max attempts reached. Placing circle without full spacing.');
@@ -340,9 +338,26 @@ function initializeLeaderboard() {
 function render() {
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
+    // Set styles once
+    const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+    ctx.fillStyle = isDarkMode ? '#ffffff' : '#000000'; // Circle color
+    ctx.font = `${activeCircle ? activeCircle.radius : 0}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
     // Draw Active Circle
     if (activeCircle) {
-        activeCircle.draw();
+        ctx.beginPath();
+        ctx.arc(activeCircle.x, activeCircle.y, activeCircle.radius, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.closePath();
+
+        // Set text color based on theme
+        ctx.fillStyle = isDarkMode ? '#000000' : '#FFFFFF';
+        ctx.fillText(activeCircle.count, activeCircle.x, activeCircle.y);
+
+        // Reset fillStyle for next elements
+        ctx.fillStyle = isDarkMode ? '#ffffff' : '#000000';
     }
 
     requestAnimationFrame(render);
@@ -444,8 +459,8 @@ function handlePointerDown(e) {
     const scaleX = gameCanvas.width / rect.width;
     const scaleY = gameCanvas.height / rect.height;
 
-    const clickX = (e.clientX - rect.left) * scaleX / (window.devicePixelRatio || 1);
-    const clickY = (e.clientY - rect.top) * scaleY / (window.devicePixelRatio || 1);
+    const clickX = (e.clientX - rect.left) * scaleX / dpr;
+    const clickY = (e.clientY - rect.top) * scaleY / dpr;
 
     if (activeCircle && activeCircle.isClicked(clickX, clickY)) {
         // Vibrate on successful pop
@@ -483,7 +498,7 @@ gameCanvas.addEventListener('pointerdown', (e) => {
         return; // Ignore non-primary touch points
     }
     handlePointerDown(e);
-});
+}, { passive: false });
 
 // Sound Functions (Using SoundManager)
 function playPopSound() {
@@ -506,14 +521,14 @@ function flashCircle(circle) {
     const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
 
     // Change fill color to indicate pop
+    ctx.fillStyle = isDarkMode ? '#FFD700' : '#FFD700'; // Gold color
     ctx.beginPath();
     ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-    ctx.fillStyle = isDarkMode ? '#FFD700' : '#FFD700'; // Gold color for flash (same for both themes)
     ctx.fill();
     ctx.closePath();
 
-    // Optionally, change text color
-    ctx.fillStyle = isDarkMode ? '#000000' : '#000000'; // Black text during flash
+    // Change text color
+    ctx.fillStyle = isDarkMode ? '#000000' : '#000000'; // Black text
     ctx.font = `${circle.radius}px Arial`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -521,9 +536,8 @@ function flashCircle(circle) {
 
     // Restore original styles after a short delay
     setTimeout(() => {
-        // Redraw the circle in its original state
         circle.draw();
-    }, 100); // Flash duration in milliseconds
+    }, 100); // 100 milliseconds
 }
 
 // Initialize Rules Modal
