@@ -6,6 +6,20 @@ import { SoundManager } from './soundManager.js';
 // Initialize SoundManager
 const soundManager = new SoundManager();
 
+// Preload Theme Images
+function preloadImages(imageArray) {
+    imageArray.forEach(src => {
+        const img = new Image();
+        img.src = src;
+    });
+}
+
+// Preload theme images early
+preloadImages([
+    'assets/images/PopixMobile.jpg',
+    'assets/images/PopixMobileDark.jpg'
+]);
+
 // DOM Elements
 const leaderboardScreen = document.getElementById('leaderboardScreen');
 const leaderboardBody = document.getElementById('leaderboardBody');
@@ -41,7 +55,6 @@ let circlesPopped = 0;
 let circlesMissed = 0;
 let clickCount = 0;
 let timeStart = null;
-let gameTimer = null;
 let actualTime = 0.00;
 let finalTime = 0.00;
 let totalPenalty = 0.0;
@@ -50,9 +63,10 @@ let currentCount = 20;
 
 let activeCircle = null;
 
-// ------------------------
-// Removed Debounce Variables
-// ------------------------
+// Flashing Effect Variables
+let isFlashing = false;
+let flashEndTime = 0;
+const flashDuration = 100; // in milliseconds
 
 // Theme Management
 function applyTheme(theme) {
@@ -95,7 +109,16 @@ function updateThemeIcon(theme) {
 
 // On page load, apply the saved theme or system preference
 let savedTheme = localStorage.getItem('theme');
-applyTheme(savedTheme);
+if (savedTheme) {
+    applyTheme(savedTheme);
+} else {
+    // Detect system preference
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        applyTheme('dark');
+    } else {
+        applyTheme('light');
+    }
+}
 
 // Function to update the game title image
 function updateGameTitleImage() {
@@ -160,25 +183,23 @@ class Circle {
     }
 
     draw() {
-        // Determine theme
-        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+        const styles = getComputedStyle(document.documentElement);
+        const circleColor = styles.getPropertyValue('--circle-color').trim();
+        const textColor = styles.getPropertyValue('--circle-text-color').trim();
 
-        // Set styles once
-        ctx.fillStyle = isDarkMode ? '#ffffff' : '#000000'; // Circle color
+        // Draw the circle
+        ctx.fillStyle = circleColor;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
         ctx.fill();
         ctx.closePath();
 
-        // Set text color based on theme
-        ctx.fillStyle = isDarkMode ? '#000000' : '#FFFFFF';
+        // Draw the countdown number
+        ctx.fillStyle = textColor;
         ctx.font = `${this.radius}px Arial`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(this.count, this.x, this.y);
-
-        // Reset fillStyle for next elements
-        ctx.fillStyle = isDarkMode ? '#ffffff' : '#000000';
     }
 
     isClicked(clickX, clickY) {
@@ -333,36 +354,61 @@ function initializeLeaderboard() {
 }
 
 // Rendering Loop for Game
-function render() {
+function render(currentTime) {
+    if (!timeStart) timeStart = currentTime;
+    const elapsedTime = (currentTime - timeStart) / 1000;
+    actualTime = elapsedTime.toFixed(2);
+    if (timerDisplay) {
+        timerDisplay.textContent = `Time: ${actualTime}s`;
+    }
+
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
-    // Set styles once
-    const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-    ctx.fillStyle = isDarkMode ? '#ffffff' : '#000000'; // Circle color
-    ctx.font = `${activeCircle ? activeCircle.radius : 0}px Arial`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    // Handle Flashing Effect
+    if (isFlashing) {
+        if (currentTime < flashEndTime) {
+            ctx.fillStyle = '#FFD700'; // Flash color
+            ctx.beginPath();
+            ctx.arc(activeCircle ? activeCircle.x : 0, activeCircle ? activeCircle.y : 0, activeCircle ? activeCircle.radius : 0, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+
+            // Set text color to black during flash
+            ctx.fillStyle = '#000000';
+            ctx.font = `${activeCircle ? activeCircle.radius : 0}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(activeCircle ? activeCircle.count : '', activeCircle ? activeCircle.x : 0, activeCircle ? activeCircle.y : 0);
+        } else {
+            isFlashing = false; // Reset flashing state
+        }
+    }
 
     // Draw Active Circle
     if (activeCircle) {
+        const styles = getComputedStyle(document.documentElement);
+        const circleColor = styles.getPropertyValue('--circle-color').trim();
+        const textColor = styles.getPropertyValue('--circle-text-color').trim();
+
+        ctx.fillStyle = circleColor;
         ctx.beginPath();
         ctx.arc(activeCircle.x, activeCircle.y, activeCircle.radius, 0, 2 * Math.PI);
         ctx.fill();
         ctx.closePath();
 
         // Set text color based on theme
-        ctx.fillStyle = isDarkMode ? '#000000' : '#FFFFFF';
+        ctx.fillStyle = textColor;
+        ctx.font = `${activeCircle.radius}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
         ctx.fillText(activeCircle.count, activeCircle.x, activeCircle.y);
-
-        // Reset fillStyle for next elements
-        ctx.fillStyle = isDarkMode ? '#ffffff' : '#000000';
     }
 
     requestAnimationFrame(render);
 }
 
 // Start the rendering loop
-render();
+requestAnimationFrame(render);
 
 // Start Game Function
 function startGame() {
@@ -386,15 +432,8 @@ function startGame() {
     // Clear any existing drawings
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
-    // Start the timer
-    timeStart = performance.now();
-    gameTimer = setInterval(() => {
-        const now = performance.now();
-        actualTime = ((now - timeStart) / 1000).toFixed(2); // in seconds with two decimals
-        if (timerDisplay) {
-            timerDisplay.textContent = `Time: ${actualTime}s`;
-        }
-    }, 10); // Update every 10ms for higher precision
+    // Start the timer by resetting timeStart
+    timeStart = null;
 
     // Display the first circle
     createCircle();
@@ -403,9 +442,8 @@ function startGame() {
 // End Game Function
 function endGame() {
     console.log('Ending game...'); // Debugging
-    clearInterval(gameTimer);
 
-    // Record end time
+    // Record end time by capturing the currentTime from the render loop
     const timeEnd = performance.now();
     actualTime = ((timeEnd - timeStart) / 1000); // in seconds
 
@@ -463,8 +501,9 @@ function handlePointerDown(e) {
         // Increment click count
         clickCount++;
 
-        // Optional: Flash the circle briefly as visual feedback
-        flashCircle(activeCircle);
+        // Initiate flash
+        isFlashing = true;
+        flashEndTime = performance.now() + flashDuration;
 
         // Remove the circle instantly
         activeCircle = null;
@@ -507,30 +546,6 @@ function vibrate() {
     if (navigator.vibrate) {
         navigator.vibrate(100); // Vibrate for 100ms
     }
-}
-
-// Optional: Flash Circle Function for Lightweight Visual Feedback
-function flashCircle(circle) {
-    const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-
-    // Change fill color to indicate pop
-    ctx.fillStyle = '#FFD700'; // Gold color
-    ctx.beginPath();
-    ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.closePath();
-
-    // Change text color
-    ctx.fillStyle = '#000000'; // Black text
-    ctx.font = `${circle.radius}px Arial`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(circle.count, circle.x, circle.y);
-
-    // Restore original styles after a short delay
-    setTimeout(() => {
-        circle.draw();
-    }, 100); // 100 milliseconds
 }
 
 // Initialize Rules Modal
