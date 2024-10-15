@@ -47,6 +47,12 @@ let currentCount = 20;
 
 let activeCircle = null;
 
+// ------------------------
+// Debounce Variables
+// ------------------------
+let lastInteractionTime = 0; // Tracks the timestamp of the last interaction
+const debounceDuration = 150; // Time in milliseconds to debounce interactions
+
 // Particle System Initialization
 class Particle {
     constructor(x, y) {
