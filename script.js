@@ -290,13 +290,19 @@ function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, 
                 rankCell.textContent = index + 1;
                 row.appendChild(rankCell);
 
-                // Name Cell with Cake and French Flag Emojis for "Guihlem"
+                // Name Cell
                 const nameCell = document.createElement('td');
-                if (entry.name === 'Cake') {
+
+                if (index === 0) {
+                    // For Rank 1: Make the name bold and add a gold medal emoji
+                    nameCell.innerHTML = `<strong>${entry.name} 🥇</strong>`;
+                } else if (entry.name === 'Cake') {
+                    // Existing logic for 'Cake'
                     nameCell.textContent = `${entry.name} 🧁🇫🇷`;
                 } else {
                     nameCell.textContent = entry.name;
                 }
+
                 row.appendChild(nameCell);
 
                 // Time Cell
