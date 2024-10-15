@@ -121,7 +121,6 @@ table th, table td {
     border: 1px solid #444;
 }
 
-/* Table Header Background */
 table th {
     background-color: #f2f2f2;
 }
@@ -165,6 +164,9 @@ table th {
     font-size: 1rem;
     transition: background-color 0.3s ease;
     min-width: 120px; /* Ensures buttons aren't too small */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Dark Mode Styles */
@@ -248,6 +250,9 @@ form button.btn {
     width: auto; /* Allows the button to size based on content */
     max-width: 200px;
     align-self: center; /* Centers the button within the form */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* =========================

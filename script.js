@@ -26,6 +26,7 @@ const tryAgainButton = document.getElementById('tryAgainButton');
 const timerDisplay = document.getElementById('timer');
 const endGameLeaderboardBody = document.getElementById('endGameLeaderboardBody');
 const themeToggleButton = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon'); // New Element for Icon
 
 // Initialize Game Context
 const ctx = gameCanvas.getContext('2d');
@@ -59,6 +60,7 @@ function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', 'light');
         localStorage.setItem('theme', 'light');
     } else {
+        // Detect system preference
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             document.documentElement.setAttribute('data-theme', 'dark');
         } else {
@@ -68,6 +70,10 @@ function applyTheme(theme) {
 
     // Update the game title image based on the current theme
     updateGameTitleImage();
+
+    // Update the theme icon
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    updateThemeIcon(currentTheme);
 }
 
 // Event listener for the theme toggle button
@@ -79,6 +85,17 @@ themeToggleButton.addEventListener('click', () => {
         applyTheme('dark');
     }
 });
+
+// Function to update the theme icon
+function updateThemeIcon(theme) {
+    if (theme === 'dark') {
+        themeIcon.textContent = '🌙'; // Moon icon for dark mode
+        themeIcon.setAttribute('aria-label', 'Switch to Light Mode');
+    } else {
+        themeIcon.textContent = '☀️'; // Sun icon for light mode
+        themeIcon.setAttribute('aria-label', 'Switch to Dark Mode');
+    }
+}
 
 // On page load, apply the saved theme or system preference
 let savedTheme = localStorage.getItem('theme');

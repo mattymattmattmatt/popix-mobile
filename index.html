@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +9,9 @@
     <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
     <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <!-- Preload Images for Faster Switching -->
+    <link rel="preload" href="assets/images/PopixMobile.jpg" as="image">
+    <link rel="preload" href="assets/images/PopixMobileDark.jpg" as="image">
 </head>
 <body>
     <!-- Timer Display -->
@@ -39,8 +41,10 @@
             <button id="startGameButton" class="btn">Start Game</button>
             <button id="rulesButton" class="btn">Rules</button>
             <button id="resetScoreButton" class="btn reset-btn">Reset Leaderboard</button>
-            <!-- Theme Toggle Button -->
-            <button id="themeToggle" class="btn">Toggle Theme</button>
+            <!-- Theme Toggle Button with Icon -->
+            <button id="themeToggle" class="btn" aria-label="Toggle Theme">
+                <span id="themeIcon">☀️</span> Toggle Theme
+            </button>
         </div>
     </div>
 
