@@ -53,64 +53,6 @@ let activeCircle = null;
 let lastInteractionTime = 0; // Tracks the timestamp of the last interaction
 const debounceDuration = 150; // Time in milliseconds to debounce interactions
 
-// Particle System Initialization
-class Particle {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.size = Math.random() * 3 + 2; // Particle size between 2 and 5
-        this.speedX = (Math.random() - 0.5) * 2; // Horizontal speed between -1 and 1
-        this.speedY = (Math.random() - 0.5) * 2; // Vertical speed between -1 and 1
-        this.opacity = 1;
-        this.lifespan = 60; // Frames
-    }
-
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        this.opacity -= 0.016; // Fixed decrement for smoother fading
-        if (this.opacity < 0) this.opacity = 0; // Prevent negative opacity
-    }
-
-    draw(ctx) {
-        ctx.globalAlpha = this.opacity;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = '#FF5722'; // Orange color
-        ctx.fill();
-        ctx.closePath();
-        ctx.globalAlpha = 1; // Reset alpha to default
-    }
-}
-
-class ParticleSystem {
-    constructor(maxParticles = 100) {
-        this.particles = [];
-        this.maxParticles = maxParticles;
-    }
-
-    emit(x, y, count = 10) { // Reduced to 10 particles per burst
-        for (let i = 0; i < count; i++) {
-            if (this.particles.length < this.maxParticles) {
-                this.particles.push(new Particle(x, y));
-            } else {
-                break; // Stop emitting if maxParticles is reached
-            }
-        }
-    }
-
-    update() {
-        this.particles = this.particles.filter(particle => particle.opacity > 0);
-        this.particles.forEach(particle => particle.update());
-    }
-
-    draw(ctx) {
-        this.particles.forEach(particle => particle.draw(ctx));
-    }
-}
-
-const particleSystem = new ParticleSystem();
-
 // Theme Management
 function applyTheme(theme) {
     if (theme === 'dark') {
@@ -394,7 +336,7 @@ function initializeLeaderboard() {
     displayLeaderboard(leaderboardBody);
 }
 
-// Rendering Loop for Game and Particles
+// Rendering Loop for Game
 function render() {
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
@@ -402,10 +344,6 @@ function render() {
     if (activeCircle) {
         activeCircle.draw();
     }
-
-    // Update and Draw Particles
-    particleSystem.update();
-    particleSystem.draw(ctx);
 
     requestAnimationFrame(render);
 }
@@ -516,8 +454,10 @@ function handlePointerDown(e) {
         playPopSound();
         // Increment click count
         clickCount++;
-        // Emit particles at circle's position
-        particleSystem.emit(activeCircle.x, activeCircle.y);
+
+        // Optional: Flash the circle briefly as visual feedback
+        flashCircle(activeCircle);
+
         // Remove the circle instantly
         activeCircle = null;
         circlesPopped++;
@@ -559,6 +499,31 @@ function vibrate() {
     if (navigator.vibrate) {
         navigator.vibrate(100); // Vibrate for 100ms
     }
+}
+
+// Optional: Flash Circle Function for Lightweight Visual Feedback
+function flashCircle(circle) {
+    const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+
+    // Change fill color to indicate pop
+    ctx.beginPath();
+    ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
+    ctx.fillStyle = isDarkMode ? '#FFD700' : '#FFD700'; // Gold color for flash (same for both themes)
+    ctx.fill();
+    ctx.closePath();
+
+    // Optionally, change text color
+    ctx.fillStyle = isDarkMode ? '#000000' : '#000000'; // Black text during flash
+    ctx.font = `${circle.radius}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(circle.count, circle.x, circle.y);
+
+    // Restore original styles after a short delay
+    setTimeout(() => {
+        // Redraw the circle in its original state
+        circle.draw();
+    }, 100); // Flash duration in milliseconds
 }
 
 // Initialize Rules Modal
