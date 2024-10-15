@@ -19,7 +19,6 @@ body {
     position: relative;
     height: 100vh;
     overflow: hidden; /* Prevent scroll bars */
-    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
 }
 
 /* Dark Mode Styles */
@@ -41,7 +40,6 @@ body {
     font-weight: bold;
     display: none; /* Hidden by default */
     z-index: 1000;
-    transition: color 0.3s ease; /* Smooth transition */
 }
 
 /* Dark Mode Styles */
@@ -67,7 +65,6 @@ body {
     padding: 2rem;
     background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent background */
     overflow-y: auto; /* Enable vertical scrolling if content overflows */
-    transition: background-color 0.3s ease; /* Smooth transition */
 }
 
 /* Dark Mode Styles */
@@ -89,7 +86,6 @@ body {
     max-width: 80%;
     height: auto;
     margin: 20px 0; /* Adds space above and below the image */
-    transition: opacity 0.3s ease; /* Smooth transition for image swapping */
 }
 
 /* =========================
@@ -104,7 +100,6 @@ table {
     margin: 1rem 0;
     background-color: #ffffff; /* Table background */
     color: #000000; /* Table text */
-    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
 }
 
 /* Dark Mode Styles */
@@ -119,7 +114,6 @@ table th, table td {
     text-align: center;
     border: 1px solid #ddd;
     font-size: 1rem;
-    transition: border-color 0.3s ease; /* Smooth transition */
 }
 
 /* Dark Mode Styles */
@@ -130,7 +124,6 @@ table th, table td {
 /* Table Header Background */
 table th {
     background-color: #f2f2f2;
-    transition: background-color 0.3s ease; /* Smooth transition */
 }
 
 /* Dark Mode Styles */
@@ -141,7 +134,6 @@ table th {
 /* Penalty Text Styling */
 .penalty {
     color: red;
-    transition: color 0.3s ease; /* Smooth transition */
 }
 
 /* Dark Mode Styles */
@@ -171,7 +163,7 @@ table th {
     border-radius: 0.5rem;
     cursor: pointer;
     font-size: 1rem;
-    transition: background-color 0.3s ease, transform 0.3s ease;
+    transition: background-color 0.3s ease;
     min-width: 120px; /* Ensures buttons aren't too small */
 }
 
@@ -184,13 +176,11 @@ table th {
 /* Button Hover Effect */
 .btn:hover {
     background-color: #0b7dda;
-    transform: scale(1.05); /* Slight scale-up on hover */
 }
 
 /* Dark Mode Hover Effect */
 [data-theme="dark"] .btn:hover {
     background-color: #333333;
-    transform: scale(1.05);
 }
 
 /* Reset Button Specific Styles */
@@ -207,6 +197,7 @@ table th {
     background-color: #da190b;
 }
 
+/* Dark Mode Hover Effect */
 [data-theme="dark"] .reset-btn:hover {
     background-color: #c62828;
 }
@@ -231,12 +222,6 @@ form label {
     margin-bottom: 0.5rem;
     font-size: 1rem;
     text-align: center; /* Center label text */
-    transition: color 0.3s ease; /* Smooth transition */
-}
-
-/* Dark Mode Styles */
-[data-theme="dark"] form label {
-    color: #ffffff;
 }
 
 /* Text Input Fields */
@@ -248,7 +233,6 @@ form input[type="text"] {
     font-size: 1rem;
     border: 1px solid #ccc;
     border-radius: 0.25rem;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; /* Smooth transition */
 }
 
 /* Dark Mode Styles */
@@ -280,7 +264,6 @@ form button.btn {
     border: none; /* Removed border */
     border-radius: 0.5rem;
     display: block; /* Ensure canvas is treated as a block element */
-    transition: background-color 0.3s ease; /* Smooth transition */
 }
 
 /* Dark Mode Styles */
@@ -303,7 +286,6 @@ form button.btn {
     height: 100%;
     overflow: auto; /* Enable scroll if needed */
     background-color: rgba(0, 0, 0, 0.5); /* Black with opacity */
-    transition: opacity 0.3s ease; /* Smooth transition */
 }
 
 /* Modal Content */
@@ -316,7 +298,6 @@ form button.btn {
     max-width: 600px;
     border-radius: 0.5rem;
     position: relative;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; /* Smooth transition */
 }
 
 /* Dark Mode Styles */
@@ -335,7 +316,6 @@ form button.btn {
     font-size: 2rem;
     font-weight: bold;
     cursor: pointer;
-    transition: color 0.3s ease; /* Smooth transition */
 }
 
 .close-button:hover,
@@ -361,14 +341,12 @@ form button.btn {
 #endGameTime {
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
-    transition: color 0.3s ease; /* Smooth transition */
 }
 
 #endGamePenalty {
     font-size: 1.2rem;
     color: red;
     margin-bottom: 1rem;
-    transition: color 0.3s ease; /* Smooth transition */
 }
 
 /* Dark Mode Styles */
@@ -379,12 +357,6 @@ form button.btn {
 /* Leaderboard Title Styling */
 .leaderboard-title {
     margin-top: 2rem; /* Adds a 2rem gap above the Leaderboard heading */
-    transition: color 0.3s ease; /* Smooth transition */
-}
-
-/* Dark Mode Styles */
-[data-theme="dark"] .leaderboard-title {
-    color: #ffffff;
 }
 
 /* Try Again Button Styling */
@@ -452,18 +424,4 @@ form button.btn {
     .modal-content {
         margin: 10% auto; /* Consistent top margin */
     }
-}
-
-/* =========================
-   12. Theme Transition Animation
-   ========================= */
-
-/* Smooth Transition for Theme Changes */
-.theme-transition {
-    animation: fadeTheme 0.3s;
-}
-
-@keyframes fadeTheme {
-    from { opacity: 0.8; }
-    to { opacity: 1; }
 }
