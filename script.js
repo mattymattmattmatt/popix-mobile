@@ -69,6 +69,9 @@ let flashEndTime = 0;
 const flashDuration = 100; // in milliseconds
 let lastFlashCircle = null;
 
+// Track the Previous Circle
+let previousCircle = null;
+
 // Theme Management
 function applyTheme(theme) {
     if (theme === 'dark') {
@@ -220,10 +223,31 @@ function getRandomPosition() {
     const canvasWidth = gameCanvas.width / dpr;
     const canvasHeight = gameCanvas.height / dpr;
 
-    const x = Math.random() * (canvasWidth - 2 * padding) + padding;
-    const y = Math.random() * (canvasHeight - 2 * padding) + padding;
+    const maxAttempts = 100; // Maximum number of attempts to find a non-overlapping position
+    let attempts = 0;
 
-    return { x, y };
+    while (attempts < maxAttempts) {
+        const x = Math.random() * (canvasWidth - 2 * padding) + padding;
+        const y = Math.random() * (canvasHeight - 2 * padding) + padding;
+
+        if (previousCircle) {
+            const distance = Math.hypot(x - previousCircle.x, y - previousCircle.y);
+            if (distance >= circlesDiameter) { // Ensure at least two radii apart
+                return { x, y };
+            }
+        } else {
+            return { x, y };
+        }
+
+        attempts++;
+    }
+
+    // If a non-overlapping position isn't found after maxAttempts, return a random position
+    console.warn('Max attempts reached. Overlapping may occur.');
+    return { 
+        x: Math.random() * (canvasWidth - 2 * padding) + padding, 
+        y: Math.random() * (canvasHeight - 2 * padding) + padding 
+    };
 }
 
 function createCircle() {
@@ -231,6 +255,9 @@ function createCircle() {
     const circle = new Circle(pos.x, pos.y, currentCount);
     activeCircle = circle;
     circle.draw();
+
+    // Store the current circle as the previous circle for the next spawn
+    previousCircle = circle;
 
     // Log the position and count of the active circle for debugging
     console.log(`New Circle: (x: ${circle.x}, y: ${circle.y}), Count: ${circle.count}`);
@@ -294,8 +321,9 @@ function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, 
                 const nameCell = document.createElement('td');
 
                 if (index === 0) {
-                    // For Rank 1: Make the name bold and add a gold medal emoji
-                    nameCell.innerHTML = `<strong>${entry.name} 🥇</strong>`;
+                    // For Rank 1: Add a gold medal emoji and apply the 'top-rank' class
+                    nameCell.innerHTML = `${entry.name} 🥇`;
+                    nameCell.classList.add('top-rank');
                 } else if (entry.name === 'Cake') {
                     // Existing logic for 'Cake'
                     nameCell.textContent = `${entry.name} 🧁🇫🇷`;
