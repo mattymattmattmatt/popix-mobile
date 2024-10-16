@@ -68,7 +68,7 @@ body {
     position: absolute;
     top: 1rem;
     left: 1rem;
-    font-size: 1.5rem;
+    font-size: 3rem; /* Doubled from 1.5rem */
     font-weight: bold;
     display: none; /* Hidden by default */
     z-index: 1000;
@@ -128,7 +128,7 @@ table {
     margin: 1rem 0;
     background-color: var(--background-color); /* Table background based on theme */
     color: var(--text-color); /* Table text based on theme */
-    font-size: 1rem; /* Base font size */
+    font-size: 2rem; /* Doubled from 1rem */
 }
 
 /* Dark Mode Styles */
@@ -137,12 +137,11 @@ table {
     color: #ffffff; /* Light table text */
 }
 
-/* Table Headers and Cells */
 table th, table td {
-    padding: 0.75rem;
+    padding: 1.5rem; /* Doubled from 0.75rem */
     text-align: center;
     border: 1px solid #ddd;
-    font-size: 1rem; /* Base font size */
+    font-size: 2rem; /* Doubled from 1rem */
 }
 
 /* Dark Mode Styles */
@@ -179,13 +178,13 @@ table th {
 
 /* Common Button Styles */
 .btn {
-    padding: 0.75rem 1.5rem;
+    padding: 1.5rem 3rem; /* Doubled from 0.75rem 1.5rem */
     background-color: var(--button-background);
     color: var(--button-text-color);
     border: none;
     border-radius: 0.5rem;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 2rem; /* Doubled from 1rem */
     transition: background-color 0.3s ease;
     min-width: 120px; /* Ensures buttons aren't too small */
     display: flex;
@@ -233,18 +232,18 @@ form {
 /* Form Labels */
 form label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-size: 1rem;
+    margin-bottom: 1rem; /* Doubled from 0.5rem */
+    font-size: 2rem; /* Doubled from 1rem */
     text-align: center; /* Center label text */
 }
 
 /* Text Input Fields */
 form input[type="text"] {
-    padding: 0.5rem;
+    padding: 1rem; /* Doubled from 0.5rem */
     width: 80%;
     max-width: 300px;
-    margin-bottom: 1rem;
-    font-size: 1rem;
+    margin-bottom: 2rem; /* Doubled from 1rem */
+    font-size: 2rem; /* Doubled from 1rem */
     border: 1px solid #ccc;
     border-radius: 0.25rem;
     background-color: var(--background-color); /* Match theme */
@@ -267,6 +266,7 @@ form button.btn {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 2rem; /* Doubled from 1rem */
 }
 
 /* =========================
@@ -312,7 +312,7 @@ form button.btn {
     background-color: var(--modal-background);
     color: var(--modal-text-color);
     margin: 10% auto; /* 10% from the top and centered */
-    padding: 2rem;
+    padding: 4rem; /* Doubled from 2rem */
     border: 1px solid #888;
     width: 80%;
     max-width: 600px;
@@ -320,6 +320,7 @@ form button.btn {
     position: relative;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     animation: fadeIn 0.5s;
+    font-size: 2.2rem; /* Doubled from 1.1rem */
 }
 
 /* Close Button within Modal */
@@ -328,7 +329,7 @@ form button.btn {
     position: absolute;
     top: 1rem;
     right: 1.5rem;
-    font-size: 2rem;
+    font-size: 4rem; /* Doubled from 2rem */
     font-weight: bold;
     cursor: pointer;
 }
@@ -363,14 +364,14 @@ form button.btn {
 
 /* End Game Time and Penalty */
 #endGameTime {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
+    font-size: 3.4rem; /* Doubled from 1.7rem */
+    margin-bottom: 1rem; /* Doubled from 0.5rem */
 }
 
 #endGamePenalty {
-    font-size: 1.2rem;
+    font-size: 2.6rem; /* Doubled from 1.3rem */
     color: var(--penalty-color);
-    margin-bottom: 1rem;
+    margin-bottom: 2rem; /* Doubled from 1rem */
 }
 
 /* =========================
@@ -379,12 +380,14 @@ form button.btn {
 
 /* Leaderboard Title Styling */
 .leaderboard-title {
-    margin-top: 2rem; /* Adds a 2rem gap above the Leaderboard heading */
+    margin-top: 4rem; /* Doubled from 2rem */
+    font-size: 2rem; /* Added font-size */
 }
 
 /* Try Again Button Styling */
 #tryAgainButton {
-    margin-bottom: 1.5rem; /* Adds a 1.5rem gap below the Try Again button */
+    margin-bottom: 3rem; /* Doubled from 1.5rem */
+    font-size: 2rem; /* Doubled from 1rem */
 }
 
 /* =========================
@@ -402,56 +405,66 @@ form button.btn {
     /* Leaderboard Tables */
     table {
         width: 100%;
-        font-size: 1.1rem; /* Increased font size for better readability */
+        font-size: 2.2rem; /* Doubled from 1.1rem */
     }
 
     /* Form Input Fields */
     form input[type="text"] {
         width: 90%;
-        font-size: 1.1rem; /* Increased font size */
+        font-size: 2.2rem; /* Doubled from 1.1rem */
     }
 
     /* Form Submit Button */
     form button.btn {
         width: 70%;
-        font-size: 1.1rem; /* Increased font size */
+        font-size: 2.2rem; /* Doubled from 1.1rem */
     }
 
     /* Modal Content Padding */
     .modal-content {
         margin: 15% auto; /* Increase top margin for better visibility */
-        font-size: 1.1rem; /* Increased font size within modal */
+        font-size: 2.2rem; /* Doubled from 1.1rem */
     }
 
     /* Timer Display */
     #timer {
-        font-size: 1.8rem; /* Increased font size for better visibility */
+        font-size: 3.6rem; /* Doubled from 1.8rem */
     }
 
     /* Table Headers and Cells */
     table th, table td {
-        padding: 1rem;
-        font-size: 1.1rem; /* Increased font size */
+        padding: 2rem; /* Doubled from 1rem */
+        font-size: 2.2rem; /* Doubled from 1.1rem */
     }
 
     /* Buttons */
     .btn {
-        font-size: 1.1rem; /* Increased font size */
-        padding: 0.85rem 1.75rem; /* Increased padding for better touch targets */
+        font-size: 2.2rem; /* Doubled from 1.1rem */
+        padding: 1.7rem 3.5rem; /* Doubled from 0.85rem 1.75rem */
     }
 
     /* Form Labels */
     form label {
-        font-size: 1.1rem; /* Increased font size */
+        font-size: 2.2rem; /* Doubled from 1.1rem */
     }
 
     /* End Game Time and Penalty */
     #endGameTime {
-        font-size: 1.7rem; /* Increased font size */
+        font-size: 3.4rem; /* Doubled from 1.7rem */
     }
 
     #endGamePenalty {
-        font-size: 1.3rem; /* Increased font size */
+        font-size: 2.6rem; /* Doubled from 1.3rem */
+    }
+
+    /* Leaderboard Title */
+    .leaderboard-title {
+        font-size: 2rem; /* Ensures title remains readable */
+    }
+
+    /* Try Again Button */
+    #tryAgainButton {
+        font-size: 2rem; /* Doubled from 1rem */
     }
 }
 
@@ -466,7 +479,7 @@ form button.btn {
     /* Leaderboard Tables */
     table {
         width: 80%;
-        font-size: 1.1rem; /* Slightly increased font size */
+        font-size: 2.2rem; /* Slightly increased font size */
     }
 
     /* Form Container */
@@ -477,43 +490,53 @@ form button.btn {
     /* Form Submit Button */
     form button.btn {
         width: 40%;
-        font-size: 1.1rem; /* Slightly increased font size */
+        font-size: 2.2rem; /* Slightly increased font size */
     }
 
     /* Modal Content Padding */
     .modal-content {
         margin: 10% auto; /* Consistent top margin */
-        font-size: 1.1rem; /* Increased font size within modal */
+        font-size: 2.2rem; /* Doubled from 1.1rem */
     }
 
     /* Timer Display */
     #timer {
-        font-size: 1.8rem; /* Increased font size for better visibility */
+        font-size: 3.6rem; /* Doubled from 1.8rem */
     }
 
     /* Table Headers and Cells */
     table th, table td {
-        padding: 1rem;
-        font-size: 1.1rem; /* Increased font size */
+        padding: 2rem; /* Doubled from 1rem */
+        font-size: 2.2rem; /* Doubled from 1.1rem */
     }
 
     /* Buttons */
     .btn {
-        font-size: 1.1rem; /* Increased font size */
-        padding: 0.85rem 1.75rem; /* Increased padding for better touch targets */
+        font-size: 2.2rem; /* Doubled from 1.1rem */
+        padding: 1.7rem 3.5rem; /* Doubled from 0.85rem 1.75rem */
     }
 
     /* Form Labels */
     form label {
-        font-size: 1.1rem; /* Increased font size */
+        font-size: 2.2rem; /* Doubled from 1.1rem */
     }
 
     /* End Game Time and Penalty */
     #endGameTime {
-        font-size: 1.7rem; /* Increased font size */
+        font-size: 3.4rem; /* Doubled from 1.7rem */
     }
 
     #endGamePenalty {
-        font-size: 1.3rem; /* Increased font size */
+        font-size: 2.6rem; /* Doubled from 1.3rem */
+    }
+
+    /* Leaderboard Title */
+    .leaderboard-title {
+        font-size: 2rem; /* Ensures title remains readable */
+    }
+
+    /* Try Again Button */
+    #tryAgainButton {
+        font-size: 2rem; /* Doubled from 1rem */
     }
 }
