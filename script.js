@@ -103,10 +103,10 @@ themeToggleButton.addEventListener('click', () => {
 // Function to update the theme icon
 function updateThemeIcon(theme) {
     if (theme === 'dark') {
-        themeIcon.textContent = '🌙'; // Moon icon for dark mode
+        themeIcon.textContent = '🌙  '; // Moon icon for dark mode
         themeIcon.setAttribute('aria-label', 'Switch to Light Mode');
     } else {
-        themeIcon.textContent = '☀️'; // Sun icon for light mode
+        themeIcon.textContent = '☀️  '; // Sun icon for light mode
         themeIcon.setAttribute('aria-label', 'Switch to Dark Mode');
     }
 }
