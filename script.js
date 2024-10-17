@@ -42,6 +42,10 @@ const endGameLeaderboardBody = document.getElementById('endGameLeaderboardBody')
 const themeToggleButton = document.getElementById('themeToggle');
 const themeIcon = document.getElementById('themeIcon'); // Icon Element
 
+// DOM Elements for Warning Modal
+const warningModal = document.getElementById('warningModal');
+const closeWarningModalButton = document.getElementById('closeWarningModal');
+
 // Initialize Game Context
 const ctx = gameCanvas.getContext('2d');
 
@@ -149,6 +153,13 @@ function calculateCircleDiameter() {
     return Math.floor(minDimension * 0.15);
 }
 
+// Function to detect if the user is on a mobile device using User-Agent Detection
+function isMobileDevice() {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    // Regular expression to match common mobile devices
+    return /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+}
+
 // Set Canvas Size to Fill Screen and Calculate Circle Size
 function resizeCanvas() {
     // Get the computed styles of the canvas
@@ -182,12 +193,30 @@ function resizeCanvas() {
     }
 }
 
-// Initial Resize
-resizeCanvas();
+// Adjust Canvas and Device-Specific Settings
+function adjustForDevice() {
+    if (isMobileDevice()) {
+        // Mobile-specific adjustments
+        gameCanvas.style.width = '95vw';
+        gameCanvas.style.height = '60vh';
+        circlesDiameter = calculateCircleDiameter();
+    } else {
+        // Desktop-specific adjustments (optional)
+        gameCanvas.style.width = '80vw';
+        gameCanvas.style.height = '80vh';
+        circlesDiameter = calculateCircleDiameter();
+    }
+    
+    // Resize canvas after adjustments
+    resizeCanvas();
+}
 
-// Listen for window resize and orientation change
-window.addEventListener('resize', resizeCanvas);
-window.addEventListener('orientationchange', resizeCanvas);
+// Initial Adjustments
+adjustForDevice();
+
+// Listen for window resize and orientation change to adjust settings
+window.addEventListener('resize', adjustForDevice);
+window.addEventListener('orientationchange', adjustForDevice);
 
 // Circle Class
 class Circle {
@@ -585,11 +614,40 @@ closeRulesButton.addEventListener('click', () => {
     rulesModal.style.display = 'none';
 });
 
-// Close Modal When Clicking Outside the Modal Content
+// Initialize Warning Modal Functionality
+/**
+ * Function to show the warning modal for desktop users.
+ */
+function showWarningModal() {
+    warningModal.style.display = 'block';
+}
+
+/**
+ * Function to hide the warning modal.
+ */
+function hideWarningModal() {
+    warningModal.style.display = 'none';
+}
+
+// Event Listener for Closing the Warning Modal
+closeWarningModalButton.addEventListener('click', hideWarningModal);
+
+// Close the modal when clicking outside the modal content
 window.addEventListener('click', (event) => {
-    if (event.target == rulesModal) {
-        rulesModal.style.display = 'none';
+    if (event.target == warningModal) {
+        hideWarningModal();
     }
+});
+
+// Updated Event Listener for Start Game Button
+startGameButton.addEventListener('click', () => {
+    if (!isMobileDevice()) {
+        // User is on a desktop device, show warning modal
+        showWarningModal();
+        return; // Prevent starting the game
+    }
+    // User is on a mobile device, proceed to start the game
+    startGame();
 });
 
 // Handle Name Submission
@@ -659,8 +717,3 @@ resetScoreButton.addEventListener('click', () => {
 
 // Initialize Leaderboard on Page Load
 initializeLeaderboard();
-
-// Handle Start Game Button Click
-startGameButton.addEventListener('click', () => {
-    startGame();
-});
