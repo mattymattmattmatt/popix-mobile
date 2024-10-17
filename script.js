@@ -59,7 +59,7 @@ let actualTime = 0.00;
 let finalTime = 0.00;
 let totalPenalty = 0.0;
 
-let currentCount = 20;
+let currentCount = totalCircles;
 
 let activeCircle = null;
 
@@ -71,6 +71,9 @@ let lastFlashCircle = null;
 
 // Track the Previous Circle
 let previousCircle = null;
+
+// Debounce Control
+let isProcessingClick = false;
 
 // Theme Management
 function applyTheme(theme) {
@@ -103,10 +106,10 @@ themeToggleButton.addEventListener('click', () => {
 // Function to update the theme icon
 function updateThemeIcon(theme) {
     if (theme === 'dark') {
-        themeIcon.textContent = '🌙  '; // Moon icon for dark mode
+        themeIcon.textContent = '🌙'; // Moon icon for dark mode
         themeIcon.setAttribute('aria-label', 'Switch to Light Mode');
     } else {
-        themeIcon.textContent = '☀️  '; // Sun icon for light mode
+        themeIcon.textContent = '☀️'; // Sun icon for light mode
         themeIcon.setAttribute('aria-label', 'Switch to Dark Mode');
     }
 }
@@ -155,9 +158,13 @@ function resizeCanvas() {
     const width = parseFloat(computedStyle.width);
     const height = parseFloat(computedStyle.height);
     
+    // Limit resolution for performance
+    const limitedWidth = Math.min(width, 1080);
+    const limitedHeight = Math.min(height, 1920);
+
     // Set the canvas's internal size based on CSS dimensions and device pixel ratio
-    gameCanvas.width = width * dpr;
-    gameCanvas.height = height * dpr;
+    gameCanvas.width = limitedWidth * dpr;
+    gameCanvas.height = limitedHeight * dpr;
     
     // Scale the context to account for device pixel ratio
     ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -223,7 +230,8 @@ function getRandomPosition() {
     const canvasWidth = gameCanvas.width / dpr;
     const canvasHeight = gameCanvas.height / dpr;
 
-    const maxAttempts = 100; // Maximum number of attempts to find a non-overlapping position
+    // Limit the number of attempts to prevent delays
+    const maxAttempts = 50;
     let attempts = 0;
 
     while (attempts < maxAttempts) {
@@ -258,9 +266,6 @@ function createCircle() {
 
     // Store the current circle as the previous circle for the next spawn
     previousCircle = circle;
-
-    // Log the position and count of the active circle for debugging
-    console.log(`New Circle: (x: ${circle.x}, y: ${circle.y}), Count: ${circle.count}`);
 }
 
 function showScreen(screen) {
@@ -322,7 +327,7 @@ function displayLeaderboard(leaderboardBodyElement, currentEntryPenalty = null, 
 
                 if (index === 0) {
                     // For Rank 1: Add a gold medal emoji and apply the 'top-rank' class
-                    nameCell.innerHTML = `${entry.name} 🥇`;
+                    nameCell.innerHTML = `<strong>${entry.name} 🥇</strong>`;
                     nameCell.classList.add('top-rank');
                 } else if (entry.name === 'Cake') {
                     // Existing logic for 'Cake'
@@ -417,23 +422,7 @@ function render(currentTime) {
 
     // Draw Active Circle
     if (activeCircle) {
-        const styles = getComputedStyle(document.documentElement);
-        const circleColor = styles.getPropertyValue('--circle-color').trim();
-        const textColor = styles.getPropertyValue('--circle-text-color').trim();
-
-        // Draw the circle
-        ctx.fillStyle = circleColor;
-        ctx.beginPath();
-        ctx.arc(activeCircle.x, activeCircle.y, activeCircle.radius, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.closePath();
-
-        // Draw the countdown number
-        ctx.fillStyle = textColor;
-        ctx.font = `${activeCircle.radius}px Arial`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(activeCircle.count, activeCircle.x, activeCircle.y);
+        activeCircle.draw();
     }
 
     requestAnimationFrame(render);
@@ -444,7 +433,6 @@ requestAnimationFrame(render);
 
 // Start Game Function
 function startGame() {
-    console.log('Starting game...'); // Debugging
     // Reset game variables
     circlesPopped = 0;
     circlesMissed = 0;
@@ -473,8 +461,6 @@ function startGame() {
 
 // End Game Function
 function endGame() {
-    console.log('Ending game...'); // Debugging
-
     // Record end time by capturing the currentTime from the render loop
     const timeEnd = performance.now();
     actualTime = ((timeEnd - timeStart) / 1000); // in seconds
@@ -515,6 +501,10 @@ function endGame() {
 
 // Handle Pointer Events (Unified for Mouse and Touch)
 function handlePointerDown(e) {
+    // Prevent multiple simultaneous clicks
+    if (isProcessingClick) return;
+    isProcessingClick = true;
+
     // Calculate click/touch coordinates
     const rect = gameCanvas.getBoundingClientRect();
     const scaleX = gameCanvas.width / rect.width;
@@ -524,8 +514,6 @@ function handlePointerDown(e) {
     const clickY = (e.clientY - rect.top) * scaleY / dpr;
 
     if (activeCircle && activeCircle.isClicked(clickX, clickY)) {
-        // Vibrate on successful pop
-        vibrate();
         // Play pop sound
         playPopSound();
         // Increment click count
@@ -553,8 +541,12 @@ function handlePointerDown(e) {
         // Missed click
         circlesMissed++;
         // Play miss sound
-        playMissSound();
     }
+
+    // Reset the flag after processing
+    setTimeout(() => {
+        isProcessingClick = false;
+    }, 100); // Adjust timeout as needed
 }
 
 // Add Pointer Event Listener with Touch Point Restriction
@@ -574,7 +566,7 @@ function playMissSound() {
     soundManager.playSound('miss');
 }
 
-// Vibration Feedback
+// Vibration Feedback (Optional - Ignored by User)
 function vibrate() {
     if (navigator.vibrate) {
         navigator.vibrate(100); // Vibrate for 100ms
@@ -611,7 +603,6 @@ nameForm.addEventListener('submit', (e) => {
         missedClicks: circlesMissed
     })
         .then(() => {
-            console.log('Score submitted successfully.');
             // Reset form
             nameForm.reset();
             // Display the leaderboard
@@ -627,7 +618,6 @@ nameForm.addEventListener('submit', (e) => {
 
 // Handle Skip Button
 skipButton.addEventListener('click', () => {
-    console.log('Skip Button Clicked'); // Debugging
     // Display the leaderboard
     initializeLeaderboard();
     // Return to initial screen
@@ -636,7 +626,6 @@ skipButton.addEventListener('click', () => {
 
 // Handle Try Again Button
 tryAgainButton.addEventListener('click', () => {
-    console.log('Try Again Button Clicked'); // Debugging
     startGame();
 });
 
@@ -670,6 +659,5 @@ initializeLeaderboard();
 
 // Handle Start Game Button Click
 startGameButton.addEventListener('click', () => {
-    console.log('Start Game Button Clicked'); // Debugging
     startGame();
 });
