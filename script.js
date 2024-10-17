@@ -516,6 +516,8 @@ function handlePointerDown(e) {
     if (activeCircle && activeCircle.isClicked(clickX, clickY)) {
         // Play pop sound
         playPopSound();
+        // Trigger vibration for successful pop
+        vibrate(); // <--- Vibration Triggered Here
         // Increment click count
         clickCount++;
 
@@ -541,6 +543,7 @@ function handlePointerDown(e) {
         // Missed click
         circlesMissed++;
         // Play miss sound
+        playMissSound();
     }
 
     // Reset the flag after processing
@@ -566,7 +569,7 @@ function playMissSound() {
     soundManager.playSound('miss');
 }
 
-// Vibration Feedback (Optional - Ignored by User)
+// Vibration Feedback
 function vibrate() {
     if (navigator.vibrate) {
         navigator.vibrate(100); // Vibrate for 100ms
