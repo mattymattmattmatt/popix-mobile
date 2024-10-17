@@ -23,8 +23,8 @@ body {
 
 /* Dark Mode Styles */
 [data-theme="dark"] body {
-    background-color: #121212; /* Dark background */
-    color: #ffffff; /* Light text */
+    background-color: var(--background-color, #121212); /* Dark background */
+    color: var(--text-color, #ffffff); /* Light text */
 }
 
 /* =========================
@@ -91,13 +91,15 @@ body {
     top: 0;
     left: 0;
     padding: 2rem;
-    background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent background */
+    background-color: var(--background-color, #ffffff); /* Changed from rgba to solid color */
+    color: var(--text-color, #000000); /* Ensure text color matches theme */
     overflow-y: auto; /* Enable vertical scrolling if content overflows */
 }
 
 /* Dark Mode Styles */
 [data-theme="dark"] .screen {
-    background-color: rgba(18, 18, 18, 0.95); /* Dark background with transparency */
+    background-color: var(--background-color, #121212); /* Dark background with transparency */
+    color: var(--text-color, #ffffff); /* Light text */
 }
 
 /* Active Screen */
@@ -126,12 +128,11 @@ table {
     max-width: 800px;
     border-collapse: collapse;
     margin: 1rem 0;
-    background-color: var(--background-color); /* Table background based on theme */
-    color: var(--text-color); /* Table text based on theme */
+    background-color: var(--background-color, #ffffff); /* Table background based on theme */
+    color: var(--text-color, #000000); /* Table text based on theme */
     font-size: 2rem; /* Doubled from 1rem */
 }
 
-/* Dark Mode Styles */
 [data-theme="dark"] table {
     background-color: #1e1e1e; /* Dark table background */
     color: #ffffff; /* Light table text */
@@ -144,7 +145,6 @@ table th, table td {
     font-size: 2rem; /* Doubled from 1rem */
 }
 
-/* Dark Mode Styles */
 [data-theme="dark"] table th, [data-theme="dark"] table td {
     border: 1px solid #444;
 }
@@ -153,7 +153,6 @@ table th {
     background-color: #f2f2f2;
 }
 
-/* Dark Mode Styles */
 [data-theme="dark"] table th {
     background-color: #2a2a2a;
 }
@@ -201,7 +200,6 @@ table th {
     background-color: #f44336; /* Red */
 }
 
-/* Dark Mode Styles */
 [data-theme="dark"] .reset-btn {
     background-color: #b71c1c; /* Darker red */
 }
